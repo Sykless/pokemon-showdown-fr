@@ -1,7 +1,9 @@
 import { PokemonDico } from './translator';
 import { AlternateFormsDico } from './translator';
 
-// Little trick in order to access Showdown variables inside script.js
+import { removeDiacritics } from './translator';
+
+// Inject Showdown variables inside inject.js
 var s = document.createElement('script');
 s.src = chrome.runtime.getURL('inject.js');
 (document.head || document.documentElement).appendChild(s);
@@ -11,13 +13,6 @@ observer.observe(document, {
 	childList: true, // report added/removed nodes
 	subtree: true,   // observe any descendant elements
 });
-
-function removeDiacritics(text: string)
-{
-	return text
-	  .normalize('NFD')
-	  .replace(/[\u0300-\u036f]/g, '');
-}
 
 function onMutation(mutations: MutationRecord[]) {
 	for (var i = 0, len = mutations.length; i < len; i++)

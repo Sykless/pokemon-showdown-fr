@@ -1,4 +1,5 @@
 import { PokemonDico } from './translator';
+import { removeDiacritics } from './translator';
 
 const FRENCH = 0;
 const ENGLISH = 1;
@@ -15,7 +16,7 @@ for (var englishName in PokemonDico)
 	var formattedFrenchName = removeSpecialCharacters(frenchName);
 	var formattedEnglishName = removeSpecialCharacters(englishName.toLowerCase());
 
-	var notAccented = updateSpecialCharacters(frenchName);
+	var notAccented = removeDiacritics(frenchName);
 
 	if (notAccented != frenchName)
 	{
@@ -30,8 +31,6 @@ var sortedArray = NamesTranslation.sort(function(a, b) {
    	if (a[0] > b[0]) return 1;
    	return 0;
 });
-
-console.log(sortedArray);
 
 var newBattleSearchIndex = [];
 var newBattleSearchIndexOffset = [];
@@ -82,9 +81,7 @@ for (var fusionnedIndex = 0 ; fusionnedIndex < newBattleSearchIndexSize ; fusion
 BattleSearchIndex = newBattleSearchIndex;
 BattleSearchIndexOffset = newBattleSearchIndexOffset;
 
-console.log(frenchWordsID);
 console.log(BattleSearchIndex);
-console.log(BattleSearchIndexOffset);
 
 function getDecalage(id: number)
 {
@@ -101,14 +98,6 @@ function getDecalage(id: number)
 
 function removeSpecialCharacters(text: string) {
 	return text.replace(/[^a-z0-9]+/g, "");
-}
-
-function updateSpecialCharacters(text: string) {
-	return text.replace(/é|è|ê/g,'e')
-		.replace('â','a')
-		.replace('ç','c')
-		.replace('ï','i')
-		.replace('ô','o');
 }
 
 function getClosestJS(query: string) {
