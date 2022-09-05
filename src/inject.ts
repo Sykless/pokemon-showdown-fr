@@ -676,7 +676,7 @@ var PokemonDicoInject: { [englishName: string]: string; } = {
 	"Vivillon": "Prismillon",
 	"Litleo": "Hélionceau",
 	"Pyroar": "Némélios",
-	"Flabébé": "Flabébé",
+	"Flabe\u0301be\u0301": "Flabébé",
 	"Floette": "Floette",
 	"Florges": "Florges",
 	"Skiddo": "Cabriolaine",
@@ -936,7 +936,7 @@ var sortedArray = NamesTranslation.sort(function(a, b) {
 	if (a[0] < b[0]) return -1;
    	if (a[0] > b[0]) return 1;
    	return 0;
-  });
+});
 
 console.log(sortedArray);
 
