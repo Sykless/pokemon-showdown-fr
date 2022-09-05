@@ -3,12 +3,18 @@ var s = document.createElement('script');
 s.src = chrome.runtime.getURL('inject.js');
 (document.head || document.documentElement).appendChild(s);
 
-
 var observer = new MutationObserver(onMutation);
 observer.observe(document, {
 	childList: true, // report added/removed nodes
 	subtree: true,   // observe any descendant elements
 });
+
+function removeDiacritics(text: string)
+{
+	return text
+	  .normalize('NFD')
+	  .replace(/[\u0300-\u036f]/g, '');
+}
 
 const PokemonDico: { [englishName: string]: string; } = {
 	"Bulbasaur": "Bulbizarre",
@@ -1016,7 +1022,7 @@ function onMutation(mutations: MutationRecord[]) {
 		for (var j = 0, node; (node = array[j]); j++)
 		{
 			var newElement = node as Element;
-			console.log(newElement);
+			// console.log(newElement);
 
 			switch(newElement.className)
 			{
@@ -1081,11 +1087,11 @@ function updateResult(element: Element)
 
 		if (searchInput.length > 0)
 		{
-			searchString = searchInput.toLowerCase();
-			searchIndex = pokemonFrenchName.toLowerCase().indexOf(searchString);
+			searchString = removeDiacritics(searchInput.toLowerCase());
+			searchIndex = removeDiacritics(pokemonFrenchName.toLowerCase()).indexOf(searchString);
 		}
 
-		// Make the searched content bold in the Pokémon name
+		// Make the searched content bold in the Pokémon name.
 		if (searchIndex >= 0)
 		{
 			var boldName = pokemonFrenchName.slice(searchIndex, searchIndex + searchString.length);

@@ -2,7 +2,6 @@
 const FRENCH = 0;
 const ENGLISH = 1;
 
-console.log("Ok injected file worked");
 declare var BattleSearchIndex: any;
 declare var BattleSearchIndexOffset: any;
 
@@ -916,9 +915,21 @@ var PokemonDicoInject: { [englishName: string]: string; } = {
 	"Enamorus": "Amovénus"
 };
 
-for (var pokemon in PokemonDicoInject)
+for (var englishName in PokemonDicoInject)
 {
-	NamesTranslation.push([toJsID(PokemonDicoInject[pokemon]), toJsID(pokemon)]);
+	var frenchName = PokemonDicoInject[englishName].toLowerCase();
+	
+	var formattedFrenchName = removeSpecialCharacters(frenchName);
+	var formattedEnglishName = removeSpecialCharacters(englishName.toLowerCase());
+
+	var notAccented = updateSpecialCharacters(frenchName);
+
+	if (notAccented != frenchName)
+	{
+		NamesTranslation.push([notAccented, formattedEnglishName]);
+	}
+
+	NamesTranslation.push([formattedFrenchName, formattedEnglishName]);
 }
 
 var sortedArray = NamesTranslation.sort(function(a, b) {
@@ -995,8 +1006,16 @@ function getDecalage(id: number)
 	return frenchWordsID.length;
 }
 
-function toJsID(text: string) {
-	return text.toLowerCase().replace(/[^a-z0-9]+/g, "");
+function removeSpecialCharacters(text: string) {
+	return text.replace(/[^a-z0-9]+/g, "");
+}
+
+function updateSpecialCharacters(text: string) {
+	return text.replace(/é|è|ê/g,'e')
+		.replace('â','a')
+		.replace('ç','c')
+		.replace('ï','i')
+		.replace('ô','o');
 }
 
 function getClosestJS(query: string) {
