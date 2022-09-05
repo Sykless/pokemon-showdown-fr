@@ -1,9 +1,6 @@
 // Little trick in order to access Showdown variables inside script.js
 var s = document.createElement('script');
-s.src = chrome.runtime.getURL('script.js');
-s.onload = function() {
-	this.remove();
-};
+s.src = chrome.runtime.getURL('inject.js');
 (document.head || document.documentElement).appendChild(s);
 
 
@@ -13,7 +10,7 @@ observer.observe(document, {
 	subtree: true,   // observe any descendant elements
 });
 
-const PokemonDico = {
+const PokemonDico: { [englishName: string]: string; } = {
 	"Bulbasaur": "Bulbizarre",
 	"Ivysaur": "Herbizarre",
 	"Venusaur": "Florizarre",
@@ -919,11 +916,9 @@ const PokemonDico = {
 	"Sneasler": "Farfurex",
 	"Overqwil": "Qwilpik",
 	"Enamorus": "Amovénus"
-}
+};
 
-export {PokemonDico};
-
-const AlternateFormsDico = {
+const AlternateFormsDico: { [englishName: string]: string; } = {
 	"Hoenn": "Hoenn",
 	"Sinnoh": "Sinnoh",
 	"Unova": "Unys",
@@ -1012,29 +1007,34 @@ const AlternateFormsDico = {
 
 const HyphenPokemonName = ["Nidoran-F", "Nidoran-M", "Ho-Oh", "Porygon-Z", "Jangmo-o", "Hakamo-o", "Kommo-o"];
 
-function onMutation(mutations) {
+function onMutation(mutations: MutationRecord[]) {
 	for (var i = 0, len = mutations.length; i < len; i++)
 	{
 		var added = mutations[i].addedNodes;
+		var array = Array.from(added);
 
-		for (var j = 0, node; (node = added[j]); j++) {
-			switch(node.className)
+		for (var j = 0, node; (node = array[j]); j++)
+		{
+			var newElement = node as Element;
+			console.log(newElement);
+
+			switch(newElement.className)
 			{
 				case 'utilichart':
 					for (var k = 0, child; (child = node.childNodes[k]) ; k++) {
-						updateResult(child);
+						updateResult(child as Element);
 					}
 
 					break;
 				
 				case 'result':
-					updateResult(node);
+					updateResult(node as Element);
 			}
 		}
 	}
 }
 
-function updateResult(element)
+function updateResult(element: Element)
 {
 	var pokemonElement = element.querySelector('.pokemonnamecol');
 	
@@ -1043,15 +1043,18 @@ function updateResult(element)
 		var alternameFormName = "";
 		var pokemonShowdownName = pokemonElement.textContent;
 
+		if (pokemonShowdownName == null)
+			pokemonShowdownName = "";
+
 		// Translate Pokémon name and its alternate form if present
 		if (pokemonShowdownName.includes("-") // Translate Pokemon alternate forms defined by "-something"
 			&& !HyphenPokemonName.includes(pokemonShowdownName)) // Don't count Pokemon with "-" in their names as alternate forms
 		{
 			// Only split with the first occurence of "-" in case the altername form name contains a "-"
-			wholePokemonName = pokemonShowdownName.split(/-(.*)/s); 
+			var wholePokemonName = pokemonShowdownName.split(/-(.*)/s); 
 
 			// Translate Pokémon name and alternate form
-			pokemonFrenchName = PokemonDico[wholePokemonName[0]];
+			var pokemonFrenchName = PokemonDico[wholePokemonName[0]];
 			alternameFormName = getAlternateFormName(wholePokemonName);
 		}
 		else
@@ -1071,15 +1074,24 @@ function updateResult(element)
 		pokemonElement.textContent = '';
 
 		// Retrieve the searched content
-		searchIndex = getSearchedIndex(pokemonFrenchName);
+		var inputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
+		var searchInput = inputElement.value;
+		var searchIndex = -1;
+		var searchString = "";
+
+		if (searchInput.length > 0)
+		{
+			searchString = searchInput.toLowerCase();
+			searchIndex = pokemonFrenchName.toLowerCase().indexOf(searchString);
+		}
 
 		// Make the searched content bold in the Pokémon name
 		if (searchIndex >= 0)
 		{
-			boldName = pokemonFrenchName.slice(searchIndex, searchIndex + searchString.length);
-			regularName = pokemonFrenchName.slice(searchIndex + searchString.length, pokemonFrenchName.length);
+			var boldName = pokemonFrenchName.slice(searchIndex, searchIndex + searchString.length);
+			var regularName = pokemonFrenchName.slice(searchIndex + searchString.length, pokemonFrenchName.length);
 
-			boldElement = document.createElement("b");
+			var boldElement = document.createElement("b");
 			boldElement.appendChild(document.createTextNode(boldName))
 
 			if (searchIndex > 0)
@@ -1099,33 +1111,16 @@ function updateResult(element)
 		// If an altername form is present, add it in a small tag
 		if (alternameFormName != "")
 		{
-			alternateForm = document.createElement("small");
+			var alternateForm = document.createElement("small");
 			alternateForm.appendChild(document.createTextNode(alternameFormName)); // Put the alternate form name in small tag
 			pokemonElement.appendChild(alternateForm);	
 		}
 	}
 }
 
-function getSearchedIndex(pokemonFrenchName)
+function getAlternateFormName(pokemonShowdownName: string[])
 {
-	searchInput = document.getElementsByName("pokemon")[0].value;
-
-	if (searchInput.length > 0)
-	{
-		searchString = searchInput.toLowerCase();
-		searchIndex = pokemonFrenchName.toLowerCase().indexOf(searchString);
-
-		return searchIndex;
-	}
-	else
-	{
-		return -1;
-	}
-}
-
-function getAlternateFormName(pokemonShowdownName)
-{
-	alternameFormName = AlternateFormsDico[pokemonShowdownName[1]];
+	var alternameFormName = AlternateFormsDico[pokemonShowdownName[1]];
 
 	if (alternameFormName == null)
 	{
@@ -1136,15 +1131,13 @@ function getAlternateFormName(pokemonShowdownName)
 	{
 		for (var i = 0, name; (name = alternameFormName.split("|")[i]); i++)
 		{
-			attribute = name.split(":");
+			var attribute = name.split(":");
 
 			if (attribute[0] == pokemonShowdownName[0]) { // Use the correct alterate form name for the Pokémon
 				return "-" + attribute[1];
 			}
 		}
 	}
-	else
-	{
-		return "-" + alternameFormName;
-	}
+	
+	return "-" + alternameFormName;
 }
