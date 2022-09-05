@@ -931,6 +931,7 @@ const AlternateFormsDico: { [englishName: string]: string; } = {
 	"Kalos": "Kalos",
 	"Alola": "Alola",
 	"Galar": "Galar",
+	"Hisui": "Hisui",
 	"Gmax": "Gmax",
 	"Mega": "Méga",
 	"Mega-X": "Méga-X",
@@ -996,6 +997,9 @@ const AlternateFormsDico: { [englishName: string]: string; } = {
 	"10%": "10%",
 	"Complete": "Parfait",
 	"Unbound": "Déchaîné",
+	"Alola-Totem": "Dominant",
+	"Busted-Totem": "Dominant",
+	"Totem": "Dominant",
 	"Pa'u": "Hula",
 	"Pom-Pom": "Pom-Pom",
 	"Sensu": "Buyō",
@@ -1010,8 +1014,6 @@ const AlternateFormsDico: { [englishName: string]: string; } = {
 	"Dada": "Papa",
 	"Shadow": "Effroi"
 }
-
-const HyphenPokemonName = ["Nidoran-F", "Nidoran-M", "Ho-Oh", "Porygon-Z", "Jangmo-o", "Hakamo-o", "Kommo-o"];
 
 function onMutation(mutations: MutationRecord[]) {
 	for (var i = 0, len = mutations.length; i < len; i++)
@@ -1046,45 +1048,43 @@ function updateResult(element: Element)
 	
 	if (pokemonElement != null)
 	{
+		var searchIndex = -1;
+		var searchString = "";
 		var alternameFormName = "";
-		var pokemonShowdownName = pokemonElement.textContent;
+		var pokemonShowdownName = pokemonElement.innerHTML;
 
 		if (pokemonShowdownName == null)
-			pokemonShowdownName = "";
+			return;
 
-		// Translate Pokémon name and its alternate form if present
-		if (pokemonShowdownName.includes("-") // Translate Pokemon alternate forms defined by "-something"
-			&& !HyphenPokemonName.includes(pokemonShowdownName)) // Don't count Pokemon with "-" in their names as alternate forms
-		{
-			// Only split with the first occurence of "-" in case the altername form name contains a "-"
-			var wholePokemonName = pokemonShowdownName.split(/-(.*)/s); 
+		// Exclude alternate form
+		var wholePokemonName = pokemonShowdownName.split("<small>");
 
-			// Translate Pokémon name and alternate form
-			var pokemonFrenchName = PokemonDico[wholePokemonName[0]];
-			alternameFormName = getAlternateFormName(wholePokemonName);
+		// Remove HTML tags
+		for (var i = 0 ; i < wholePokemonName.length ; i++) {
+			wholePokemonName[i] = wholePokemonName[i].replace(/<\/?[^>]+(>|$)/g, "");
 		}
-		else
-		{
-			// Translate Pokémon name
-			pokemonFrenchName = PokemonDico[pokemonShowdownName];
-		}
+			
+		 // Translate Pokémon name
+		var pokemonFrenchName = PokemonDico[wholePokemonName[0]];
 
 		if (pokemonFrenchName == null)
 		{
-			console.log("Unable to translate " + pokemonShowdownName);
+			console.log("Unable to translate " + wholePokemonName[0]);
 			return;
 		}
 
-		
-		// Remove current Pokémon name
+		// Alternate forms are located in <small> tags
+		if (wholePokemonName.length > 1) {
+			alternameFormName = getAlternateFormName(wholePokemonName);
+		}
+
+		// Remove current Pokémon name so we can replace it
 		pokemonElement.textContent = '';
 
 		// Retrieve the searched content
 		var inputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
 		var searchInput = inputElement.value;
-		var searchIndex = -1;
-		var searchString = "";
-
+		
 		if (searchInput.length > 0)
 		{
 			searchString = removeDiacritics(searchInput.toLowerCase());
@@ -1100,8 +1100,7 @@ function updateResult(element: Element)
 			var boldElement = document.createElement("b");
 			boldElement.appendChild(document.createTextNode(boldName))
 
-			if (searchIndex > 0)
-			{
+			if (searchIndex > 0) { // Searched content is in the middle of the name
 				pokemonElement.appendChild(document.createTextNode(pokemonFrenchName.slice(0,searchIndex)));
 			}
 			
@@ -1126,11 +1125,12 @@ function updateResult(element: Element)
 
 function getAlternateFormName(pokemonShowdownName: string[])
 {
-	var alternameFormName = AlternateFormsDico[pokemonShowdownName[1]];
-
+	// Remove the "-" at the start of the form name, then translate it
+	var alternameFormName = AlternateFormsDico[pokemonShowdownName[1].substring(1)];
+	
 	if (alternameFormName == null)
 	{
-		console.log("Unable to translate form " + pokemonShowdownName[1] + " of " + pokemonShowdownName[0]);
+		console.log("Unable to translate alternate form " + pokemonShowdownName[0] + pokemonShowdownName[1]);
 		return "-TOTRANSLATE";
 	}
 	else if (alternameFormName.includes("|")) // If multiple Pokémons match the alternate form name
