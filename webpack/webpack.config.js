@@ -1,9 +1,12 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
+
 module.exports = {
    mode: "production",
    entry: {
-      content: path.join(__dirname, "src/content.ts"),
+      content: path.resolve(__dirname, "..", "src", "content.ts"),
+      inject: path.resolve(__dirname, "..", "src", "inject.ts"),
+      translator: path.resolve(__dirname, "..", "src", "translator.ts"),
    },
    output: {
       path: path.join(__dirname, "../dist"),
@@ -20,10 +23,5 @@ module.exports = {
             exclude: /node_modules/,
          },
       ],
-   },
-   plugins: [
-      new CopyPlugin({
-         patterns: [{from: ".", to: ".", context: "public"}]
-      }),
-   ],
+   }
 };
