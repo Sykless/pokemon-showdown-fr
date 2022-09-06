@@ -1,6 +1,7 @@
 import { PokemonDico } from './translator';
 import { AlternateFormsDico } from './translator';
 import { AbilitiesDico } from './translator';
+import { TypesDico } from './translator';
 
 import { removeDiacritics } from './translator';
 
@@ -30,18 +31,35 @@ function onMutation(mutations: MutationRecord[]) {
 				case 'utilichart': // Search results have been reset
 					for (var k = 0, result; (result = node.childNodes[k]) ; k++)
 					{
-						updatePokemonName(result as Element);
-						updatePokemonAbility(result as Element);
+						updateResultTag(result as Element);
 					}
 
 					break;
 				
 				case 'result': // New results after scrolling
-					updatePokemonName(node as Element);
-					updatePokemonAbility(node as Element);
+					updateResultTag(node as Element);
 					break;
 			}
 		}
+	}
+}
+
+function updateResultTag(resultElement: Element)
+{
+	var displayedDataType = getDisplayedDataType(resultElement);
+
+	if (displayedDataType == "pokemon")
+	{
+		updatePokemonName(resultElement);
+		updatePokemonAbility(resultElement);
+	}
+	else if (displayedDataType == "ability")
+	{
+		updateAbility(resultElement);
+	}
+	else if (displayedDataType == "separator")
+	{
+		updateSeparator(resultElement);
 	}
 }
 
@@ -195,78 +213,132 @@ function updatePokemonAbility(element: Element)
 {
 	var displayedDataType = getDisplayedDataType(element);
 	
-	// Translate the Pokémon abilities
-	if (displayedDataType == "pokemon")
+	var abilityNodeList = element.querySelectorAll('.abilitycol');
+	var twoAbilitiesNode = element.querySelector('.twoabilitycol');
+
+	for (var i = 0, node; (node = abilityNodeList[i]) ; i++)
 	{
-		var abilityNodeList = element.querySelectorAll('.abilitycol');
-		var twoAbilitiesNode = element.querySelector('.twoabilitycol');
-
-		for (var i = 0, node; (node = abilityNodeList[i]) ; i++)
+		// The Pokemon might only have one ability, so we check if null before using it
+		if (node.textContent)
 		{
-			// The Pokemon might only have one ability, so we check if null before using it
-			if (node.textContent)
-			{
-				var frenchAbility = AbilitiesDico[node.textContent];
+			var frenchAbility = AbilitiesDico[node.textContent];
 
-				if (frenchAbility != null) { // Directly update the textContent, no style needed
-					node.textContent = frenchAbility;
-				}
-				else {
-					console.log("Unable to translate ability " + node.textContent);
-				}
+			if (frenchAbility != null) { // Directly update the textContent, no style needed
+				node.textContent = frenchAbility;
 			}
-		}
-
-		// There could be a node with two abilities
-		if (twoAbilitiesNode != null)
-		{
-			var twoAbilities = twoAbilitiesNode.innerHTML.split("<br>");
-			twoAbilitiesNode.textContent = '';
-			
-			for (var i = 0 ; i < twoAbilities.length ; i++)
-			{
-				// If two abilities are present, add a br tag to separate them
-				if (i == 1) {
-					twoAbilitiesNode.appendChild(document.createElement("br"));
-				}
-
-				// Use the untranslated ability if no translation is found
-				var frenchAbility = AbilitiesDico[twoAbilities[i]];
-				var abilityTextNode = document.createTextNode(frenchAbility != null ? frenchAbility : twoAbilities[i])
-
-				if (frenchAbility == null) {
-					console.log("Unable to translate ability " + twoAbilities[i]);
-				}
-
-				twoAbilitiesNode.appendChild(abilityTextNode)
+			else {
+				console.log("Unable to translate ability " + node.textContent);
 			}
 		}
 	}
-	// Translate the displayed ability
-	else if (displayedDataType == "ability")
+
+	// There could be a node with two abilities
+	if (twoAbilitiesNode != null)
 	{
-		var abilityNode = element.querySelector('.namecol');
-		var filterNode = element.querySelector('.filtercol');
-
-		if (abilityNode != null && abilityNode.textContent != null)
+		var twoAbilities = twoAbilitiesNode.innerHTML.split("<br>");
+		twoAbilitiesNode.textContent = '';
+		
+		for (var i = 0 ; i < twoAbilities.length ; i++)
 		{
-			var frenchAbility = AbilitiesDico[abilityNode.textContent];
-
-			if (frenchAbility != null) { // Directly update the textContent, no style needed
-				abilityNode.textContent = frenchAbility;
+			// If two abilities are present, add a br tag to separate them
+			if (i == 1) {
+				twoAbilitiesNode.appendChild(document.createElement("br"));
 			}
-			else {
-				console.log("Unable to translate ability " + abilityNode.textContent);
+
+			// Use the untranslated ability if no translation is found
+			var frenchAbility = AbilitiesDico[twoAbilities[i]];
+			var abilityTextNode = document.createTextNode(frenchAbility != null ? frenchAbility : twoAbilities[i])
+
+			if (frenchAbility == null) {
+				console.log("Unable to translate ability " + twoAbilities[i]);
+			}
+
+			twoAbilitiesNode.appendChild(abilityTextNode)
+		}
+	}
+}
+
+function updateAbility(element: Element)
+{
+	var abilityNode = element.querySelector('.namecol');
+	var filterNode = element.querySelector('.filtercol');
+
+	if (abilityNode != null && abilityNode.textContent != null)
+	{
+		var frenchAbility = AbilitiesDico[abilityNode.textContent];
+
+		if (frenchAbility != null) { // Directly update the textContent, no style needed
+			abilityNode.textContent = frenchAbility;
+		}
+		else {
+			console.log("Unable to translate ability " + abilityNode.textContent);
+		}
+	}
+
+	if (filterNode != null) {
+		translateFilter(filterNode);
+	}
+	
+}
+
+function updateSeparator(separatorElement: Element)
+{
+	var separatorTag = separatorElement.firstChild as Element;
+
+	if (separatorTag.tagName == "H3" && separatorTag.textContent != null)
+	{
+		// Get all separator words
+		var separatorWords = separatorTag.textContent.split(" ");
+
+		if (separatorWords.length > 1)
+		{
+			// Either ability of type filter
+			if (separatorWords.at(-1) == "Pokémon")
+			{
+				var filterData = separatorTag.textContent.replace(" Pokémon","");
+				var possibleType = TypesDico[filterData.replace("-type", "")];
+
+				// Type
+				if (possibleType != null)
+				{
+					separatorTag.textContent = "Pokémon de type " + possibleType;
+				}
+				// Ability
+				else
+				{
+					// Translate ability and insert it with the separator french translation
+					var filteredAbility = AbilitiesDico[filterData];
+
+					if (filteredAbility != null) {
+						separatorTag.textContent = "Pokémon avec " + filterData;
+					}
+				}
 			}
 		}
-
-		if (filterNode != null)
+		else
 		{
-			var filterElement = document.createElement("em");
-			filterElement.appendChild(document.createTextNode("Filtrer"));
-
-			filterNode.textContent = "";
-			filterNode.appendChild(filterElement);
+			// The only single-word to translate is "Moves"
+			separatorTag.textContent = separatorTag.textContent
+				.replace("Abilities", "Talents")
+				.replace("Moves", "Capacités");
 		}
+	}
+	else
+	{
+		console.log("Unknown separator element");
+		console.log(separatorElement)
+	}
+}
+
+function translateFilter(filterNode: Element)
+{
+	var filterButtonTag = filterNode.firstChild as Element;
+
+	if (filterButtonTag != null && filterButtonTag.tagName == "EM") {
+		filterButtonTag.textContent = "Filtrer";
+	}
+	else {
+		console.log("Unkown filter element");
+		console.log(filterNode);
 	}
 }

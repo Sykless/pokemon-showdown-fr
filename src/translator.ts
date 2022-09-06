@@ -1360,6 +1360,27 @@ export const AbilitiesDico: { [englishName: string]: string; } = {
     "Neutralizing Gas": "Gaz Inhibiteur"
 }
 
+export const TypesDico: { [englishName: string]: string; } = {
+    "Bug": "Insecte",
+	"Dark": "Ténèbres",
+	"Dragon": "Dragon",
+	"Electric": "Électrik",
+	"Fairy": "Fée",
+	"Fighting": "Combat",
+	"Fire": "Feu",
+	"Flying": "Vol",
+	"Ghost": "Spectre",
+	"Grass": "Plante",
+	"Ground": "Sol",
+	"Ice": "Glace",
+    "Normal": "Normal",
+	"Poison": "Poison",
+	"Psychic": "Psy",
+	"Rock": "Roche",
+	"Steel": "Acier",
+	"Water": "Eau"
+}
+
 export function removeDiacritics(text: string)
 {
 	return text
