@@ -2,6 +2,7 @@ import { PokemonDico } from './translator';
 import { AlternateFormsDico } from './translator';
 import { AbilitiesDico } from './translator';
 import { TypesDico } from './translator';
+import { HeadersDico } from './translator';
 
 import { removeDiacritics } from './translator';
 
@@ -57,9 +58,9 @@ function updateResultTag(resultElement: Element)
 	{
 		updateAbility(resultElement);
 	}
-	else if (displayedDataType == "separator")
+	else if (displayedDataType == "header")
 	{
-		updateSeparator(resultElement);
+		updateHeader(resultElement);
 	}
 }
 
@@ -194,9 +195,9 @@ function getDisplayedDataType(element: Element)
 					console.log(childResult);
 				}
 			}
-			// The result child is probably a separator
+			// The result child is probably a header
 			else {
-				displayedDataType = "separator";
+				displayedDataType = "header";
 			}
 		}
 	}
@@ -281,52 +282,84 @@ function updateAbility(element: Element)
 	
 }
 
-function updateSeparator(separatorElement: Element)
+function updateHeader(headerElement: Element)
 {
-	var separatorTag = separatorElement.firstChild as Element;
+	var headerTag = headerElement.firstChild as Element;
 
-	if (separatorTag.tagName == "H3" && separatorTag.textContent != null)
+	if (headerTag.tagName == "H3" && headerTag.textContent != null)
 	{
-		// Get all separator words
-		var separatorWords = separatorTag.textContent.split(" ");
+		// Get all header words
+		var headerWords = headerTag.textContent.split(" ");
 
-		if (separatorWords.length > 1)
+		if (headerWords.length > 1)
 		{
 			// Either ability of type filter
-			if (separatorWords.at(-1) == "Pokémon")
+			if (headerWords.at(-1) == "Pokémon")
 			{
-				var filterData = separatorTag.textContent.replace(" Pokémon","");
+				var filterData = headerTag.textContent.replace(" Pokémon","");
 				var possibleType = TypesDico[filterData.replace("-type", "")];
 
 				// Type
 				if (possibleType != null)
 				{
-					separatorTag.textContent = "Pokémon de type " + possibleType;
+					headerTag.textContent = "Pokémon de type " + possibleType;
 				}
 				// Ability
 				else
 				{
-					// Translate ability and insert it with the separator french translation
+					// Translate ability and insert it with the header french translation
 					var filteredAbility = AbilitiesDico[filterData];
 
 					if (filteredAbility != null) {
-						separatorTag.textContent = "Pokémon avec " + filterData;
+						headerTag.textContent = "Pokémon avec " + filterData;
+					}
+				}
+			}
+			else if (headerWords.at(-1) == "technicality")
+			{
+				headerTag.textContent = headerWords[0] + " par technicalité";
+			}
+			else if (headerWords[0] == "Generation")
+			{
+				headerTag.textContent = "Génération " + headerWords[1];
+			}
+			else
+			{
+				var possiblePokemonName = PokemonDico[headerWords.at(-1) as string];
+
+				if (possiblePokemonName != null) {
+					headerTag.textContent = "Spécifique à " + possiblePokemonName;
+				}
+				else {
+					// Default : the header should be in HeadersDico
+					var translatedHeader = HeadersDico[headerTag.textContent];
+
+					if (translatedHeader != null) {
+						headerTag.textContent = translatedHeader;
+					}
+					else {
+						console.log("Unable to translate header " + headerTag.textContent);
 					}
 				}
 			}
 		}
 		else
 		{
-			// The only single-word to translate is "Moves"
-			separatorTag.textContent = separatorTag.textContent
-				.replace("Abilities", "Talents")
-				.replace("Moves", "Capacités");
+			// One-word headers, we can translate directly
+			var translatedHeader = HeadersDico[headerTag.textContent];
+
+			if (translatedHeader != null) {
+				headerTag.textContent = translatedHeader;
+			}
+			else {
+				console.log("Unable to translate header " + headerTag.textContent);
+			}
 		}
 	}
-	else
+	else if (!headerTag.classList.contains("result"))
 	{
-		console.log("Unknown separator element");
-		console.log(separatorElement)
+		console.log("Unknown header element");
+		console.log(headerElement)
 	}
 }
 
