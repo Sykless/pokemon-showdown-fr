@@ -23,7 +23,7 @@ function onMutation(mutations: MutationRecord[]) {
 		for (var j = 0, node; (node = added[j]); j++)
 		{
 			var newElement = node as Element;
-			console.log(newElement);
+			//console.log(newElement);
 
 			switch(newElement.className)
 			{
@@ -156,7 +156,7 @@ function getDisplayedDataType(element: Element)
 	var displayedDataType = "";
 
 	// Element should be a li tag with a result class
-	if (element.tagName == "li" && element.classList.contains("result"))
+	if (element.tagName == "LI" && element.classList.contains("result"))
 	{
 		var childResult = element.firstChild as Element;
 
@@ -164,7 +164,7 @@ function getDisplayedDataType(element: Element)
 		{
 			// If result child is a tag name, it should have a data-entry
 			// attribute telling what the displayed data is
-			if (childResult.tagName == "a")
+			if (childResult.tagName == "A")
 			{
 				var attribute = childResult.getAttribute('data-entry');
 
@@ -172,7 +172,8 @@ function getDisplayedDataType(element: Element)
 					displayedDataType = attribute.split("|")[0];
 				}
 				else {
-					console.log("No data-entry present in tag " + childResult);
+					console.log("No data-entry present in tag ");
+					console.log(childResult);
 				}
 			}
 			// The result child is probably a separator
@@ -183,7 +184,8 @@ function getDisplayedDataType(element: Element)
 	}
 	else
 	{
-		console.log("Unknown result element : " + element);
+		console.log("Unknown result element");
+		console.log(element)
 	}
 	
 	return displayedDataType;
