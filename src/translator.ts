@@ -1410,6 +1410,13 @@ export const HeadersDico: { [englishName: string]: string; } = {
     "CAP moves": "Capacités CAP",
 }
 
+export const MenuDico: { [englishName: string]: string; } = {
+    "Copy": "Copier",
+    "Import/Export": "Importer/Exporter",
+    "Move": "Déplacer",
+    "Delete": "Supprimer",
+}
+
 export function removeDiacritics(text: string)
 {
 	return text
