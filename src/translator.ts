@@ -1360,6 +1360,56 @@ export const AbilitiesDico: { [englishName: string]: string; } = {
     "Neutralizing Gas": "Gaz Inhibiteur"
 }
 
+export const TypesDico: { [englishName: string]: string; } = {
+    "Bug": "Insecte",
+	"Dark": "Ténèbres",
+	"Dragon": "Dragon",
+	"Electric": "Électrik",
+	"Fairy": "Fée",
+	"Fighting": "Combat",
+	"Fire": "Feu",
+	"Flying": "Vol",
+	"Ghost": "Spectre",
+	"Grass": "Plante",
+	"Ground": "Sol",
+	"Ice": "Glace",
+    "Normal": "Normal",
+	"Poison": "Poison",
+	"Psychic": "Psy",
+	"Rock": "Roche",
+	"Steel": "Acier",
+	"Water": "Eau"
+}
+
+export const HeadersDico: { [englishName: string]: string; } = {
+    "Abilities": "Talents",
+    "Hidden Ability": "Talent caché",
+    "Special Event Ability": "Talent événementiel",
+    "Situational Abilities": "Talents situationnels",
+    "Unviable Abilities": "Talents non viables",
+	"Moves": "Capacités",
+    "Physical moves": "Capacités physiques",
+    "Special moves": "Capacités spéciales",
+    "Status moves": "Capacités de statut",
+    "Usually useless moves": "Capacités généralement inutiles",
+    "Sketched moves": "Capacités gribouillées",
+    "Useless sketched moves": "Capacités gribouillées inutiles",
+	"Items": "Objets",
+    "Popular items": "Objets populaires",
+    "Pokémon-specific items": "Objets spécifiques à un Pokémon",
+    "Usually useless items": "Objets généralement inutiles",
+    "Useless items": "Objets inutiles",
+    "Restricted Legendary": "Légendaires restreints",
+    "Regular": "Standard",
+    "Mythical": "Fabuleux",
+    "New": "Nouveau",
+    "Below PU": "Sous le PU",
+    "Below DUU": "Sous le DUU",
+    "NFEs not in a higher tier": "NFEs non présents dans un tier supérieur",
+    "Illegal results": "Résultats illégaux",
+    "CAP moves": "Capacités CAP",
+}
+
 export function removeDiacritics(text: string)
 {
 	return text
