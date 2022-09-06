@@ -23,14 +23,15 @@ function onMutation(mutations: MutationRecord[]) {
 		for (var j = 0, node; (node = added[j]); j++)
 		{
 			var newElement = node as Element;
-			// console.log(newElement);
+			console.log(newElement);
 
 			switch(newElement.className)
 			{
-				case 'utilichart': // First time the page is loading
-					for (var k = 0, child; (child = node.childNodes[k]) ; k++) {
-						updatePokemonName(child as Element);
-						updatePokemonAbility(child as Element);
+				case 'utilichart': // Search results have been reset
+					for (var k = 0, result; (result = node.childNodes[k]) ; k++)
+					{
+						updatePokemonName(result as Element);
+						updatePokemonAbility(result as Element);
 					}
 
 					break;
@@ -150,49 +151,120 @@ function getAlternateFormName(pokemonShowdownName: string[])
 	return "-" + alternameFormName;
 }
 
-function updatePokemonAbility(element: Element)
+function getDisplayedDataType(element: Element)
 {
-	var abilityNodeList = element.querySelectorAll('.abilitycol');
-	var twoAbilitiesNode = element.querySelector('.twoabilitycol');
+	var displayedDataType = "";
 
-	for (var i = 0, node; (node = abilityNodeList[i]) ; i++)
+	// Element should be a li tag with a result class
+	if (element.tagName == "li" && element.classList.contains("result"))
 	{
-		// The Pokemon might only have one ability, so we check if null before using it
-		if (node.textContent)
-		{
-			var frenchAbility = AbilitiesDico[node.textContent];
+		var childResult = element.firstChild as Element;
 
-			if (frenchAbility != null) { // Directly update the textContent, no style needed
-				node.textContent = frenchAbility;
+		if (childResult != null)
+		{
+			// If result child is a tag name, it should have a data-entry
+			// attribute telling what the displayed data is
+			if (childResult.tagName == "a")
+			{
+				var attribute = childResult.getAttribute('data-entry');
+
+				if (attribute != null) {
+					displayedDataType = attribute.split("|")[0];
+				}
+				else {
+					console.log("No data-entry present in tag " + childResult);
+				}
 			}
+			// The result child is probably a separator
 			else {
-				console.log("Unable to translate ability " + node.textContent);
+				displayedDataType = "separator";
 			}
 		}
 	}
-
-	// There could be a node with two abilities
-	if (twoAbilitiesNode != null)
+	else
 	{
-		var twoAbilities = twoAbilitiesNode.innerHTML.split("<br>");
-		twoAbilitiesNode.textContent = '';
-		
-		for (var i = 0 ; i < twoAbilities.length ; i++)
+		console.log("Unknown result element : " + element);
+	}
+	
+	return displayedDataType;
+}
+
+function updatePokemonAbility(element: Element)
+{
+	var displayedDataType = getDisplayedDataType(element);
+	
+	// Translate the Pokémon abilities
+	if (displayedDataType == "pokemon")
+	{
+		var abilityNodeList = element.querySelectorAll('.abilitycol');
+		var twoAbilitiesNode = element.querySelector('.twoabilitycol');
+
+		for (var i = 0, node; (node = abilityNodeList[i]) ; i++)
 		{
-			// If two abilities are present, add a br tag to separate them
-			if (i == 1) {
-				twoAbilitiesNode.appendChild(document.createElement("br"));
+			// The Pokemon might only have one ability, so we check if null before using it
+			if (node.textContent)
+			{
+				var frenchAbility = AbilitiesDico[node.textContent];
+
+				if (frenchAbility != null) { // Directly update the textContent, no style needed
+					node.textContent = frenchAbility;
+				}
+				else {
+					console.log("Unable to translate ability " + node.textContent);
+				}
 			}
+		}
 
-			// Use the untranslated ability if no translation is found
-			var frenchAbility = AbilitiesDico[twoAbilities[i]];
-			var abilityNode = document.createTextNode(frenchAbility != null ? frenchAbility : twoAbilities[i])
+		// There could be a node with two abilities
+		if (twoAbilitiesNode != null)
+		{
+			var twoAbilities = twoAbilitiesNode.innerHTML.split("<br>");
+			twoAbilitiesNode.textContent = '';
+			
+			for (var i = 0 ; i < twoAbilities.length ; i++)
+			{
+				// If two abilities are present, add a br tag to separate them
+				if (i == 1) {
+					twoAbilitiesNode.appendChild(document.createElement("br"));
+				}
 
-			if (frenchAbility == null) {
-				console.log("Unable to translate ability " + twoAbilities[i]);
+				// Use the untranslated ability if no translation is found
+				var frenchAbility = AbilitiesDico[twoAbilities[i]];
+				var abilityTextNode = document.createTextNode(frenchAbility != null ? frenchAbility : twoAbilities[i])
+
+				if (frenchAbility == null) {
+					console.log("Unable to translate ability " + twoAbilities[i]);
+				}
+
+				twoAbilitiesNode.appendChild(abilityTextNode)
 			}
+		}
+	}
+	// Translate the displayed ability
+	else if (displayedDataType == "ability")
+	{
+		var abilityNode = element.querySelector('.namecol');
+		var filterNode = element.querySelector('.filtercol');
 
-			twoAbilitiesNode.appendChild(abilityNode)
+		if (abilityNode != null && abilityNode.textContent != null)
+		{
+			var frenchAbility = AbilitiesDico[abilityNode.textContent];
+
+			if (frenchAbility != null) { // Directly update the textContent, no style needed
+				abilityNode.textContent = frenchAbility;
+			}
+			else {
+				console.log("Unable to translate ability " + abilityNode.textContent);
+			}
+		}
+
+		if (filterNode != null)
+		{
+			var filterElement = document.createElement("em");
+			filterElement.appendChild(document.createTextNode("Filtrer"));
+
+			filterNode.textContent = "";
+			filterNode.appendChild(filterElement);
 		}
 	}
 }
