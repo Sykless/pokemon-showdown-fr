@@ -1,5 +1,6 @@
 import { PokemonDico } from './translator';
 import { AlternateFormsDico } from './translator';
+import { AbilitiesDico } from './translator';
 
 import { removeDiacritics } from './translator';
 
@@ -18,29 +19,32 @@ function onMutation(mutations: MutationRecord[]) {
 	for (var i = 0, len = mutations.length; i < len; i++)
 	{
 		var added = mutations[i].addedNodes;
-		var array = Array.from(added);
 
-		for (var j = 0, node; (node = array[j]); j++)
+		for (var j = 0, node; (node = added[j]); j++)
 		{
 			var newElement = node as Element;
+			// console.log(newElement);
 
 			switch(newElement.className)
 			{
-				case 'utilichart':
+				case 'utilichart': // First time the page is loading
 					for (var k = 0, child; (child = node.childNodes[k]) ; k++) {
-						updateResult(child as Element);
+						updatePokemonName(child as Element);
+						updatePokemonAbility(child as Element);
 					}
 
 					break;
 				
-				case 'result':
-					updateResult(node as Element);
+				case 'result': // New results after scrolling
+					updatePokemonName(node as Element);
+					updatePokemonAbility(node as Element);
+					break;
 			}
 		}
 	}
 }
 
-function updateResult(element: Element)
+function updatePokemonName(element: Element)
 {
 	var pokemonElement = element.querySelector('.pokemonnamecol');
 	
@@ -144,4 +148,51 @@ function getAlternateFormName(pokemonShowdownName: string[])
 	}
 	
 	return "-" + alternameFormName;
+}
+
+function updatePokemonAbility(element: Element)
+{
+	var abilityNodeList = element.querySelectorAll('.abilitycol');
+	var twoAbilitiesNode = element.querySelector('.twoabilitycol');
+
+	for (var i = 0, node; (node = abilityNodeList[i]) ; i++)
+	{
+		// The Pokemon might only have one ability, so we check if null before using it
+		if (node.textContent)
+		{
+			var frenchAbility = AbilitiesDico[node.textContent];
+
+			if (frenchAbility != null) { // Directly update the textContent, no style needed
+				node.textContent = frenchAbility;
+			}
+			else {
+				console.log("Unable to translate ability " + node.textContent);
+			}
+		}
+	}
+
+	// There could be a node with two abilities
+	if (twoAbilitiesNode != null)
+	{
+		var twoAbilities = twoAbilitiesNode.innerHTML.split("<br>");
+		twoAbilitiesNode.textContent = '';
+		
+		for (var i = 0 ; i < twoAbilities.length ; i++)
+		{
+			// If two abilities are present, add a br tag to separate them
+			if (i == 1) {
+				twoAbilitiesNode.appendChild(document.createElement("br"));
+			}
+
+			// Use the untranslated ability if no translation is found
+			var frenchAbility = AbilitiesDico[twoAbilities[i]];
+			var abilityNode = document.createTextNode(frenchAbility != null ? frenchAbility : twoAbilities[i])
+
+			if (frenchAbility == null) {
+				console.log("Unable to translate ability " + twoAbilities[i]);
+			}
+
+			twoAbilitiesNode.appendChild(abilityNode)
+		}
+	}
 }
