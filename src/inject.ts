@@ -10,6 +10,8 @@ import { MenuDico } from './translator';
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
 // Démétéros surligné en gras
 
+console.log("Extension successfully loaded !");
+
 // Variable defined by Showdown containing every piece of data
 // (Pokémon names, moves, abilities) needed in the teambuilder research
 declare var BattleSearchIndex: any;
@@ -91,15 +93,13 @@ function updateResultTag(resultElement: Element)
 	}
 }
 
-function updateCurElement(searchInput: string, translatedPokemonName: any)
+function updateCurElement(translatedPokemonName: string)
 {
-	// Cur element is the search result entry of the curent selected Pokémon 
+	// Cur element is the search result entry of the current selected Pokémon 
 	// It is defined by the current Pokémon name, but since the current Pokémon name is in french, cur is bugged
-
+	// In order to fix this, we completely replace cur type by generating a new entry with Showdown code
 	var curElements = document.getElementsByClassName("cur");
-
-	// The input can be either the english or in french name
-	var englishNameId = Object.keys(PokemonDico).find(key => PokemonDico[key] === translatedPokemonName[0]);
+	var nextCurSibling = null;
 
 	for (var curID = 0 ; curID < curElements.length ; curID++)
 	{
@@ -108,7 +108,48 @@ function updateCurElement(searchInput: string, translatedPokemonName: any)
 		if (cur?.tagName == "A" && cur?.parentElement?.tagName == "LI")
 		{
 			// Remove cur parent node
-			//cur?.parentElement.remove();
+			var curParent = cur?.parentElement;
+
+			nextCurSibling = curParent.nextSibling;
+			curParent.remove();
+		}
+	}
+
+	if (nextCurSibling)
+	{
+		var englishName = translatePokemonNameToEnglish(translatedPokemonName);
+
+		if (englishName)
+		{
+			var parentNode = nextCurSibling.parentNode;
+
+			if (parentNode)
+			{
+				// Generate the current Pokémon HTML code from its english name
+				var englishNameId = removeSpecialCharacters(englishName.toLowerCase());
+				var htmlCurElement = getPokemonCurHTMLElement(englishNameId);
+
+				// The Pokémon tier is not automatically provided, so we manually add it
+				htmlCurElement = htmlCurElement.replace('col numcol"><', 'col numcol">' + BattlePokedex[englishNameId].tier + '<');
+
+				var curTemplate = document.createElement('template');
+				curTemplate.innerHTML = htmlCurElement;
+
+				var curNode = curTemplate.content.firstChild;
+
+				if (curNode) {
+					parentNode.insertBefore(curNode, nextCurSibling);
+				}
+			}
+			else
+			{
+				console.log("The following node doesn't have a parent node.")
+				console.log(nextCurSibling);
+			}
+		}
+		else
+		{
+			console.log(translatedPokemonName + " cannot be translated in english");
 		}
 	}
 }
@@ -136,12 +177,17 @@ function updatePokemonInfo()
 		var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
 		var searchInput = nameInputElement.value;
 
-		console.log("searchInput : " + searchInput);
+		// If the english translation of the search input is different than the search input
+		// it means that the search input is a complete Pokémon french word, so remove the incomplete class
+		if (translatePokemonNameToEnglish(searchInput) !=  searchInput) {
+			nameInputElement.classList.remove("incomplete");
+		}
 
 		// Try to translate the name to check if it matches a french translation
 		var translatedPokemonNameArray = getTranslatedPokemonNameArray(searchInput);
+		var translatedPokemonName = getTranslatedPokemonNameFromArray(searchInput, translatedPokemonNameArray);
 
-		updateCurElement(searchInput, translatedPokemonNameArray);
+		updateCurElement(translatedPokemonName);
 
 		liComponent.childNodes.forEach(function(node)
 		{
@@ -187,9 +233,9 @@ function updatePokemonInfo()
 			
 									if (nameInput.tagName == "INPUT" && nameInput.value)
 									{
-										// Convert the Array Pokemon name to string and insert it in the search input field
-										// (If no translation is found, the string is return as is)
-										nameInput.value = getTranslatedPokemonNameFromArray(searchInput, translatedPokemonNameArray);
+										// Update the Pokémon search input with the french translation
+										// (If no translation is found, the original string stays untouched)
+										nameInput.value = translatedPokemonName;
 									}
 								})
 							});
@@ -295,6 +341,12 @@ function translatePokemonName(pokemonEnglishName: string)
 		console.log("Unable to translate Pokémon " + pokemonEnglishName);
 		return pokemonEnglishName;
 	}
+}
+
+function translatePokemonNameToEnglish(pokemonFrenchName: string)
+{
+	var pokemonEnglishName = Object.keys(PokemonDico).find(key => PokemonDico[key] === pokemonFrenchName);
+	return pokemonEnglishName ? pokemonEnglishName : pokemonFrenchName;
 }
 
 function translateAlternateFormName(pokemonEnglishName: string, alternatePokemonFormName: string)
