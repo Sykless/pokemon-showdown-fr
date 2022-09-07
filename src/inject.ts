@@ -5,23 +5,27 @@ import { TypesDico } from './translator';
 import { HeadersDico } from './translator';
 import { MenuDico } from './translator';
 
-import { removeDiacritics } from './translator';
-
 // TODO
-// Motisma -> seulement celui de base
+// Ajout des formes dans le BattleSearchIndex
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
+// Démétéros surligné en gras
 
 // Variable defined by Showdown containing every piece of data
 // (Pokémon names, moves, abilities) needed in the teambuilder research
 declare var BattleSearchIndex: any;
 declare var BattleSearchIndexOffset: any;
+declare var BattlePokedex: any;
 declare var BattleSearch: any;
+
+// Backup the BattlePokedex variable, we need it to erase incorrect entries
+// in the BattlePokedex variable (see updatePokemonInfo method)
+const originalBattlePokedex = structuredClone(BattlePokedex);
 
 const FRENCH = 0;
 const ENGLISH = 1;
 const SEARCH_TYPE = 2;
 
-// Create FrenchNamesDico dictionary, containing every french to english traduction alphabetically sorted
+// Create FrenchNamesDico dictionary, containing every french to english translation alphabetically sorted
 const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico];
 const FrenchNamesDico = populateFrenchDico();
 
@@ -49,7 +53,7 @@ function onMutation(mutations: MutationRecord[]) {
 
 			switch(newElement.className)
 			{
-				case 'utilichart': // Search results have been reset
+				case 'utilichart': // A search field has been updated
 
 					updatePokemonInfo();
 
@@ -66,147 +70,6 @@ function onMutation(mutations: MutationRecord[]) {
 			}
 		}
 	}
-}
-
-function updateBattleSearchIndex()
-{
-	var newBattleSearchIndex = [];
-	var newBattleSearchIndexOffset = [];
-	var newBattleSearchIndexSize = BattleSearchIndex.length + FrenchNamesDico.length;
-
-	var frenchIndex = 0;
-	var frenchWordsID: Array<number> = [];
-
-	for (var englishIndex = 0 ; newBattleSearchIndex.length < newBattleSearchIndexSize ; englishIndex++)
-	{
-		if (frenchIndex == FrenchNamesDico.length)
-		{
-			newBattleSearchIndex.push(BattleSearchIndex[englishIndex]);
-			newBattleSearchIndexOffset.push(BattleSearchIndexOffset[englishIndex]);
-		}
-		else if (FrenchNamesDico[frenchIndex][FRENCH] == FrenchNamesDico[frenchIndex][ENGLISH])
-		{
-			frenchIndex++;
-			englishIndex--;
-			newBattleSearchIndexSize--;
-		}
-		else if (englishIndex == BattleSearchIndex.length || BattleSearchIndex[englishIndex][0] > FrenchNamesDico[frenchIndex][FRENCH])
-		{
-			let englishID = binarySearch(FrenchNamesDico[frenchIndex][ENGLISH]);
-
-			newBattleSearchIndex.push([FrenchNamesDico[frenchIndex][FRENCH],FrenchNamesDico[frenchIndex][SEARCH_TYPE],englishID,0])
-			newBattleSearchIndexOffset.push('');
-
-			frenchWordsID.push(englishIndex);
-			frenchIndex++;
-			englishIndex--;
-		}
-		else
-		{
-			newBattleSearchIndex.push(BattleSearchIndex[englishIndex]);
-			newBattleSearchIndexOffset.push(BattleSearchIndexOffset[englishIndex]);
-		}
-	}
-
-	for (var fusionnedIndex = 0 ; fusionnedIndex < newBattleSearchIndexSize ; fusionnedIndex++)
-	{
-		if (newBattleSearchIndex[fusionnedIndex].length > 2)
-		{
-			newBattleSearchIndex[fusionnedIndex][2] += getDecalage(frenchWordsID, newBattleSearchIndex[fusionnedIndex][2]);
-		}
-	}
-
-	BattleSearchIndex = newBattleSearchIndex;
-	BattleSearchIndexOffset = newBattleSearchIndexOffset;
-
-	// Always log BattleSearchIndex to help with debug
-	console.log(BattleSearchIndex);
-}
-
-function populateFrenchDico()
-{
-	let NamesTranslation: Array<any> = [];
-	let searchTypeGetter: Array<string> = ["pokemon", "ability"];
-
-	for (var i = 0 ; i < searchTypeGetter.length ; i++)
-	{
-		var dico = ShowdownTradDictionnaries[i];
-		var searchType = searchTypeGetter[i];
-
-		for (var englishName in dico)
-		{
-			var frenchName = dico[englishName].toLowerCase();
-			
-			// Remove everything that is not a regular letter or number
-			var formattedFrenchName = removeSpecialCharacters(frenchName);
-			var formattedEnglishName = removeSpecialCharacters(englishName.toLowerCase());
-
-			// Remove diacritics (é -> e) from a name and see if it changes anything
-			// If so, add this copy in BattleSearchIndex in order to match accented characters with regular letters
-			var notAccented = removeDiacritics(frenchName);
-
-			if (notAccented != frenchName) { // Add the copy
-				NamesTranslation.push([notAccented, formattedEnglishName, searchType]);
-			}
-
-			// Add the regular translated name
-			NamesTranslation.push([formattedFrenchName, formattedEnglishName, searchType]);
-		}
-	}
-	
-	// BattleSearchIndex is alphabatically sorted in order to perform a binary search
-	// so we absolutely need to sort our dictionary so we can insert the names in the right spot
-	var sortedNamesTranslation = NamesTranslation.sort(function(a, b) {
-		if (a[0] < b[0]) return -1;
-		   if (a[0] > b[0]) return 1;
-		   return 0;
-	});
-
-	return sortedNamesTranslation;
-}
-
-function removeSpecialCharacters(text: string) {
-	return text.replace(/[^a-z0-9]+/g, "");
-}
-
-function getDecalage(frenchWordsID:Array<number>, id: number)
-{
-	for (var i = 0 ; i < frenchWordsID.length ; i++)
-	{
-		if (id < frenchWordsID[i])
-		{
-			return i;
-		}
-	}
-
-	return frenchWordsID.length;
-}
-
-function binarySearch(query: string) {
-	// Binary search through BattleSearchIndex, better performances than regular search
-	let left = 0;
-	let right = BattleSearchIndex.length - 1;
-	while (right > left) {
-		let mid = Math.floor((right - left) / 2 + left);
-		if (BattleSearchIndex[mid][0] === query && (mid === 0 || BattleSearchIndex[mid - 1][0] !== query)) {
-			return mid; // Exact match
-		} else if (BattleSearchIndex[mid][0] < query) {
-			left = mid + 1;
-		} else {
-			right = mid - 1;
-		}
-	}
-
-	if (left >= BattleSearchIndex.length - 1) left = BattleSearchIndex.length - 1;
-	else if (BattleSearchIndex[left + 1][0] && BattleSearchIndex[left][0] < query) left++;
-	if (left && BattleSearchIndex[left - 1][0] === query) left--;
-	return left;
-}
-
-function getPokemonCurHTMLElement(englishPokemonID: string)
-{
-	var battleSearchElement = new BattleSearch("","");
-	return battleSearchElement.renderRow(englishPokemonID, "pokemon", 0, 0, "", ' class="cur"');
 }
 
 function updateResultTag(resultElement: Element)
@@ -252,16 +115,31 @@ function updateCurElement(searchInput: string, translatedPokemonName: any)
 
 function updatePokemonInfo()
 {
+	// For some reason, when an unknown Pokémon name is present in the Pokémon search input
+	// and the user click on another search input, the unknown Pokémon name is added to the BattlePokedex variable,
+	// even if the name is incorrect - obviously since we are using french names, the names are always incorrect
+
+	// That causes the name to later be put in lowerCase without special chararacters
+	// I think it's a bug, but to compensate I need to load the backup of the original BattlePokedex
+	// everytime the Pokémon search input is updated
+
+	// If a Showdown developer reads this, the line in your code where a specie is added is "window.BattlePokedex[id] = species;"
+	BattlePokedex = structuredClone(originalBattlePokedex);
+
+	// Since we update the teamchart element everytime an input is modified, we need to manually retrieve it
 	var teamchartElement = document.getElementsByClassName("teamchart").item(0);
 	var liComponent = teamchartElement?.firstChild;
 
-	var inputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
-	var searchInput = inputElement.value;
-
-	if (liComponent && searchInput)
+	if (liComponent)
 	{
+		// Retrieve the Pokémon name provided in the Pokémon search input
+		var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
+		var searchInput = nameInputElement.value;
+
+		console.log("searchInput : " + searchInput);
+
+		// Try to translate the name to check if it matches a french translation
 		var translatedPokemonNameArray = getTranslatedPokemonNameArray(searchInput);
-		var translatedPokemonName = getTranslatedPokemonNameFromArray(searchInput, translatedPokemonNameArray);
 
 		updateCurElement(searchInput, translatedPokemonNameArray);
 
@@ -299,26 +177,19 @@ function updatePokemonInfo()
 					node.childNodes.forEach(function(pokemonInfoNode) {
 						var classList = (pokemonInfoNode as Element).classList;
 
-						// Name
+						// Pokémon name
 						if (classList.contains("setcol-icon"))
 						{
 							// Translate the name
-							// If the utilichart component is updated, the name is most likely correct
 							pokemonInfoNode.childNodes.forEach(function(spriteNameNode) {
 								spriteNameNode.childNodes.forEach(function(nameNode) {
 									var nameInput = nameNode as HTMLInputElement;
 			
 									if (nameInput.tagName == "INPUT" && nameInput.value)
 									{
-										if (translatedPokemonName && translatedPokemonName[0])
-										{
-											if (translatedPokemonName[1]) {
-												nameInput.value = translatedPokemonName[0] + "-" + translatedPokemonName[1];
-											}
-											else {
-												nameInput.value = translatedPokemonName[0];
-											}
-										}
+										// Convert the Array Pokemon name to string and insert it in the search input field
+										// (If no translation is found, the string is return as is)
+										nameInput.value = getTranslatedPokemonNameFromArray(searchInput, translatedPokemonNameArray);
 									}
 								})
 							});
@@ -724,4 +595,151 @@ function translateFilter(filterNode: Element)
 		console.log("Unkown filter element");
 		console.log(filterNode);
 	}
+}
+
+function updateBattleSearchIndex()
+{
+	var newBattleSearchIndex = [];
+	var newBattleSearchIndexOffset = [];
+	var newBattleSearchIndexSize = BattleSearchIndex.length + FrenchNamesDico.length;
+
+	var frenchIndex = 0;
+	var frenchWordsID: Array<number> = [];
+
+	for (var englishIndex = 0 ; newBattleSearchIndex.length < newBattleSearchIndexSize ; englishIndex++)
+	{
+		if (frenchIndex == FrenchNamesDico.length)
+		{
+			newBattleSearchIndex.push(BattleSearchIndex[englishIndex]);
+			newBattleSearchIndexOffset.push(BattleSearchIndexOffset[englishIndex]);
+		}
+		else if (FrenchNamesDico[frenchIndex][FRENCH] == FrenchNamesDico[frenchIndex][ENGLISH])
+		{
+			frenchIndex++;
+			englishIndex--;
+			newBattleSearchIndexSize--;
+		}
+		else if (englishIndex == BattleSearchIndex.length || BattleSearchIndex[englishIndex][0] > FrenchNamesDico[frenchIndex][FRENCH])
+		{
+			let englishID = binarySearch(FrenchNamesDico[frenchIndex][ENGLISH]);
+
+			newBattleSearchIndex.push([FrenchNamesDico[frenchIndex][FRENCH],FrenchNamesDico[frenchIndex][SEARCH_TYPE],englishID,0])
+			newBattleSearchIndexOffset.push('');
+
+			frenchWordsID.push(englishIndex);
+			frenchIndex++;
+			englishIndex--;
+		}
+		else
+		{
+			newBattleSearchIndex.push(BattleSearchIndex[englishIndex]);
+			newBattleSearchIndexOffset.push(BattleSearchIndexOffset[englishIndex]);
+		}
+	}
+
+	for (var fusionnedIndex = 0 ; fusionnedIndex < newBattleSearchIndexSize ; fusionnedIndex++)
+	{
+		if (newBattleSearchIndex[fusionnedIndex].length > 2)
+		{
+			newBattleSearchIndex[fusionnedIndex][2] += getDecalage(frenchWordsID, newBattleSearchIndex[fusionnedIndex][2]);
+		}
+	}
+
+	BattleSearchIndex = newBattleSearchIndex;
+	BattleSearchIndexOffset = newBattleSearchIndexOffset;
+
+	// Always log BattleSearchIndex to help with debug
+	console.log(BattleSearchIndex);
+}
+
+function populateFrenchDico()
+{
+	let NamesTranslation: Array<any> = [];
+	let searchTypeGetter: Array<string> = ["pokemon", "ability"];
+
+	for (var i = 0 ; i < searchTypeGetter.length ; i++)
+	{
+		var dico = ShowdownTradDictionnaries[i];
+		var searchType = searchTypeGetter[i];
+
+		for (var englishName in dico)
+		{
+			var frenchName = dico[englishName].toLowerCase();
+			
+			// Remove everything that is not a regular letter or number
+			var formattedFrenchName = removeSpecialCharacters(frenchName);
+			var formattedEnglishName = removeSpecialCharacters(englishName.toLowerCase());
+
+			// Remove diacritics (é -> e) from a name and see if it changes anything
+			// If so, add this copy in BattleSearchIndex in order to match accented characters with regular letters
+			var notAccented = removeDiacritics(frenchName);
+
+			if (notAccented != frenchName) { // Add the copy
+				NamesTranslation.push([notAccented, formattedEnglishName, searchType]);
+			}
+
+			// Add the regular translated name
+			NamesTranslation.push([formattedFrenchName, formattedEnglishName, searchType]);
+		}
+	}
+	
+	// BattleSearchIndex is alphabatically sorted in order to perform a binary search
+	// so we absolutely need to sort our dictionary so we can insert the names in the right spot
+	var sortedNamesTranslation = NamesTranslation.sort(function(a, b) {
+		if (a[0] < b[0]) return -1;
+		   if (a[0] > b[0]) return 1;
+		   return 0;
+	});
+
+	return sortedNamesTranslation;
+}
+
+function removeSpecialCharacters(text: string) {
+	return text.replace(/[^a-z0-9]+/g, "");
+}
+
+function removeDiacritics(text: string) {
+	return text
+	  .normalize('NFD')
+	  .replace(/[\u0300-\u036f]/g, '');
+}
+
+function getDecalage(frenchWordsID:Array<number>, id: number)
+{
+	for (var i = 0 ; i < frenchWordsID.length ; i++)
+	{
+		if (id < frenchWordsID[i])
+		{
+			return i;
+		}
+	}
+
+	return frenchWordsID.length;
+}
+
+function binarySearch(query: string) {
+	// Binary search through BattleSearchIndex, better performances than regular search
+	let left = 0;
+	let right = BattleSearchIndex.length - 1;
+	while (right > left) {
+		let mid = Math.floor((right - left) / 2 + left);
+		if (BattleSearchIndex[mid][0] === query && (mid === 0 || BattleSearchIndex[mid - 1][0] !== query)) {
+			return mid; // Exact match
+		} else if (BattleSearchIndex[mid][0] < query) {
+			left = mid + 1;
+		} else {
+			right = mid - 1;
+		}
+	}
+
+	if (left >= BattleSearchIndex.length - 1) left = BattleSearchIndex.length - 1;
+	else if (BattleSearchIndex[left + 1][0] && BattleSearchIndex[left][0] < query) left++;
+	if (left && BattleSearchIndex[left - 1][0] === query) left--;
+	return left;
+}
+
+function getPokemonCurHTMLElement(englishPokemonID: string)
+{
+	var battleSearchElement = new BattleSearch("","");
+	return battleSearchElement.renderRow(englishPokemonID, "pokemon", 0, 0, "", ' class="cur"');
 }
