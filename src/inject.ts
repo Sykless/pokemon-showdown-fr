@@ -130,8 +130,10 @@ function updateCurElement(translatedPokemonName: string)
 				var htmlCurElement = getPokemonCurHTMLElement(englishNameId);
 
 				// The Pokémon tier is not automatically provided, so we manually add it
+				// then remove any potentically malicious script tag before using innerHTML
 				htmlCurElement = htmlCurElement.replace('col numcol"><', 'col numcol">' + BattlePokedex[englishNameId].tier + '<');
-
+				htmlCurElement = htmlCurElement.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+				
 				var curTemplate = document.createElement('template');
 				curTemplate.innerHTML = htmlCurElement;
 
