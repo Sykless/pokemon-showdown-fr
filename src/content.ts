@@ -68,10 +68,26 @@ function updateResultTag(resultElement: Element)
 	}
 }
 
-function updateCurElement()
+function updateCurElement(searchInput: string, translatedPokemonName: any)
 {
-	// Cur element is the 
+	// Cur element is the search result entry of the curent selected Pokémon 
+	// It is defined by the current Pokémon name, but since the current Pokémon name is in french, cur is bugged
+
 	var curElements = document.getElementsByClassName("cur");
+
+	// The input can be either the english or in french name
+	var englishNameId = Object.keys(PokemonDico).find(key => PokemonDico[key] === translatedPokemonName[0]);
+
+	for (var curID = 0 ; curID < curElements.length ; curID++)
+	{
+		var cur = curElements.item(curID);
+		
+		if (cur?.tagName == "A" && cur?.parentElement?.tagName == "LI")
+		{
+			// Remove cur parent node
+			//cur?.parentElement.remove();
+		}
+	}
 }
 
 function updatePokemonInfo()
@@ -84,7 +100,10 @@ function updatePokemonInfo()
 
 	if (liComponent && searchInput)
 	{
-		var translatedPokemonName = getTranslatedPokemonNameArray(searchInput);
+		var translatedPokemonNameArray = getTranslatedPokemonNameArray(searchInput);
+		var translatedPokemonName = getTranslatedPokemonNameFromArray(searchInput, translatedPokemonNameArray);
+
+		updateCurElement(searchInput, translatedPokemonNameArray);
 
 		liComponent.childNodes.forEach(function(node)
 		{
@@ -109,7 +128,7 @@ function updatePokemonInfo()
 							nicknameElement.textContent = "Surnom";
 						}
 						else if (nicknameElement.tagName == "INPUT") {
-							(nicknameElement as HTMLInputElement).placeholder = (translatedPokemonName[0] || "");
+							(nicknameElement as HTMLInputElement).placeholder = (translatedPokemonNameArray[0] || "");
 						}
 					});
 
@@ -129,8 +148,8 @@ function updatePokemonInfo()
 								spriteNameNode.childNodes.forEach(function(nameNode) {
 									var nameInput = nameNode as HTMLInputElement;
 			
-									if (nameInput.tagName == "INPUT" && nameInput.value) {
-
+									if (nameInput.tagName == "INPUT" && nameInput.value)
+									{
 										if (translatedPokemonName && translatedPokemonName[0])
 										{
 											if (translatedPokemonName[1]) {
@@ -208,23 +227,30 @@ function getTranslatedPokemonNameArray(pokemonShowdownName: string)
 	}
 }
 
-function getTranslatedPokemonName(pokemonShowdownName: string)
+function getTranslatedPokemonNameFromArray(pokemonShowdownName: string, pokemonFrenchNameArray: any)
 {
-	var translatedPokemonName = getTranslatedPokemonNameArray(pokemonShowdownName);
-
-	if (translatedPokemonName && translatedPokemonName[0])
+	if (pokemonFrenchNameArray && pokemonFrenchNameArray[0])
 	{
-		if (translatedPokemonName[1]) {
-			return translatedPokemonName[0] + "-" + translatedPokemonName[1];
+		if (pokemonFrenchNameArray[1]) {
+			return pokemonFrenchNameArray[0] + "-" + pokemonFrenchNameArray[1];
 		}
 		else {
-			return translatedPokemonName[0];
+			return pokemonFrenchNameArray[0];
 		}
 	}
 	else
 	{
 		return pokemonShowdownName;
 	}
+}
+
+function getTranslatedPokemonName(pokemonShowdownName: string)
+{
+	// Get the french Pokémon name in an array (first element = name, second element = alternate form name)
+	var translatedPokemonName = getTranslatedPokemonNameArray(pokemonShowdownName);
+
+	// Convert the array Pokémon name into a string
+	return getTranslatedPokemonNameFromArray(pokemonShowdownName, translatedPokemonName);
 }
 
 function translatePokemonName(pokemonEnglishName: string)

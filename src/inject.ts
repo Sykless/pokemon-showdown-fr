@@ -2,6 +2,9 @@ import { PokemonDico } from './translator';
 import { AbilitiesDico } from './translator';
 import { removeDiacritics } from './translator';
 
+// Motisma -> seulement celui de base
+// "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
+
 const FRENCH = 0;
 const ENGLISH = 1;
 const SEARCH_TYPE = 2;
@@ -12,6 +15,7 @@ const Dictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, A
 // (Pokémon names, moves, abilities) needed in the teambuilder research
 declare var BattleSearchIndex: any;
 declare var BattleSearchIndexOffset: any;
+declare var BattleSearch: any;
 
 var frenchNamesDico = populateFrenchDico();
 
@@ -144,4 +148,10 @@ function binarySearch(query: string) {
 	else if (BattleSearchIndex[left + 1][0] && BattleSearchIndex[left][0] < query) left++;
 	if (left && BattleSearchIndex[left - 1][0] === query) left--;
 	return left;
+}
+
+function getPokemonCurHTMLElement(englishPokemonID: string)
+{
+	var battleSearchElement = new BattleSearch("","");
+	return battleSearchElement.renderRow(englishPokemonID, "pokemon", 0, 0, "", ' class="cur"');
 }
