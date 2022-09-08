@@ -109,7 +109,10 @@ function updateCurElement(translatedPokemonName: string)
 {
 	// Cur element is the search result entry of the current selected Pokémon 
 	// It is defined by the current Pokémon name, but since the current Pokémon name is in french, cur is bugged
-	// In order to fix this, we completely replace cur type by generating a new entry with Showdown code
+	
+	// For now we remove it, maybe we could find a way to retrieve 
+	// every piece of information in order to manualy create it
+
 	var curElements = document.getElementsByClassName("cur");
 	var nextCurSibling = null;
 
@@ -121,49 +124,7 @@ function updateCurElement(translatedPokemonName: string)
 		{
 			// Remove cur parent node
 			var curParent = cur?.parentElement;
-
-			nextCurSibling = curParent.nextSibling;
 			curParent.remove();
-		}
-	}
-
-	if (nextCurSibling)
-	{
-		var englishName = translatePokemonNameToEnglish(translatedPokemonName);
-
-		if (englishName)
-		{
-			var parentNode = nextCurSibling.parentNode;
-
-			if (parentNode)
-			{
-				// Generate the current Pokémon HTML code from its english name
-				var englishNameId = removeSpecialCharacters(englishName.toLowerCase());
-				var htmlCurElement = getPokemonCurHTMLElement(englishNameId);
-
-				// The Pokémon tier is not automatically provided, so we manually add it
-				// then remove any potentically malicious script tag before using innerHTML
-				htmlCurElement = htmlCurElement.replace('col numcol"><', 'col numcol">' + BattlePokedex[englishNameId].tier + '<');
-				htmlCurElement = htmlCurElement.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-				
-				var curTemplate = document.createElement('template');
-				curTemplate.innerHTML = htmlCurElement;
-
-				var curNode = curTemplate.content.firstChild;
-
-				if (curNode) {
-					parentNode.insertBefore(curNode, nextCurSibling);
-				}
-			}
-			else
-			{
-				console.log("The following node doesn't have a parent node.")
-				console.log(nextCurSibling);
-			}
-		}
-		else
-		{
-			console.log(translatedPokemonName + " cannot be translated in english");
 		}
 	}
 }
