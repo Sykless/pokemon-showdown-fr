@@ -3,6 +3,7 @@ import { AbilitiesDico } from './translator';
 import { TypesDico } from './translator';
 import { HeadersDico } from './translator';
 import { MenuDico } from './translator';
+import { FiltersDico } from './translator';
 
 // TODO
 // Update cur for the correct input
@@ -94,6 +95,7 @@ function updateResultTag(resultElement: Element)
 		updatePokemonName(resultElement);
 		updatePokemonAbility(resultElement);
 		updatePokemonType(resultElement);
+		updatePokemonStats(resultElement);
 	}
 	else if (displayedDataType == "ability")
 	{
@@ -102,6 +104,7 @@ function updateResultTag(resultElement: Element)
 	else if (displayedDataType == "header")
 	{
 		updateHeader(resultElement);
+		updateSortFilters(resultElement);
 	}
 }
 
@@ -559,6 +562,39 @@ function updateHeader(headerElement: Element)
 	{
 		console.log("Unknown header element");
 		console.log(headerElement)
+	}
+}
+
+function updatePokemonStats(resultElement: Element)
+{
+	var statsNodes = resultElement.getElementsByClassName("statcol");
+
+	for (var i = 0 ; i < statsNodes.length ; i++)
+	{
+		statsNodes[i].childNodes.forEach(function(statNode) {
+			var statElement = statNode as Element;
+			if (statElement.tagName == "EM" && statElement.textContent) {
+				statElement.textContent = FiltersDico[statElement.textContent];
+			}
+		});
+	}
+}
+
+function updateSortFilters(resultElement: Element)
+{
+	var sortRowElement = resultElement.firstChild as Element;
+	console.log(sortRowElement);
+
+	if (sortRowElement.className == "sortrow")
+	{
+		sortRowElement.childNodes.forEach(function (sortButton) {
+			console.log(sortButton);
+			var sortButtonElement = sortButton as Element;
+
+			if (sortButtonElement.tagName == "BUTTON" && sortButtonElement.textContent) {
+				sortButtonElement.textContent = FiltersDico[sortButtonElement.textContent];
+			}
+		})
 	}
 }
 

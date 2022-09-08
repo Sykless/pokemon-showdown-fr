@@ -1600,3 +1600,18 @@ export const MenuDico: { [englishName: string]: string; } = {
     "Move": "Déplacer",
     "Delete": "Supprimer",
 }
+
+export const FiltersDico:  { [englishName: string]: string; } = {
+    "HP": "PV",
+    "Atk": "Atq",
+    "Def": "Def",
+    "SpA": "SpA",
+	"SpD": "SpD",
+	"Spe": "Vit",
+	"BST": "BST",
+	"Sort: ": "Tri :",
+	"Name": "Nom",
+	"Types" : "Types",
+	"Abilities": "Talents",
+	"Number" : "Numéro"
+}
