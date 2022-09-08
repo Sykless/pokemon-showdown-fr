@@ -5,6 +5,9 @@
   "permissions": [
     "tabs"
   ],
+  "icons": {
+    "48": "icon48.png"
+  },
   "content_scripts": [{
     "matches": ["https://play.pokemonshowdown.com/*"],
     "js": ["content.js"],
