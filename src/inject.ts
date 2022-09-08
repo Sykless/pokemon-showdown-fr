@@ -7,6 +7,7 @@ import { MenuDico } from './translator';
 // TODO
 // Mettre les formes en gras
 // Update cur for the correct input
+// Don't show duplicate Pokémon (english/french name)
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
 // Démétéros surligné en gras
 
@@ -229,7 +230,10 @@ function updatePokemonInfo()
 							nicknameElement.textContent = "Surnom";
 						}
 						else if (nicknameElement.tagName == "INPUT") {
-							(nicknameElement as HTMLInputElement).placeholder = (translatedPokemonNameArray[0] || "");
+							if (translatePokemonNameToEnglish(searchInput) != searchInput || PokemonDico[searchInput]) {
+								(nicknameElement as HTMLInputElement).placeholder = (translatedPokemonNameArray[0] || "");
+							}
+		
 						}
 					});
 
