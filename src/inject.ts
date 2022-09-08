@@ -1,14 +1,14 @@
 import { PokemonDico } from './translator';
-import { AlternateFormsDico } from './translator';
 import { AbilitiesDico } from './translator';
 import { TypesDico } from './translator';
 import { HeadersDico } from './translator';
 import { MenuDico } from './translator';
 
 // TODO
-// Ajout des formes dans le BattleSearchIndex
+// Update cur for the correct input
+// Don't show duplicate Pokémon (english/french name)
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
-// Démétéros surligné en gras
+// Le cur est basé sur l'OU
 
 console.log("Extension successfully loaded !");
 
@@ -65,10 +65,13 @@ function onMutation(mutations: MutationRecord[]) {
 			{
 				case 'utilichart': // A search field has been updated
 
+					// We can't catch input search modification with MutationObserver, however everytime an input
+					// is modified in some way, the utilichart component is updated,
+					// so we still get a way to catch input modification
 					updatePokemonInfo();
 
-					for (var k = 0, result; (result = node.childNodes[k]) ; k++)
-					{
+					// Update every search result
+					for (var k = 0, result; (result = node.childNodes[k]) ; k++) {
 						updateResultTag(result as Element);
 					}
 
@@ -177,7 +180,7 @@ function updatePokemonInfo()
 
 	// If a Showdown developer reads this, the line in your code where a specie is added is "window.BattlePokedex[id] = species;"
 	BattlePokedex = structuredClone(originalBattlePokedex);
-
+	
 	// Since we update the teamchart element everytime an input is modified, we need to manually retrieve it
 	var teamchartElement = document.getElementsByClassName("teamchart").item(0);
 	var liComponent = teamchartElement?.firstChild;
@@ -188,17 +191,20 @@ function updatePokemonInfo()
 		var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
 		var searchInput = nameInputElement.value;
 
-		// If the english translation of the search input is different than the search input
-		// it means that the search input is a complete Pokémon french word, so remove the incomplete class
-		if (translatePokemonNameToEnglish(searchInput) !=  searchInput) {
-			nameInputElement.classList.remove("incomplete");
-		}
-
 		// Try to translate the name to check if it matches a french translation
-		var translatedPokemonNameArray = getTranslatedPokemonNameArray(searchInput);
-		var translatedPokemonName = getTranslatedPokemonNameFromArray(searchInput, translatedPokemonNameArray);
+		var translatedPokemonName = translatePokemonName(searchInput);
+		var translatedPokemonNameArray = convertPokemonNameToArray(translatedPokemonName);
 
-		updateCurElement(translatedPokemonName);
+		// If the english translation of the search input is different than the search input
+		// it means that the search input is a complete Pokémon french word
+		if (translatePokemonNameToEnglish(searchInput) != searchInput)
+		{
+			// The provided input search is a Pokémon, remove the incomplete class
+			nameInputElement.classList.remove("incomplete");
+
+			// The provided input search is a Pokémon, update cur element
+			updateCurElement(translatedPokemonName);
+		}
 
 		liComponent.childNodes.forEach(function(node)
 		{
@@ -223,7 +229,10 @@ function updatePokemonInfo()
 							nicknameElement.textContent = "Surnom";
 						}
 						else if (nicknameElement.tagName == "INPUT") {
-							(nicknameElement as HTMLInputElement).placeholder = (translatedPokemonNameArray[0] || "");
+							if (translatePokemonNameToEnglish(searchInput) != searchInput || PokemonDico[searchInput]) {
+								(nicknameElement as HTMLInputElement).placeholder = (translatedPokemonNameArray[0] || "");
+							}
+		
 						}
 					});
 
@@ -273,121 +282,6 @@ function updatePokemonInfo()
 		})
 		
 	}
-	
-}
-
-function getTranslatedPokemonNameArray(pokemonShowdownName: string)
-{
-	const HyphenPokemonName = ["Nidoran-F", "Nidoran-M", "Ho-Oh", "Porygon-Z", "Jangmo-o", "Hakamo-o", "Kommo-o"]
-	var pokemonRawName = pokemonShowdownName.split("-");
-
-	if (pokemonRawName.length == 1)
-	{
-		// No "-" in the name so no alternate form
-		return [translatePokemonName(pokemonRawName[0]), ""];
-	}
-	else
-	{
-		// Check if the "-" is present because there was one in the raw name
-		var possibleHyphenPokemon = pokemonRawName[0] + "-" + pokemonRawName[1];
-		var pokemonEnglishBaseName = "";
-
-		if (HyphenPokemonName.includes(possibleHyphenPokemon)) {
-			// "-" in the base Pokémon name
-			pokemonEnglishBaseName = possibleHyphenPokemon;
-
-			// If the only "-" in the whole name was in the raw name, there is no alternate form
-			if (pokemonRawName.length == 2) {
-				return [translatePokemonName(pokemonEnglishBaseName), ""];
-			}
-		}
-		else {
-			// No "-" in the base Pokémon name, so the first element is the english Pokémon name
-			pokemonEnglishBaseName = pokemonRawName[0];
-		}
-
-		// Remove the pokemon name from the whole name to get the alternate form
-		var alternatePokemonFormName = pokemonShowdownName.replace(pokemonEnglishBaseName + "-", "");
-
-		// Return the translated Pokémon name and its form
-		return [translatePokemonName(pokemonEnglishBaseName),
-			translateAlternateFormName(pokemonEnglishBaseName, alternatePokemonFormName)]
-	}
-}
-
-function getTranslatedPokemonNameFromArray(pokemonShowdownName: string, pokemonFrenchNameArray: any)
-{
-	if (pokemonFrenchNameArray && pokemonFrenchNameArray[0])
-	{
-		if (pokemonFrenchNameArray[1]) {
-			return pokemonFrenchNameArray[0] + "-" + pokemonFrenchNameArray[1];
-		}
-		else {
-			return pokemonFrenchNameArray[0];
-		}
-	}
-	else
-	{
-		return pokemonShowdownName;
-	}
-}
-
-function getTranslatedPokemonName(pokemonShowdownName: string)
-{
-	// Get the french Pokémon name in an array (first element = name, second element = alternate form name)
-	var translatedPokemonName = getTranslatedPokemonNameArray(pokemonShowdownName);
-
-	// Convert the array Pokémon name into a string
-	return getTranslatedPokemonNameFromArray(pokemonShowdownName, translatedPokemonName);
-}
-
-function translatePokemonName(pokemonEnglishName: string)
-{
-	var frenchName = PokemonDico[pokemonEnglishName];
-
-	if (frenchName) {
-		return frenchName;
-	}
-	else {
-		console.log("Unable to translate Pokémon " + pokemonEnglishName);
-		return pokemonEnglishName;
-	}
-}
-
-function translatePokemonNameToEnglish(pokemonFrenchName: string)
-{
-	var pokemonEnglishName = Object.keys(PokemonDico).find(key => PokemonDico[key] === pokemonFrenchName);
-	return pokemonEnglishName ? pokemonEnglishName : pokemonFrenchName;
-}
-
-function translateAlternateFormName(pokemonEnglishName: string, alternatePokemonFormName: string)
-{
-	var frenchAlternateFormName = AlternateFormsDico[alternatePokemonFormName];
-
-	if (frenchAlternateFormName)
-	{
-		var possibleMultipleMatches = frenchAlternateFormName.split("|");
-
-		if (possibleMultipleMatches.length > 1) // If multiple Pokémons match the alternate form name
-		{
-			for (var i = 0, name; (name = possibleMultipleMatches[i]); i++)
-			{
-				var attribute = name.split(":");
-
-				if (attribute[0] == pokemonEnglishName) { // Use the correct alterate form name for the Pokémon
-					return attribute[1];
-				}
-			}
-		}
-		else
-		{
-			return frenchAlternateFormName;
-		}
-	}
-	else {
-		console.log("Unable to translate form " + alternatePokemonFormName);
-		return alternatePokemonFormName;
-	}
 }
 
 function updatePokemonName(element: Element)
@@ -396,18 +290,19 @@ function updatePokemonName(element: Element)
 	
 	if (pokemonElement)
 	{
-		var searchIndex = -1;
-		var searchString = "";
 		var pokemonShowdownName = pokemonElement.textContent;
 
 		if (pokemonShowdownName == null)
 			return;
 
-		var pokemonTranslatedName = getTranslatedPokemonNameArray(pokemonShowdownName);
-
+		var pokemonTranslatedName = translatePokemonName(pokemonShowdownName);
+		
 		// Don't update HTML if no translation is found
-		if (pokemonTranslatedName[0])
+		if (pokemonTranslatedName != pokemonShowdownName)
 		{
+			// Convert the Pokémon french name to [baseName, alternateForm]
+			var pokemonTranslatedNameArray = convertPokemonNameToArray(pokemonTranslatedName);
+
 			// Remove current Pokémon name so we can replace it
 			pokemonElement.textContent = '';
 
@@ -417,81 +312,115 @@ function updatePokemonName(element: Element)
 			
 			if (searchInput.length > 0)
 			{
-				searchString = removeDiacritics(searchInput.toLowerCase());
-				searchIndex = removeDiacritics(pokemonTranslatedName[0].toLowerCase()).indexOf(searchString);
-			}
+				var searchString = removeDiacritics(searchInput.toLowerCase());
+				var searchedPokemon: Array<string> = [];
 
-			// Make the searched content bold in the Pokémon name.
-			if (searchIndex >= 0)
-			{
-				var boldName = pokemonTranslatedName[0].slice(searchIndex, searchIndex + searchString.length);
-				var regularName = pokemonTranslatedName[0].slice(searchIndex + searchString.length, pokemonTranslatedName[0].length);
-
-				var boldElement = document.createElement("b");
-				boldElement.appendChild(document.createTextNode(boldName))
-
-				if (searchIndex > 0) { // Searched content is in the middle of the name
-					pokemonElement.appendChild(document.createTextNode(pokemonTranslatedName[0].slice(0,searchIndex)));
+				if (searchString.includes("-")) {
+					// Split the search result in an array [baseName, formName]
+					searchedPokemon = convertPokemonNameToArray(searchString);
 				}
-				
-				pokemonElement.appendChild(boldElement);
-				pokemonElement.appendChild(document.createTextNode(regularName));
+				else {
+					// No "-" means the result could be a base name or a form name, so we try to match both
+					searchedPokemon = [searchString, searchString];
+				}
+
+				// Search for the baseName in the translatedBaseName
+				var baseNameSearchIndex = removeDiacritics(pokemonTranslatedNameArray[0].toLowerCase()).indexOf(searchedPokemon[0]);
+				var fullNameBolded = false;
+
+				if (baseNameSearchIndex >= 0)
+				{
+					var boldBaseName = document.createElement("b");
+
+					// Make only the searched part bold
+					var boldName = pokemonTranslatedNameArray[0].slice(baseNameSearchIndex, baseNameSearchIndex + searchedPokemon[0].length);
+					var regularName = pokemonTranslatedNameArray[0].slice(baseNameSearchIndex + searchedPokemon[0].length, pokemonTranslatedNameArray[0].length);
+
+					boldBaseName.appendChild(document.createTextNode(boldName));
+
+					if (baseNameSearchIndex > 0) { // Searched content is in the middle of the name
+						pokemonElement.appendChild(document.createTextNode(pokemonTranslatedNameArray[0].slice(0,baseNameSearchIndex)));
+					}
+
+					// Add the bold searched part
+					pokemonElement.appendChild(boldBaseName);
+
+					if (regularName) {
+						// If the whole name is not bold, add the rest in a regular text node
+						pokemonElement.appendChild(document.createTextNode(regularName));
+					}
+					else {
+						// Useful for alternate form styling process
+						fullNameBolded = true;
+					}
+				}
+				else
+				{
+					// No name match, add the raw name
+					pokemonElement.appendChild(document.createTextNode(pokemonTranslatedNameArray[0]));
+				}
+
+				// If an altername form is present, add it in a small tag
+				if (pokemonTranslatedNameArray[1])
+				{
+					var alternateForm = document.createElement("small");
+
+					// Search for the formName in the translatedFormName
+					var formNameSearchIndex = removeDiacritics(pokemonTranslatedNameArray[1].toLowerCase()).indexOf(searchedPokemon[1]);
+
+					if (formNameSearchIndex >= 0)
+					{
+						var boldFormName = document.createElement("b");
+
+						// A part of the alternate form is in the searched content
+						var boldForm = pokemonTranslatedNameArray[1].slice(formNameSearchIndex, formNameSearchIndex + searchedPokemon[1].length);
+						var regularForm = pokemonTranslatedNameArray[1].slice(formNameSearchIndex + searchedPokemon[1].length, pokemonTranslatedNameArray[1].length);
+
+						if (formNameSearchIndex > 0) { // Searched content is in the middle of the form name
+							alternateForm.appendChild(document.createTextNode("-" + pokemonTranslatedNameArray[1].slice(0,formNameSearchIndex)));
+							boldFormName.appendChild(document.createTextNode(boldForm));
+						}
+						else { // Searched content is at the start of 
+							if (fullNameBolded) {
+								boldFormName.appendChild(document.createTextNode("-" + boldForm));
+							}
+							else {
+								alternateForm.appendChild(document.createTextNode("-"));
+								boldFormName.appendChild(document.createTextNode(boldForm));
+							}
+						}
+
+						alternateForm.appendChild(boldFormName);
+
+						if (regularForm) {
+							// If the whole form is not bold, add the rest in a regular text node
+							alternateForm.appendChild(document.createTextNode(regularForm));
+						}
+					}
+					else
+					{
+						// No form match, add the raw altername form in the small tag
+						alternateForm.appendChild(document.createTextNode("-" + pokemonTranslatedNameArray[1]));
+					}
+
+					pokemonElement.appendChild(alternateForm);	
+				}
 			}
 			else
 			{
-				// No searched content, add the raw name
-				pokemonElement.appendChild(document.createTextNode(pokemonTranslatedName[0]));
-			}
+				// Add Pokémon base name in a text node
+				pokemonElement.appendChild(document.createTextNode(pokemonTranslatedNameArray[0]));
 
-			// If an altername form is present, add it in a small tag
-			if (pokemonTranslatedName[1])
-			{
-				var alternateForm = document.createElement("small");
-				alternateForm.appendChild(document.createTextNode("-" + pokemonTranslatedName[1])); // Put the alternate form name in small tag
-				pokemonElement.appendChild(alternateForm);	
+				// If an alterate name is present, add it in a node with a small tag
+				if (pokemonTranslatedNameArray[1]) {
+					var smallNode = document.createElement("small");
+					smallNode.appendChild(document.createTextNode("-" + pokemonTranslatedNameArray[1]));
+
+					pokemonElement.appendChild(smallNode);
+				}
 			}
 		}	
 	}
-}
-
-function getDisplayedDataType(element: Element)
-{
-	var displayedDataType = "";
-
-	// Element should be a li tag with a result class
-	if (element.tagName == "LI" && element.classList.contains("result"))
-	{
-		var childResult = element.firstChild as Element;
-
-		if (childResult)
-		{
-			// If result child is a tag name, it should have a data-entry
-			// attribute telling what the displayed data is
-			if (childResult.tagName == "A")
-			{
-				var attribute = childResult.getAttribute('data-entry');
-
-				if (attribute) {
-					displayedDataType = attribute.split("|")[0];
-				}
-				else {
-					console.log("No data-entry present in tag ");
-					console.log(childResult);
-				}
-			}
-			// The result child is probably a header
-			else {
-				displayedDataType = "header";
-			}
-		}
-	}
-	else
-	{
-		console.log("Unknown result element");
-		console.log(element)
-	}
-	
-	return displayedDataType;
 }
 
 function updatePokemonAbility(element: Element)
@@ -541,6 +470,28 @@ function updatePokemonAbility(element: Element)
 	}
 }
 
+function updateAbility(element: Element)
+{
+	var abilityNode = element.querySelector('.namecol');
+	var filterNode = element.querySelector('.filtercol');
+
+	if (abilityNode && abilityNode.textContent)
+	{
+		var frenchAbility = AbilitiesDico[abilityNode.textContent];
+
+		if (frenchAbility) { // Directly update the textContent, no style needed
+			abilityNode.textContent = frenchAbility;
+		}
+		else {
+			console.log("Unable to translate ability " + abilityNode.textContent);
+		}
+	}
+
+	if (filterNode) {
+		translateFilter(filterNode);
+	}
+}
+
 function updatePokemonType(typesElement: Element)
 {
 	var twoAbilitiesNode = typesElement.querySelector('.typecol');
@@ -566,29 +517,6 @@ function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
 			console.log("Cannot find type in image " + spriteImage.src);
 		}
 	}
-}
-
-function updateAbility(element: Element)
-{
-	var abilityNode = element.querySelector('.namecol');
-	var filterNode = element.querySelector('.filtercol');
-
-	if (abilityNode && abilityNode.textContent)
-	{
-		var frenchAbility = AbilitiesDico[abilityNode.textContent];
-
-		if (frenchAbility) { // Directly update the textContent, no style needed
-			abilityNode.textContent = frenchAbility;
-		}
-		else {
-			console.log("Unable to translate ability " + abilityNode.textContent);
-		}
-	}
-
-	if (filterNode) {
-		translateFilter(filterNode);
-	}
-	
 }
 
 function updateHeader(headerElement: Element)
@@ -620,7 +548,7 @@ function updateHeader(headerElement: Element)
 					var filteredAbility = AbilitiesDico[filterData];
 
 					if (filteredAbility) {
-						headerTag.textContent = "Pokémon avec " + filterData;
+						headerTag.textContent = "Pokémon avec " + filteredAbility;
 					}
 				}
 			}
@@ -683,6 +611,103 @@ function translateFilter(filterNode: Element)
 		console.log("Unkown filter element");
 		console.log(filterNode);
 	}
+}
+
+function convertPokemonNameToArray(pokemonName: string)
+{
+	const HyphenPokemonName = ["nidoran-f", "nidoran-d", "ho-oh", "porygon-z", "jangmo-o", "hakamo-o", "kommo-o", "ama-ama"]
+	var pokemonRawName = pokemonName.split("-");
+
+	if (pokemonRawName.length == 1)
+	{
+		// No "-" in the name so no alternate form
+		return [pokemonRawName[0], ""];
+	}
+	else
+	{
+		// Check if the "-" is present because there was one in the base name
+		var possibleHyphenPokemon = pokemonRawName[0] + "-" + pokemonRawName[1];
+		var basePokemonName = "";
+
+		if (HyphenPokemonName.includes(removeDiacritics(possibleHyphenPokemon.toLowerCase()))) {
+			// There is a "-" in the base Pokémon name
+			basePokemonName = possibleHyphenPokemon;
+
+			// If the only "-" in the whole name was in the raw name, there is no alternate form
+			if (pokemonRawName.length == 2) {
+				return [basePokemonName, ""];
+			}
+		}
+		else {
+			// No "-" in the base Pokémon name, so the first element is the english Pokémon name
+			basePokemonName = pokemonRawName[0];
+		}
+
+		// Remove the pokemon name from the whole name to get the alternate form
+		var alternatePokemonFormName = pokemonName.replace(basePokemonName + "-", "");
+
+		// Return the translated Pokémon name and its form
+		return [basePokemonName, alternatePokemonFormName]
+	}
+}
+
+function translatePokemonName(pokemonEnglishName: string)
+{
+	var frenchName = PokemonDico[pokemonEnglishName];
+
+	if (frenchName) {
+		return frenchName;
+	}
+	else {
+		console.log("Unable to translate Pokémon " + pokemonEnglishName);
+		return pokemonEnglishName;
+	}
+}
+
+function translatePokemonNameToEnglish(pokemonFrenchName: string)
+{
+	var pokemonEnglishName = Object.keys(PokemonDico).find(key => PokemonDico[key] === pokemonFrenchName);
+	return pokemonEnglishName ? pokemonEnglishName : pokemonFrenchName;
+}
+
+function getDisplayedDataType(element: Element)
+{
+	var displayedDataType = "";
+
+	// Element should be a li tag with a result class
+	if (element.tagName == "LI" && element.classList.contains("result"))
+	{
+		var childResult = element.firstChild as Element;
+
+		if (childResult)
+		{
+			// If result child is a tag name, it should have a data-entry
+			// attribute telling what the displayed data is
+			if (childResult.tagName == "A")
+			{
+				var attribute = childResult.getAttribute('data-entry');
+
+				if (attribute) {
+					displayedDataType = attribute.split("|")[0];
+				}
+				else {
+					console.log("No data-entry present in tag ");
+					console.log(childResult);
+				}
+			}
+			// The result child is probably a header
+			else {
+				displayedDataType = "header";
+			}
+		}
+	}
+	else
+	{
+		console.log("Unknown result element");
+		console.log(element)
+	}
+	
+	return displayedDataType;
 }
 
 function updateBattleSearchIndex()
