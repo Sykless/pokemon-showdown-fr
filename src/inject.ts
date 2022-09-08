@@ -105,7 +105,7 @@ function updateResultTag(resultElement: Element)
 	}
 }
 
-function updateCurElement(translatedPokemonName: string)
+function removeCurElement()
 {
 	// Cur element is the search result entry of the current selected Pokémon 
 	// It is defined by the current Pokémon name, but since the current Pokémon name is in french, cur is bugged
@@ -114,16 +114,17 @@ function updateCurElement(translatedPokemonName: string)
 	// every piece of information in order to manualy create it
 
 	var curElements = document.getElementsByClassName("cur");
-	var nextCurSibling = null;
 
 	for (var curID = 0 ; curID < curElements.length ; curID++)
 	{
 		var cur = curElements.item(curID);
 		
-		if (cur?.tagName == "A" && cur?.parentElement?.tagName == "LI")
+		// Only remove the specific Pokemon search cur
+		if (cur?.tagName == "A" && cur.parentElement?.tagName == "LI"
+			&& cur.getAttribute("data-entry")?.includes("pokemon"))
 		{
 			// Remove cur parent node
-			var curParent = cur?.parentElement;
+			var curParent = cur.parentElement;
 			curParent.remove();
 		}
 	}
@@ -163,8 +164,8 @@ function updatePokemonInfo()
 			// The provided input search is a Pokémon, remove the incomplete class
 			nameInputElement.classList.remove("incomplete");
 
-			// The provided input search is a Pokémon, update cur element
-			updateCurElement(translatedPokemonName);
+			// Only remove cur element if the provided name is a french name
+			removeCurElement();
 		}
 
 		liComponent.childNodes.forEach(function(node)
