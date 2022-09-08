@@ -1,11 +1,10 @@
-import { PokemonDico } from './translator';
-import { CosmeticFormsDico } from './translator';
-import { AbilitiesDico } from './translator';
-import { MovesDico } from './translator';
-import { TypesDico } from './translator';
-import { HeadersDico } from './translator';
-import { MenuDico } from './translator';
-import { FiltersDico } from './translator';
+import { PokemonDico, AbilitiesDico, MovesDico, TypesDico,
+	HeadersDico, MenuDico, FiltersDico } from './translator';
+	
+import { CosmeticForms  } from './translator';
+
+import { translatePokemonName, translateAbility, translateMove,
+	translateType, translateHeader, translateFilter, translateMenu } from './translator';
 
 // TODO
 // Update cur for the correct input
@@ -110,6 +109,10 @@ function updateResultTag(resultElement: Element)
 	{
 		updateAbility(resultElement);
 	}
+	else if (displayedDataType == "move")
+	{
+		updateMove(resultElement);
+	}
 	else if (displayedDataType == "type")
 	{
 		updateType(resultElement);
@@ -185,16 +188,8 @@ function updatePokemonInfo()
 			{
 				// Translate team builder menu
 				node.childNodes.forEach(function(menuButton) {
-					if (menuButton.lastChild?.textContent)
-					{
-						var frenchMenuOption = MenuDico[menuButton.lastChild.textContent];
-
-						if (frenchMenuOption) {
-							menuButton.lastChild.textContent = frenchMenuOption;
-						}
-						else {
-							console.log("Unable to translate menu " + menuButton.lastChild.textContent);
-						}
+					if (menuButton.lastChild?.textContent) {
+						menuButton.lastChild.textContent = translateMenu(menuButton.lastChild.textContent);
 					}
 				})
 			}
@@ -411,16 +406,8 @@ function updatePokemonAbility(element: Element)
 	for (var i = 0, node; (node = abilityNodeList[i]) ; i++)
 	{
 		// The Pokemon might only have one ability, so we check if null before using it
-		if (node.textContent)
-		{
-			var frenchAbility = AbilitiesDico[node.textContent];
-
-			if (frenchAbility) { // Directly update the textContent, no style needed
-				node.textContent = frenchAbility;
-			}
-			else {
-				console.log("Unable to translate ability " + node.textContent);
-			}
+		if (node.textContent) {
+			node.textContent = translateAbility(node.textContent);
 		}
 	}
 
@@ -438,13 +425,7 @@ function updatePokemonAbility(element: Element)
 			}
 
 			// Use the untranslated ability if no translation is found
-			var frenchAbility = AbilitiesDico[twoAbilities[i]];
-			var abilityTextNode = document.createTextNode(frenchAbility ? frenchAbility : twoAbilities[i])
-
-			if (frenchAbility == null) {
-				console.log("Unable to translate ability " + twoAbilities[i]);
-			} 
-
+			var abilityTextNode = document.createTextNode(translateAbility(twoAbilities[i]))
 			twoAbilitiesNode.appendChild(abilityTextNode)
 		}
 	}
@@ -455,22 +436,57 @@ function updateAbility(element: Element)
 	var abilityNode = element.querySelector('.namecol');
 	var filterNode = element.querySelector('.filtercol');
 
-	if (abilityNode?.textContent)
-	{
-		var frenchAbility = AbilitiesDico[abilityNode.textContent];
-
-		if (frenchAbility) { // Directly update the textContent, no style needed
-			abilityNode.textContent = frenchAbility;
-		}
-		else {
-			console.log("Unable to translate ability " + abilityNode.textContent);
-		}
+	if (abilityNode?.textContent) {
+		abilityNode.textContent = translateAbility(abilityNode.textContent);
 	}
 
 	// Translate Filter button
 	if (filterNode) {
-		translateFilter(filterNode);
+		updateFilterElement(filterNode);
 	}
+}
+
+function updateMove(resultElement: Element)
+{
+	resultElement.childNodes.forEach(function (moveNode) {
+		var moveElement = moveNode as Element;
+		var moveClasses = moveElement.classList;
+		
+		if (moveClasses.contains("movenamecol"))
+		{
+			if (moveElement.textContent) {
+				moveNode.textContent = translateMove(moveElement.textContent);
+			}
+		}
+		else if (moveClasses.contains("typecol"))
+		{
+			moveNode.childNodes.forEach(function (typeSprite) {
+				updatePokemonTypeSprite(typeSprite as HTMLImageElement);
+			})
+		}
+		else if (moveClasses.contains("labelcol"))
+		{
+			if (moveElement.tagName == "EM" && moveElement.textContent) {
+				moveElement.textContent = translateFilter(moveElement.textContent);
+			}
+		}
+		else if (moveClasses.contains("widelabelcol"))
+		{
+			
+		}
+		else if (moveClasses.contains("pplabelcol"))
+		{
+			
+		}
+		else if (moveClasses.contains("movedesccol"))
+		{
+			
+		}
+		else if (moveClasses.contains("filtercol"))
+		{
+			updateFilterElement(moveElement);
+		}
+	})
 }
 
 function updatePokemonType(typesElement: Element)
@@ -484,18 +500,12 @@ function updatePokemonType(typesElement: Element)
 
 function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
 {
-	if (spriteImage.tagName == "IMG") {
-		// Get the fileName in the URL
-		var typeImageName = spriteImage.src.split("/").at(-1);
-		var typeName = typeImageName?.replace(".png", "");
-
-		// The type might already have been updated so we check the presence of the "French" tag
-		if (!typeName?.includes("French")) {
-			spriteImage.src = SpriteURL + "French_Type_" + typeName + ".png"
-		}
-		else {
-			// Default : keep the Showdown sprite as is
-			console.log("Cannot find type in image " + spriteImage.src);
+	if (spriteImage.tagName == "IMG")
+	{
+		// Check that the alt attribute is a valid type
+		if (TypesDico[spriteImage.alt]) {
+			// Use the french type sprite
+			spriteImage.src = SpriteURL + "French_Type_" + spriteImage.alt + ".png"
 		}
 	}
 }
@@ -518,19 +528,14 @@ function updateHeader(headerElement: Element)
 				var possibleType = TypesDico[filterData.replace("-type", "")];
 
 				// Type
-				if (possibleType)
-				{
+				if (possibleType) {
 					headerTag.textContent = "Pokémon de type " + possibleType;
 				}
 				// Ability
 				else
 				{
 					// Translate ability and insert it with the header french translation
-					var filteredAbility = AbilitiesDico[filterData];
-
-					if (filteredAbility) {
-						headerTag.textContent = "Pokémon avec " + filteredAbility;
-					}
+					headerTag.textContent = "Pokémon avec " + translateAbility(filterData);;
 				}
 			}
 			else if (headerWords.at(-1) == "technicality") {
@@ -548,28 +553,14 @@ function updateHeader(headerElement: Element)
 				}
 				else {
 					// Default : the header should be in HeadersDico
-					var translatedHeader = HeadersDico[headerTag.textContent];
-
-					if (translatedHeader) {
-						headerTag.textContent = translatedHeader;
-					}
-					else {
-						console.log("Unable to translate header " + headerTag.textContent);
-					}
+					headerTag.textContent = translateHeader(headerTag.textContent);
 				}
 			}
 		}
 		else
 		{
 			// One-word headers, we can translate directly
-			var translatedHeader = HeadersDico[headerTag.textContent];
-
-			if (translatedHeader) {
-				headerTag.textContent = translatedHeader;
-			}
-			else {
-				console.log("Unable to translate header " + headerTag.textContent);
-			}
+			headerTag.textContent = translateHeader(headerTag.textContent);
 		}
 	}
 	else if (!headerElement.classList.contains("result"))
@@ -588,7 +579,7 @@ function updatePokemonStats(resultElement: Element)
 		statsNodes[i].childNodes.forEach(function(statNode) {
 			var statElement = statNode as Element;
 			if (statElement.tagName == "EM" && statElement.textContent) {
-				statElement.textContent = FiltersDico[statElement.textContent];
+				statElement.textContent = translateFilter(statElement.textContent);
 			}
 		});
 	}
@@ -604,7 +595,7 @@ function updateSortFilters(resultElement: Element)
 			var sortButtonElement = sortButton as Element;
 
 			if (sortButtonElement.tagName == "BUTTON" && sortButtonElement.textContent) {
-				sortButtonElement.textContent = FiltersDico[sortButtonElement.textContent];
+				sortButtonElement.textContent = translateFilter(sortButtonElement.textContent);
 			}
 		})
 	}
@@ -616,16 +607,9 @@ function updateType(resultElement: Element)
 	var typeSpriteNode = resultElement.querySelector('.typecol');
 	var filterNode = resultElement.querySelector('.filtercol');
 
-	if (typeNameNode?.textContent)
-	{
-		var frenchType = TypesDico[typeNameNode.textContent];
-
-		if (frenchType) { // Directly update the textContent, no style needed
-			typeNameNode.textContent = frenchType;
-		}
-		else {
-			console.log("Unable to translate ability " + typeNameNode.textContent);
-		}
+	// Directly update the textContent, no style needed
+	if (typeNameNode?.textContent) {
+		typeNameNode.textContent = translateType(typeNameNode.textContent);
 	}
 
 	// Replace english type sprite by french ones
@@ -633,11 +617,11 @@ function updateType(resultElement: Element)
 
 	// Translate Filter button
 	if (filterNode) {
-		translateFilter(filterNode);
+		updateFilterElement(filterNode);
 	}
 }
 
-function translateFilter(filterNode: Element)
+function updateFilterElement(filterNode: Element)
 {
 	var filterButtonTag = filterNode.firstChild as Element;
 
@@ -685,19 +669,6 @@ function convertPokemonNameToArray(pokemonName: string)
 
 		// Return the translated Pokémon name and its form
 		return [basePokemonName, alternatePokemonFormName]
-	}
-}
-
-function translatePokemonName(pokemonEnglishName: string)
-{
-	var frenchName = PokemonDico[pokemonEnglishName];
-
-	if (frenchName) {
-		return frenchName;
-	}
-	else {
-		console.log("Unable to translate Pokémon " + pokemonEnglishName);
-		return pokemonEnglishName;
 	}
 }
 
@@ -814,7 +785,7 @@ function updateBattleSearchIndex()
 	BattleSearchIndex = newBattleSearchIndex;
 	BattleSearchIndexOffset = newBattleSearchIndexOffset;
 
-	// Always log BattleSearchIndex to help with debug
+	// Always log BattleSearchIndex to help debugging
 	console.log(BattleSearchIndex);
 }
 
@@ -830,7 +801,7 @@ function populateFrenchDico()
 
 		for (var englishName in dico)
 		{
-			if (searchType == "pokemon" && CosmeticFormsDico.includes(englishName)) {
+			if (searchType == "pokemon" && CosmeticForms.includes(englishName)) {
 				// Don't include cosmetic forms in BattleSearchIndex
 				continue;
 			}

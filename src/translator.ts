@@ -1272,7 +1272,7 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Enamorus-Therian": "Amovénus-Totem"
 };
 
-export const CosmeticFormsDico: Array<string> = [
+export const CosmeticForms: Array<string> = [
 	"Unown-B",
 	"Unown-C",
 	"Unown-D",
@@ -2527,6 +2527,7 @@ export const TypesDico: { [englishName: string]: string; } = {
 }
 
 export const HeadersDico: { [englishName: string]: string; } = {
+	"Pokémon": "Pokémon",
     "Abilities": "Talents",
     "Hidden Ability": "Talent caché",
     "Special Event Ability": "Talent événementiel",
@@ -2572,9 +2573,107 @@ export const FiltersDico:  { [englishName: string]: string; } = {
 	"SpD": "SpD",
 	"Spe": "Vit",
 	"BST": "BST",
+	"Cat": "Cat",
+	"Pow": "Pui",
+	"Acc": "Pre",
+	"Power": "Puissance",
+	"Accuracy": "Précision",
+	"PP": "PP",
 	"Sort: ": "Tri :",
 	"Name": "Nom",
+	"Type": "Type",
 	"Types" : "Types",
 	"Abilities": "Talents",
-	"Number" : "Numéro"
+	"Number" : "Numéro",
+}
+
+export function translatePokemonName(pokemonEnglishName: string)
+{
+	var frenchName = PokemonDico[pokemonEnglishName];
+
+	if (frenchName) {
+		return frenchName;
+	}
+	else {
+		console.log("Unable to translate Pokémon " + pokemonEnglishName);
+		return pokemonEnglishName;
+	}
+}
+
+export function translateAbility(pokemonEnglishAbility: string)
+{
+	var frenchAbility = AbilitiesDico[pokemonEnglishAbility];
+
+	if (frenchAbility) {
+		return frenchAbility;
+	}
+	else {
+		console.log("Unable to translate ability " + pokemonEnglishAbility);
+		return pokemonEnglishAbility;
+	}
+}
+
+export function translateMove(pokemonEnglishMove: string)
+{
+	var frenchMove = MovesDico[pokemonEnglishMove];
+
+	if (frenchMove) {
+		return frenchMove;
+	}
+	else {
+		console.log("Unable to translate ability " + pokemonEnglishMove);
+		return pokemonEnglishMove;
+	}
+}
+
+export function translateType(pokemonEnglishType: string)
+{
+	var frenchType = MovesDico[pokemonEnglishType];
+
+	if (frenchType) {
+		return frenchType;
+	}
+	else {
+		console.log("Unable to translate move " + pokemonEnglishType);
+		return pokemonEnglishType;
+	}
+}
+
+export function translateHeader(pokemonEnglishHeader: string)
+{
+	var frenchHeader = HeadersDico[pokemonEnglishHeader];
+
+	if (frenchHeader) {
+		return frenchHeader;
+	}
+	else {
+		console.log("Unable to translate header " + pokemonEnglishHeader);
+		return pokemonEnglishHeader;
+	}
+}
+
+export function translateFilter(pokemonEnglishFilter: string)
+{
+	var frenchFilter = FiltersDico[pokemonEnglishFilter];
+
+	if (frenchFilter) {
+		return frenchFilter;
+	}
+	else {
+		console.log("Unable to translate filter " + pokemonEnglishFilter);
+		return pokemonEnglishFilter;
+	}
+}
+
+export function translateMenu(pokemonEnglishMenu: string)
+{
+	var frenchMenu = FiltersDico[pokemonEnglishMenu];
+
+	if (frenchMenu) {
+		return frenchMenu;
+	}
+	else {
+		console.log("Unable to translate menu " + pokemonEnglishMenu);
+		return pokemonEnglishMenu;
+	}
 }
