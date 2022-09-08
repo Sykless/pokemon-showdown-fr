@@ -27,6 +27,14 @@ const FRENCH = 0;
 const ENGLISH = 1;
 const SEARCH_TYPE = 2;
 
+// The injected script cannot access chrome.runtime.getURL
+// So we need to catch an event from the content script that sends it
+var SpriteURL = "";
+
+window.addEventListener('RecieveContent', function(evt: any) {
+	SpriteURL = evt.detail;
+});
+
 // Create FrenchNamesDico dictionary, containing every french to english translation alphabetically sorted
 const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico];
 const FrenchNamesDico = populateFrenchDico();
@@ -82,6 +90,7 @@ function updateResultTag(resultElement: Element)
 	{
 		updatePokemonName(resultElement);
 		updatePokemonAbility(resultElement);
+		updatePokemonType(resultElement);
 	}
 	else if (displayedDataType == "ability")
 	{
@@ -487,8 +496,6 @@ function getDisplayedDataType(element: Element)
 
 function updatePokemonAbility(element: Element)
 {
-	var displayedDataType = getDisplayedDataType(element);
-	
 	var abilityNodeList = element.querySelectorAll('.abilitycol');
 	var twoAbilitiesNode = element.querySelector('.twoabilitycol');
 
@@ -527,9 +534,36 @@ function updatePokemonAbility(element: Element)
 
 			if (frenchAbility == null) {
 				console.log("Unable to translate ability " + twoAbilities[i]);
-			}
+			} 
 
 			twoAbilitiesNode.appendChild(abilityTextNode)
+		}
+	}
+}
+
+function updatePokemonType(typesElement: Element)
+{
+	var twoAbilitiesNode = typesElement.querySelector('.typecol');
+
+	twoAbilitiesNode?.childNodes.forEach(function(typeNode) {
+		updatePokemonTypeSprite(typeNode as HTMLImageElement)
+	})
+}
+
+function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
+{
+	if (spriteImage.tagName == "IMG") {
+		// Get the fileName in the URL
+		var typeImageName = spriteImage.src.split("/").at(-1);
+		var typeName = typeImageName?.replace(".png", "");
+
+		// The type might already have been updated so we check the presence of the "French" tag
+		if (typeName && !typeName.includes("French")) {
+			spriteImage.src = SpriteURL + "French_Type_" + typeName + ".png"
+		}
+		else {
+			// Default : keep the Showdown sprite as is
+			console.log("Cannot find type in image " + spriteImage.src);
 		}
 	}
 }
