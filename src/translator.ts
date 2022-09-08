@@ -1090,6 +1090,7 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Togedemaru-Totem": "Togedemaru-Dominant",
 	"Mimikyu": "Mimiqui",
 	"Mimikyu-Busted": "Mimiqui-Démasqué",
+	"Mimikyu-Totem": "Mimiqui-Dominant",
 	"Mimikyu-Busted-Totem": "Mimiqui-Dominant-Démasqué",
 	"Bruxish": "Denticrisse",
 	"Drampa": "Draïeul",
