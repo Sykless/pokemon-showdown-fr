@@ -1,4 +1,5 @@
 import { PokemonDico } from './translator';
+import { CosmeticFormsDico } from './translator';
 import { AbilitiesDico } from './translator';
 import { TypesDico } from './translator';
 import { HeadersDico } from './translator';
@@ -60,27 +61,36 @@ function onMutation(mutations: MutationRecord[]) {
 		for (var j = 0, node; (node = added[j]); j++)
 		{
 			var newElement = node as Element;
-			//console.log(newElement);
+			var elementClasses = newElement.classList;
 
-			switch(newElement.className)
+			console.log(newElement);
+
+			if (elementClasses)
 			{
-				case 'utilichart': // A search field has been updated
-
-					// We can't catch input search modification with MutationObserver, however everytime an input
-					// is modified in some way, the utilichart component is updated,
-					// so we still get a way to catch input modification
-					updatePokemonInfo();
-
+				// A search field has been updated
+				if (elementClasses.contains("utilichart"))
+				{
 					// Update every search result
 					for (var k = 0, result; (result = node.childNodes[k]) ; k++) {
 						updateResultTag(result as Element);
 					}
 
-					break;
-				
-				case 'result': // New results after scrolling
+					// We can't catch input search modification with MutationObserver, however everytime an input
+					// is modified in some way, the utilichart component is updated,
+					// so we still get a way to catch input modification
+					updatePokemonInfo();
+				}
+				// New results after scrolling
+				else if (elementClasses.contains("result"))
+				{
+					// Update every new result
 					updateResultTag(node as Element);
-					break;
+				}
+				// Pokémon info has been updated
+				else if (elementClasses.contains("statrow-head"))
+				{
+					updatePokemonInfo();
+				}
 			}
 		}
 	}
@@ -149,107 +159,100 @@ function updatePokemonInfo()
 
 	// If a Showdown developer reads this, the line in your code where a specie is added is "window.BattlePokedex[id] = species;"
 	BattlePokedex = structuredClone(originalBattlePokedex);
+
+	// Retrieve the Pokémon name provided in the Pokémon search input
+	var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
+
+	// Check if the search input is a valid french Pokémon name
+	if (isValidPokemonFrenchName(nameInputElement.value))
+	{
+		// Cur element is only bugged with french names
+		removeCurElement();
+	}
 	
-	// Since we update the teamchart element everytime an input is modified, we need to manually retrieve it
+	// Since we don't always get the teamchart element from MutationObserver, we need to manually retrieve it
 	var teamchartElement = document.getElementsByClassName("teamchart").item(0);
 	var liComponent = teamchartElement?.firstChild;
 
-	if (liComponent)
+	liComponent?.childNodes.forEach(function(node)
 	{
-		// Retrieve the Pokémon name provided in the Pokémon search input
-		var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
-		var searchInput = nameInputElement.value;
-
-		// Try to translate the name to check if it matches a french translation
-		var translatedPokemonName = translatePokemonName(searchInput);
-		var translatedPokemonNameArray = convertPokemonNameToArray(translatedPokemonName);
-
-		// If the english translation of the search input is different than the search input
-		// it means that the search input is a complete Pokémon french word
-		if (translatePokemonNameToEnglish(searchInput) != searchInput)
+		switch ((node as Element).className)
 		{
-			// The provided input search is a Pokémon, remove the incomplete class
-			nameInputElement.classList.remove("incomplete");
+			case "setmenu":
+				// Translate team builder menu
+				node.childNodes.forEach(function(menuButton) {
+					if (menuButton.lastChild?.textContent) {
+						menuButton.lastChild.textContent = MenuDico[menuButton.lastChild.textContent];
+					}
+				})
+				
+				break;
 
-			// Only remove cur element if the provided name is a french name
-			removeCurElement();
+			case "setchart-nickname":
+				// Translate the nickname
+				node.childNodes.forEach(function(nicknameNode) {
+					var nicknameElement = nicknameNode as HTMLInputElement;
+
+					if (nicknameElement.tagName == "LABEL") {
+						nicknameElement.textContent = "Surnom";
+					}
+					else if (nicknameElement.tagName == "INPUT")
+					{
+						nicknameElement.placeholder = translatePokemonName(nicknameElement.placeholder);
+						nicknameElement.value = translatePokemonName(nicknameElement.value);
+					}
+				});
+
+				break;
+
+			case "setchart":
+
+				node.childNodes.forEach(function(pokemonInfoNode) {
+					var classList = (pokemonInfoNode as Element).classList;
+
+					// Pokémon name
+					if (classList.contains("setcol-icon"))
+					{
+						// Translate the name
+						pokemonInfoNode.childNodes.forEach(function(spriteNameNode) {
+							spriteNameNode.childNodes.forEach(function(nameNode) {
+								var nameInput = nameNode as HTMLInputElement;
+		
+								if (nameInput.tagName == "INPUT" && nameInput.value)
+								{
+									// Update the Pokémon search input with the french translation
+									// (If no translation is found, the original string stays untouched)
+									nameInput.value = translatePokemonName(nameInput.value);;
+								}
+							})
+						});
+					}
+					// Item, Ability, Level, Gender, Shiny
+					else if (classList.contains("setcol-details"))
+					{
+
+					}
+					// Moves
+					else if (classList.contains("setcol-moves"))
+					{
+						
+					}
+					// Stats
+					else if (classList.contains("setcol-stats"))
+					{
+						
+					}
+				})
+
+				break;
 		}
+	})
 
-		liComponent.childNodes.forEach(function(node)
-		{
-			switch ((node as Element).className)
-			{
-				case "setmenu":
-					// Translate team builder menu
-					node.childNodes.forEach(function(menuButton) {
-						if (menuButton.lastChild?.textContent) {
-							menuButton.lastChild.textContent = MenuDico[menuButton.lastChild.textContent];
-						}
-					})
-					
-					break;
-
-				case "setchart-nickname":
-					// Translate the nickname
-					node.childNodes.forEach(function(nicknameNode) {
-						var nicknameElement = nicknameNode as Element;
-
-						if (nicknameElement.tagName == "LABEL") {
-							nicknameElement.textContent = "Surnom";
-						}
-						else if (nicknameElement.tagName == "INPUT") {
-							if (translatePokemonNameToEnglish(searchInput) != searchInput || PokemonDico[searchInput]) {
-								(nicknameElement as HTMLInputElement).placeholder = (translatedPokemonNameArray[0] || "");
-							}
-		
-						}
-					});
-
-					break;
-
-				case "setchart":
-
-					node.childNodes.forEach(function(pokemonInfoNode) {
-						var classList = (pokemonInfoNode as Element).classList;
-
-						// Pokémon name
-						if (classList.contains("setcol-icon"))
-						{
-							// Translate the name
-							pokemonInfoNode.childNodes.forEach(function(spriteNameNode) {
-								spriteNameNode.childNodes.forEach(function(nameNode) {
-									var nameInput = nameNode as HTMLInputElement;
-			
-									if (nameInput.tagName == "INPUT" && nameInput.value)
-									{
-										// Update the Pokémon search input with the french translation
-										// (If no translation is found, the original string stays untouched)
-										nameInput.value = translatedPokemonName;
-									}
-								})
-							});
-						}
-						// Item, Ability, Level, Gender, Shiny
-						else if (classList.contains("setcol-details"))
-						{
-
-						}
-						// Moves
-						else if (classList.contains("setcol-moves"))
-						{
-							
-						}
-						// Stats
-						else if (classList.contains("setcol-stats"))
-						{
-							
-						}
-					})
-
-					break;
-			}
-		})
-		
+	// Check if the search input is a valid french Pokémon name
+	if (isValidPokemonFrenchName(nameInputElement.value))
+	{
+		// The provided input search is a Pokémon, remove the incomplete class
+		nameInputElement.classList.remove("incomplete");
 	}
 }
 
@@ -696,6 +699,22 @@ function translatePokemonNameToEnglish(pokemonFrenchName: string)
 	return pokemonEnglishName ? pokemonEnglishName : pokemonFrenchName;
 }
 
+function isValidPokemonFrenchName(pokemonName: string)
+{
+	return translatePokemonNameToEnglish(pokemonName) != pokemonName;
+}
+
+function isValidPokemonEnglishName(pokemonName: string)
+{
+	return PokemonDico[pokemonName];
+}
+
+function isValidPokemonName(pokemonName: string)
+{
+	return isValidPokemonFrenchName(pokemonName) 
+		|| isValidPokemonEnglishName(pokemonName);
+}
+
 function getDisplayedDataType(element: Element)
 {
 	var displayedDataType = "";
@@ -803,8 +822,13 @@ function populateFrenchDico()
 
 		for (var englishName in dico)
 		{
+			if (searchType == "pokemon" && CosmeticFormsDico.includes(englishName)) {
+				// Don't include cosmetic forms in BattleSearchIndex
+				continue;
+			}
+
 			var frenchName = dico[englishName].toLowerCase();
-			
+
 			// Remove everything that is not a regular letter or number
 			var formattedFrenchName = removeSpecialCharacters(frenchName);
 			var formattedEnglishName = removeSpecialCharacters(englishName.toLowerCase());
@@ -875,10 +899,4 @@ function binarySearch(query: string) {
 	else if (BattleSearchIndex[left + 1][0] && BattleSearchIndex[left][0] < query) left++;
 	if (left && BattleSearchIndex[left - 1][0] === query) left--;
 	return left;
-}
-
-function getPokemonCurHTMLElement(englishPokemonID: string)
-{
-	var battleSearchElement = new BattleSearch("","");
-	return battleSearchElement.renderRow(englishPokemonID, "pokemon", 0, 0, "", ' class="cur"');
 }
