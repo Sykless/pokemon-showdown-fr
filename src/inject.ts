@@ -5,7 +5,8 @@ import { HeadersDico } from './translator';
 import { MenuDico } from './translator';
 
 // TODO
-// Ajout des formes dans le BattleSearchIndex
+// Mettre les formes en gras
+// Update cur for the correct input
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
 // Démétéros surligné en gras
 
@@ -190,18 +191,20 @@ function updatePokemonInfo()
 		var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
 		var searchInput = nameInputElement.value;
 
-		// If the english translation of the search input is different than the search input
-		// it means that the search input is a complete Pokémon french word, so remove the incomplete class
-		if (translatePokemonNameToEnglish(searchInput) != searchInput) {
-			nameInputElement.classList.remove("incomplete");
-		}
-
 		// Try to translate the name to check if it matches a french translation
 		var translatedPokemonName = translatePokemonName(searchInput);
 		var translatedPokemonNameArray = convertPokemonNameToArray(translatedPokemonName);
 
-		// Update cur element if present
-		updateCurElement(translatedPokemonName);
+		// If the english translation of the search input is different than the search input
+		// it means that the search input is a complete Pokémon french word
+		if (translatePokemonNameToEnglish(searchInput) != searchInput)
+		{
+			// The provided input search is a Pokémon, remove the incomplete class
+			nameInputElement.classList.remove("incomplete");
+
+			// The provided input search is a Pokémon, update cur element
+			updateCurElement(translatedPokemonName);
+		}
 
 		liComponent.childNodes.forEach(function(node)
 		{
