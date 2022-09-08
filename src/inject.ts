@@ -1,6 +1,7 @@
 import { PokemonDico } from './translator';
 import { CosmeticFormsDico } from './translator';
 import { AbilitiesDico } from './translator';
+import { MovesDico } from './translator';
 import { TypesDico } from './translator';
 import { HeadersDico } from './translator';
 import { MenuDico } from './translator';
@@ -38,7 +39,7 @@ window.addEventListener('RecieveContent', function(evt: any) {
 });
 
 // Create FrenchNamesDico dictionary, containing every french to english translation alphabetically sorted
-const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico];
+const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico, MovesDico];
 const FrenchNamesDico = populateFrenchDico();
 
 // When Showdown first loads, update the BattleSearchIndex
@@ -62,8 +63,6 @@ function onMutation(mutations: MutationRecord[]) {
 		{
 			var newElement = node as Element;
 			var elementClasses = newElement.classList;
-
-			console.log(newElement);
 
 			if (elementClasses)
 			{
@@ -186,10 +185,8 @@ function updatePokemonInfo()
 			{
 				// Translate team builder menu
 				node.childNodes.forEach(function(menuButton) {
-					if (menuButton.lastChild?.textContent) {
-
-						console.log(menuButton);
-
+					if (menuButton.lastChild?.textContent)
+					{
 						var frenchMenuOption = MenuDico[menuButton.lastChild.textContent];
 
 						if (frenchMenuOption) {
@@ -229,7 +226,7 @@ function updatePokemonInfo()
 						pokemonInfoNode.childNodes.forEach(function(spriteNameNode) {
 							spriteNameNode.childNodes.forEach(function(nameNode) {
 								var nameInput = nameNode as HTMLInputElement;
-		
+
 								if (nameInput.tagName == "INPUT" && nameInput.value)
 								{
 									// Update the Pokémon search input with the french translation
@@ -824,7 +821,7 @@ function updateBattleSearchIndex()
 function populateFrenchDico()
 {
 	let NamesTranslation: Array<any> = [];
-	let searchTypeGetter: Array<string> = ["pokemon", "ability"];
+	let searchTypeGetter: Array<string> = ["pokemon", "ability", "move"];
 
 	for (var i = 0 ; i < searchTypeGetter.length ; i++)
 	{
