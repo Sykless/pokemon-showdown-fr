@@ -101,6 +101,10 @@ function updateResultTag(resultElement: Element)
 	{
 		updateAbility(resultElement);
 	}
+	else if (displayedDataType == "type")
+	{
+		updateType(resultElement);
+	}
 	else if (displayedDataType == "header")
 	{
 		updateHeader(resultElement);
@@ -440,7 +444,7 @@ function updateAbility(element: Element)
 	var abilityNode = element.querySelector('.namecol');
 	var filterNode = element.querySelector('.filtercol');
 
-	if (abilityNode && abilityNode.textContent)
+	if (abilityNode?.textContent)
 	{
 		var frenchAbility = AbilitiesDico[abilityNode.textContent];
 
@@ -452,6 +456,7 @@ function updateAbility(element: Element)
 		}
 	}
 
+	// Translate Filter button
 	if (filterNode) {
 		translateFilter(filterNode);
 	}
@@ -474,7 +479,7 @@ function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
 		var typeName = typeImageName?.replace(".png", "");
 
 		// The type might already have been updated so we check the presence of the "French" tag
-		if (typeName && !typeName.includes("French")) {
+		if (!typeName?.includes("French")) {
 			spriteImage.src = SpriteURL + "French_Type_" + typeName + ".png"
 		}
 		else {
@@ -517,12 +522,10 @@ function updateHeader(headerElement: Element)
 					}
 				}
 			}
-			else if (headerWords.at(-1) == "technicality")
-			{
+			else if (headerWords.at(-1) == "technicality") {
 				headerTag.textContent = headerWords[0] + " par technicalité";
 			}
-			else if (headerWords[0] == "Generation")
-			{
+			else if (headerWords[0] == "Generation") {
 				headerTag.textContent = "Génération " + headerWords[1];
 			}
 			else
@@ -583,18 +586,43 @@ function updatePokemonStats(resultElement: Element)
 function updateSortFilters(resultElement: Element)
 {
 	var sortRowElement = resultElement.firstChild as Element;
-	console.log(sortRowElement);
 
 	if (sortRowElement.className == "sortrow")
 	{
 		sortRowElement.childNodes.forEach(function (sortButton) {
-			console.log(sortButton);
 			var sortButtonElement = sortButton as Element;
 
 			if (sortButtonElement.tagName == "BUTTON" && sortButtonElement.textContent) {
 				sortButtonElement.textContent = FiltersDico[sortButtonElement.textContent];
 			}
 		})
+	}
+}
+
+function updateType(resultElement: Element)
+{
+	var typeNameNode = resultElement.querySelector('.namecol');
+	var typeSpriteNode = resultElement.querySelector('.typecol');
+	var filterNode = resultElement.querySelector('.filtercol');
+
+	if (typeNameNode?.textContent)
+	{
+		var frenchType = TypesDico[typeNameNode.textContent];
+
+		if (frenchType) { // Directly update the textContent, no style needed
+			typeNameNode.textContent = frenchType;
+		}
+		else {
+			console.log("Unable to translate ability " + typeNameNode.textContent);
+		}
+	}
+
+	// Replace english type sprite by french ones
+	updatePokemonTypeSprite(typeSpriteNode?.firstChild as HTMLImageElement);
+
+	// Translate Filter button
+	if (filterNode) {
+		translateFilter(filterNode);
 	}
 }
 
@@ -693,7 +721,7 @@ function getDisplayedDataType(element: Element)
 					console.log(childResult);
 				}
 			}
-			// The result child is probably a header
+			// The result child is a header
 			else {
 				displayedDataType = "header";
 			}

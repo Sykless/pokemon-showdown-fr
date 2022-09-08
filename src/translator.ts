@@ -1273,6 +1273,7 @@ export const PokemonDico: { [englishName: string]: string; } = {
 };
 
 export const AbilitiesDico: { [englishName: string]: string; } = {
+	"No Ability": "Pas de Talent",
     "Stench": "Puanteur",
     "Drizzle": "Crachin",
     "Speed Boost": "Turbo",
