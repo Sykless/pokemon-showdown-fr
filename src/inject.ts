@@ -586,7 +586,7 @@ function updateHeader(headerElement: Element)
 					var filteredAbility = AbilitiesDico[filterData];
 
 					if (filteredAbility) {
-						headerTag.textContent = "Pokémon avec " + filterData;
+						headerTag.textContent = "Pokémon avec " + filteredAbility;
 					}
 				}
 			}
