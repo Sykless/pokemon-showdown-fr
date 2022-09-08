@@ -1,0 +1,20 @@
+{
+  "name": "Showdown Traduction",
+  "version": "0.2",
+  "description": "Translate Pokémon Showdown in french",
+  "permissions": [
+    "tabs"
+  ],
+  "content_scripts": [{
+    "matches": ["https://play.pokemonshowdown.com/*"],
+    "js": ["content.js"],
+    "run_at": "document_end"
+    }], 
+  "web_accessible_resources": [{
+    "resources": [
+      "inject.js",
+      "sprites/*"],
+    "matches": ["https://play.pokemonshowdown.com/*"]
+  }],
+  "manifest_version": 3
+}
