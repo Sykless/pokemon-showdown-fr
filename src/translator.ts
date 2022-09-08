@@ -1688,10 +1688,12 @@ export const HeadersDico: { [englishName: string]: string; } = {
 }
 
 export const MenuDico: { [englishName: string]: string; } = {
-    "Copy": "Copier",
-    "Import/Export": "Importer/Exporter",
-    "Move": "Déplacer",
-    "Delete": "Supprimer",
+    "Copy": "Copie",
+	"Import": "Import",
+    "Import/Export": "Import/Export",
+    "Move": "Déplacement",
+    "Delete": "Suppression",
+	" Undo Delete": " Annuler Suppression"
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {

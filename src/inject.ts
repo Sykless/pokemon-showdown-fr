@@ -176,19 +176,33 @@ function updatePokemonInfo()
 
 	liComponent?.childNodes.forEach(function(node)
 	{
-		switch ((node as Element).className)
-		{
-			case "setmenu":
+		var teamchartClasses = (node as Element).classList;
+
+		if (teamchartClasses) {
+
+			console.log(teamchartClasses);
+
+			if (teamchartClasses.contains("setmenu"))
+			{
 				// Translate team builder menu
 				node.childNodes.forEach(function(menuButton) {
 					if (menuButton.lastChild?.textContent) {
-						menuButton.lastChild.textContent = MenuDico[menuButton.lastChild.textContent];
+
+						console.log(menuButton);
+
+						var frenchMenuOption = MenuDico[menuButton.lastChild.textContent];
+
+						if (frenchMenuOption) {
+							menuButton.lastChild.textContent = frenchMenuOption;
+						}
+						else {
+							console.log("Unable to translate menu " + menuButton.lastChild.textContent);
+						}
 					}
 				})
-				
-				break;
-
-			case "setchart-nickname":
+			}
+			else if (teamchartClasses.contains("setchart-nickname"))
+			{
 				// Translate the nickname
 				node.childNodes.forEach(function(nicknameNode) {
 					var nicknameElement = nicknameNode as HTMLInputElement;
@@ -202,14 +216,12 @@ function updatePokemonInfo()
 						nicknameElement.value = translatePokemonName(nicknameElement.value);
 					}
 				});
-
-				break;
-
-			case "setchart":
-
+			}
+			else if (teamchartClasses.contains("setchart"))
+			{
 				node.childNodes.forEach(function(pokemonInfoNode) {
 					var classList = (pokemonInfoNode as Element).classList;
-
+	
 					// Pokémon name
 					if (classList.contains("setcol-icon"))
 					{
@@ -230,7 +242,7 @@ function updatePokemonInfo()
 					// Item, Ability, Level, Gender, Shiny
 					else if (classList.contains("setcol-details"))
 					{
-
+	
 					}
 					// Moves
 					else if (classList.contains("setcol-moves"))
@@ -243,9 +255,8 @@ function updatePokemonInfo()
 						
 					}
 				})
-
-				break;
-		}
+			}
+		}	
 	})
 
 	// Check if the search input is a valid french Pokémon name
