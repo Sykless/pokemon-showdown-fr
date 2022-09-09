@@ -61,55 +61,71 @@ var observer = new MutationObserver(onMutation);
 observer.observe(document, {
 	childList: true, // report added/removed nodes
 	subtree: true,   // observe any descendant elements
+
+	// Catch any class modification
+	attributes: true,
+	attributeFilter: ['class']
 });
 
 // Everytime a new element is added to the page, onMutation method is called
 function onMutation(mutations: MutationRecord[]) {
 	for (var i = 0, len = mutations.length; i < len; i++)
 	{
-		var added = mutations[i].addedNodes;
-
-		for (var j = 0, node; (node = added[j]); j++)
+		if (mutations[i].type == "childList")
 		{
-			var newElement = node as Element;
-			var elementClasses = newElement.classList;
+			var newNodes = mutations[i].addedNodes;
 
-			if (elementClasses)
+			for (var j = 0, node; (node = newNodes[j]); j++)
 			{
-				// A search field has been updated
-				if (elementClasses.contains("utilichart"))
-				{
-					// We can't catch input search modification with MutationObserver, however everytime an input
-					// is modified in some way, the utilichart component is updated,
-					// so we still get a way to catch input modification
-					updatePokemonInfo();
+				var newElement = node as Element;
+				var elementClasses = newElement.classList;
 
-					// Update every search result
-					for (var k = 0, result; (result = node.childNodes[k]) ; k++) {
-						updateResultTag(result as Element);
+				if (elementClasses)
+				{
+					// A search field has been updated
+					if (elementClasses.contains("utilichart"))
+					{
+						// We can't catch input search modification with MutationObserver, however everytime an input
+						// is modified in some way, the utilichart component is updated,
+						// so we still get a way to catch input modification
+						updatePokemonInfo();
+
+						// Update every search result
+						for (var k = 0, result; (result = node.childNodes[k]) ; k++) {
+							updateResultTag(result as Element);
+						}
+					}
+					// New results after scrolling
+					else if (elementClasses.contains("result"))
+					{
+						// Update every new result
+						updateResultTag(newElement);
+					}
+					// Pokémon info has been updated
+					else if (elementClasses.contains("statrow-head"))
+					{
+						updatePokemonInfo();
+
+						// When the stat block is updated, the element "Remaining EVs" is reset
+						// So we need to re-translate it, but we don't need to update the whole StatForm component
+						updateRemainingEVElement(document.querySelector(".graphcol"))
+					}
+					// Pokémon stats/nature interface has been loaded
+					else if (elementClasses.contains("statform"))
+					{
+						updatePokemonInfo();
+						updateStatForm(newElement);
 					}
 				}
-				// New results after scrolling
-				else if (elementClasses.contains("result"))
-				{
-					// Update every new result
-					updateResultTag(newElement);
-				}
-				// Pokémon info has been updated
-				else if (elementClasses.contains("statrow-head"))
-				{
-					updatePokemonInfo();
+			}
+		}
+		else if (mutations[i].type == "attributes")
+		{
+			var modifiedElement = mutations[i].target as Element;
 
-					// When the stat block is updated, the element "Remaining EVs" is reset
-					// So we need to re-translate it, but we don't need to update the whole StatForm component
-					updateRemainingEVElement(document.querySelector(".graphcol"))
-				}
-				// Pokémon stats/nature interface has been loaded
-				else if (elementClasses.contains("statform"))
-				{
-					updatePokemonInfo();
-					updateStatForm(newElement);
-				}
+			// Only update the Input classes
+			if (modifiedElement.tagName == "INPUT") {
+				removeInputIncompleteClass(modifiedElement as HTMLInputElement);
 			}
 		}
 	}
@@ -209,39 +225,38 @@ function removeCurElement()
 	}
 }
 
-function removeInputIncompleteClass()
+function removeInputIncompleteClass(inputElement: HTMLInputElement)
 {
-	// Retrieve the input searches values (Pokémon, Item, Ability)
-	var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
-	var itemInputElement = document.getElementsByName("item")[0] as HTMLInputElement;
-	var abilityInputElement = document.getElementsByName("ability")[0] as HTMLInputElement;
-	var moveInputElement = [
-		document.getElementsByName("move1")[0] as HTMLInputElement,
-		document.getElementsByName("move2")[0] as HTMLInputElement,
-		document.getElementsByName("move3")[0] as HTMLInputElement,
-		document.getElementsByName("move4")[0] as HTMLInputElement
-	];
+	// Whenever a search input does not match a known english word (Pokémon, Item, etc), 
+	// an "incomplete" class is added to the input, which turns the text in red
+	// So if we detect this class but the word is a valid french word, we remove it
 
-	// If the provided input search is a french Pokémon, remove the incomplete class
-	if (isValidFrenchPokemonName(nameInputElement.value)){
-		nameInputElement.classList.remove("incomplete");
-	}
+	if (inputElement.classList.contains("incomplete")) {
+		switch (inputElement.name)
+		{
+			case "pokemon":
+				if (isValidFrenchPokemonName(inputElement.value)){
+					inputElement.classList.remove("incomplete");
+				}
+				break;
 
-	// If the provided input search is a french Item, remove the incomplete class
-	if (isValidFrenchItem(itemInputElement.value)) {
-		itemInputElement.classList.remove("incomplete");
-	}
+			case "item":
+				if (isValidFrenchItem(inputElement.value)) {
+					inputElement.classList.remove("incomplete");
+				}
+				break;
 
-	// If the provided input search is a french Ability, remove the incomplete class
-	if (isValidFrenchAbility(abilityInputElement.value)) {
-		abilityInputElement.classList.remove("incomplete");
-	}
+			case "ability":
+				if (isValidFrenchAbility(inputElement.value)) {
+					inputElement.classList.remove("incomplete");
+				}
+				break;
 
-	// If the provided input search is a french Move, remove the incomplete class
-	for (var i = 0 ; i < moveInputElement.length ; i++)
-	{
-		if (isValidFrenchMove(moveInputElement[i].value)) {
-			moveInputElement[i].classList.remove("incomplete");
+			case "move1": case "move2": case "move3": case "move4":
+				if (isValidFrenchMove(inputElement.value)) {
+					inputElement.classList.remove("incomplete");
+				}
+				break;
 		}
 	}
 }
@@ -461,11 +476,6 @@ function updatePokemonInfo()
 			}
 		}	
 	})
-
-	// Whenever a search input does not match a known english word (Pokémon, Item, etc), 
-	// an "incomplete" class is added to the input, which turns the text in red
-	// So after we update the input text, if the french text is correct, we remove this tag
-	removeInputIncompleteClass();
 }
 
 function updatePokemonName(element: Element)
