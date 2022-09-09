@@ -10,9 +10,8 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 // TODO
 // Don't show duplicate Pokémon (english/french name)
 // Translate filter (move/ability) on name search input
-// Catch la modif de classe des inputs
 // Smogon guessed spread
-// Only update details on stats changing
+// Don't update multiple times the same node through childNode mutation
 
 // HIDDEN TEXT
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
@@ -70,7 +69,7 @@ observer.observe(document, {
 // Everytime a new element is added to the page, onMutation method is called
 function onMutation(mutations: MutationRecord[]) {
 	for (var i = 0, len = mutations.length; i < len; i++)
-	{
+	{		
 		if (mutations[i].type == "childList")
 		{
 			var newNodes = mutations[i].addedNodes;
@@ -79,6 +78,8 @@ function onMutation(mutations: MutationRecord[]) {
 			{
 				var newElement = node as Element;
 				var elementClasses = newElement.classList;
+
+				console.log(newElement);
 
 				if (elementClasses)
 				{
@@ -104,8 +105,6 @@ function onMutation(mutations: MutationRecord[]) {
 					// Pokémon info has been updated
 					else if (elementClasses.contains("statrow-head"))
 					{
-						updatePokemonInfo();
-
 						// When the stat block is updated, the element "Remaining EVs" is reset
 						// So we need to re-translate it, but we don't need to update the whole StatForm component
 						updateRemainingEVElement(document.querySelector(".graphcol"))
@@ -115,6 +114,11 @@ function onMutation(mutations: MutationRecord[]) {
 					{
 						updatePokemonInfo();
 						updateStatForm(newElement);
+					}
+					else if (elementClasses.contains("detailcell"))
+					{
+						// If a detailcell is updated, just translate it again
+						updatePokemonDetails(newElement);
 					}
 				}
 			}
@@ -361,11 +365,7 @@ function updatePokemonInfo()
 								{
 									// Update every detail element
 									detailsNode.childNodes.forEach(function (spanNode) {
-										spanNode.childNodes.forEach(function (detailsContentNode) {
-											if (detailsContentNode.textContent) {
-												detailsContentNode.textContent = translateMenu(detailsContentNode.textContent);
-											}
-										})
+										updatePokemonDetails(spanNode as Element);
 									});
 								}
 							});
@@ -475,6 +475,15 @@ function updatePokemonInfo()
 				})
 			}
 		}	
+	})
+}
+
+function updatePokemonDetails(buttonDetailsElement: Element)
+{
+	buttonDetailsElement.childNodes.forEach(function (detailsContentNode) {
+		if (detailsContentNode.textContent) {
+			detailsContentNode.textContent = translateMenu(detailsContentNode.textContent);
+		}
 	})
 }
 
