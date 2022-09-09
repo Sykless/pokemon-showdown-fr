@@ -3130,6 +3130,10 @@ const LogTranslationType: Array<string> = [
 
 function translateToFrench(englishWord: string, translationType: number)
 {
+	if (!englishWord) {
+		return englishWord;
+	}
+
 	var Dico = MainDico[translationType];
 	var frenchWord = Dico[englishWord];
 
@@ -3147,6 +3151,10 @@ function translateToFrench(englishWord: string, translationType: number)
 
 function translateToEnglish(frenchWord: string, translationType: number)
 {
+	if (!frenchWord) {
+		return frenchWord;
+	}
+
 	var Dico = MainDico[translationType];
 	var englishWord = Object.keys(Dico).find(key => Dico[key] === frenchWord)
 

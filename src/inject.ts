@@ -1,5 +1,4 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico,
-	HeadersDico, MenuDico, FiltersDico  } from './translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico } from './translator';
 	
 import { isValidEnglishType, isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from './translator';
 
@@ -75,15 +74,15 @@ function onMutation(mutations: MutationRecord[]) {
 				// A search field has been updated
 				if (elementClasses.contains("utilichart"))
 				{
-					// Update every search result
-					for (var k = 0, result; (result = node.childNodes[k]) ; k++) {
-						updateResultTag(result as Element);
-					}
-
 					// We can't catch input search modification with MutationObserver, however everytime an input
 					// is modified in some way, the utilichart component is updated,
 					// so we still get a way to catch input modification
 					updatePokemonInfo();
+
+					// Update every search result
+					for (var k = 0, result; (result = node.childNodes[k]) ; k++) {
+						updateResultTag(result as Element);
+					}
 				}
 				// New results after scrolling
 				else if (elementClasses.contains("result"))
@@ -424,7 +423,24 @@ function updatePokemonInfo()
 					// Stats
 					else if (classList.contains("setcol-stats"))
 					{
-						
+						pokemonInfoNode.childNodes.forEach(function (statsDivNode) {
+							statsDivNode.childNodes.forEach(function (statsNode) {
+								var moveTag = (statsNode as Element).tagName;
+
+								// Details buttons
+								if (moveTag == "BUTTON")
+								{
+									// Update every detail element
+									statsNode.childNodes.forEach(function (spanNode) {
+										spanNode.childNodes.forEach(function (statsContentNode) {
+											if ((statsContentNode as Element).tagName == "LABEL" && statsContentNode.textContent) {
+												statsContentNode.textContent = translateFilter(statsContentNode.textContent);
+											}
+										})
+									});
+								}
+							})
+						})
 					}
 				})
 			}
