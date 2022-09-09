@@ -5,13 +5,18 @@ import { isValidEnglishType, isValidFrenchPokemonName, isValidFrenchItem, isVali
 import { CosmeticForms  } from './translator';
 
 import {translatePokemonName, translateAbility, translateMove, translateItem, translateType, 
-	translateHeader, translateFilter, translateMenu } from './translator';
+	translateHeader, translateFilter, translateMenu,  translateStat, translateNature } from './translator';
 
 // TODO
 // Don't show duplicate Pokémon (english/french name)
-// "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
 // Translate filter (move/ability) on name search input
-// Le cur est basé sur l'OU
+// Catch la modif de classe des inputs
+// Smogon guessed spread
+// Only update details on stats changing
+
+// HIDDEN TEXT
+// "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
+// Illegal team
 
 console.log("Extension successfully loaded !");
 
@@ -88,12 +93,22 @@ function onMutation(mutations: MutationRecord[]) {
 				else if (elementClasses.contains("result"))
 				{
 					// Update every new result
-					updateResultTag(node as Element);
+					updateResultTag(newElement);
 				}
 				// Pokémon info has been updated
 				else if (elementClasses.contains("statrow-head"))
 				{
 					updatePokemonInfo();
+
+					// When the stat block is updated, the element "Remaining EVs" is reset
+					// So we need to re-translate it, but we don't need to update the whole StatForm component
+					updateRemainingEVElement(document.querySelector(".graphcol"))
+				}
+				// Pokémon stats/nature interface has been loaded
+				else if (elementClasses.contains("statform"))
+				{
+					updatePokemonInfo();
+					updateStatForm(newElement);
 				}
 			}
 		}
@@ -843,12 +858,137 @@ function updateFilterElement(filterNode: Element)
 {
 	var filterButtonTag = filterNode.firstChild as Element;
 
-	if (filterButtonTag && filterButtonTag.tagName == "EM") {
-		filterButtonTag.textContent = "Filtrer";
+	if (filterButtonTag.tagName == "EM" && filterButtonTag.textContent) {
+		filterButtonTag.textContent = translateMenu(filterButtonTag.textContent);
 	}
 	else {
 		console.log("Unkown filter element");
 		console.log(filterNode);
+	}
+}
+
+function updateStatForm(statFormNode: Element)
+{
+	statFormNode.childNodes.forEach(function (statsNode) {
+		var statsElement = statsNode as Element;
+		var statsClasses = statsElement.classList;
+
+		if (statsClasses.length > 0)
+		{
+			if (statsClasses.contains("labelcol"))
+			{
+				statsNode.childNodes.forEach(function (statName) {
+					if (statName.textContent) {
+						statName.textContent = translateStat(statName.textContent);
+					}
+				})
+			}
+			else if (statsClasses.contains("ivcol"))
+			{
+				// Only last child needs to be translated
+				statsNode.lastChild?.firstChild?.childNodes.forEach(function (ivSpreadOption) {
+					var ivSpreadElement = ivSpreadOption as Element;
+
+					// Translate the option select title
+					if (ivSpreadElement.tagName == "OPTION" && ivSpreadElement.textContent) {
+						ivSpreadElement.textContent = translateMenu(ivSpreadElement.textContent);
+					}
+
+					if (ivSpreadElement.tagName == "OPTGROUP")
+					{
+						var optgroupElement = ivSpreadElement as HTMLOptGroupElement;
+						var optgroupWords = optgroupElement.label.split(" ");
+						var translatedLabel = "";
+
+						for (var i = 0 ; i < optgroupWords.length ; i++) {
+							translatedLabel += translateStat(optgroupWords[i].replace(",","").replace("all", "tout"));
+							translatedLabel += i == optgroupWords.length - 1 ? "" : " ";
+						}
+
+						optgroupElement.label = translatedLabel;
+					}
+				});
+			}
+			else if (statsClasses.contains("graphcol"))
+			{
+				// Translate the "Remaining EV" component
+				updateRemainingEVElement(statsElement);
+			}
+		}
+		else if (statsElement.tagName == "P")
+		{
+			// Nature setter
+			if (statsElement.getAttribute("style")) {
+				statsElement.childNodes.forEach(function (natureSetter)
+				{
+					var frenchNaturesList: Array<Array<string>> = [];
+					var natureSelect = natureSetter as HTMLSelectElement;
+					
+					if (natureSelect.tagName == "SELECT")
+					{
+						var natureNumber = natureSelect.options.length - 1;
+
+						for (var i = natureNumber ; i >= 0 ; i--)
+						{
+							// Translate every word of the nature option
+							// Should be under the form "Nature" or "Nature (+Stat, -Stat)"
+							var natureWords = natureSelect.options[i].textContent?.split(" ");
+							var translatedNature = "";
+
+							if (natureWords?.length == 1)
+							{
+								translatedNature = translateNature(natureWords[0])
+							}
+							else if (natureWords?.length == 3)
+							{
+								// Reform the nature layout and translate every word
+								translatedNature = translateNature(natureWords[0]) + " (+";
+								translatedNature += translateStat(natureWords[1]
+									.replace("(","").replace("+","").replace(",","")) + ", -"
+								translatedNature += translateStat(natureWords[2]
+									.replace(")","").replace("-","")) + ")"
+							}
+
+							// Empty the natures list in order to insert the sorted french natures later
+							frenchNaturesList.push([translatedNature, natureSelect.options[i].value]);
+							natureSelect.remove(i);
+						}
+
+						// Alphabetically sort the french natures
+						frenchNaturesList.sort();
+
+						for (var i = 0 ; i < frenchNaturesList.length ; i++) {
+							natureSelect.options[i] = new Option(frenchNaturesList[i][0], frenchNaturesList[i][1]);;
+						}
+					}
+				})
+			}
+			// Protip
+			else
+			{
+				// Translate every part of the protip
+				statsElement.childNodes.forEach(function (proTipOption) {
+					if (proTipOption.textContent) {
+						proTipOption.textContent = translateMenu(proTipOption.textContent);
+					}
+				});
+			}
+		}
+
+	})
+}
+
+function updateRemainingEVElement(remainingNode: Element | null)
+{
+	// The node might not be on the page
+	if (remainingNode)
+	{
+		// Only last child needs to be translated
+		var remainingElement = remainingNode?.lastChild?.firstChild as Element;
+
+		if (remainingElement.tagName == "EM" && remainingElement.textContent) {
+			remainingElement.textContent = translateMenu(remainingElement.textContent);
+		}
 	}
 }
 

@@ -3,9 +3,11 @@ const ABILITY = 1;
 const MOVE = 2;
 const ITEM = 3;
 const TYPE = 4;
-const HEADER = 5;
-const MENU = 6;
-const FILTER = 7;
+const NATURE = 5;
+const STAT = 6;
+const HEADER = 7;
+const MENU = 8;
+const FILTER = 9;
 
 export const PokemonDico: { [englishName: string]: string; } = {
 	"Bulbasaur": "Bulbizarre",
@@ -2954,6 +2956,48 @@ export const TypesDico: { [englishName: string]: string; } = {
 	"Water": "Eau"
 }
 
+export const NaturesDico: { [englishName: string]: string; } = {
+	"Adamant": "Rigide",
+	"Bashful": "Pudique",
+	"Bold": "Assuré",
+	"Brave": "Brave",
+	"Calm": "Calme",
+	"Careful": "Prudent",
+	"Docile": "Docile",
+	"Gentle": "Gentil",
+	"Hardy": "Hardi",
+	"Hasty": "Pressé",
+	"Impish": "Malin",
+	"Jolly": "Jovial",
+	"Lax": "Lâche",
+	"Lonely": "Solo",
+	"Mild": "Doux",
+	"Modest": "Modeste",
+	"Naive": "Naïf",
+	"Naughty": "Mauvais",
+	"Quiet": "Discret",
+	"Quirky": "Bizarre",
+	"Rash": "Foufou",
+	"Relaxed": "Relax",
+	"Sassy": "Malpoli",
+	"Serious": "Sérieux",
+	"Timid": "Timide"
+}
+
+export const StatsDico: { [englishName: string]: string; } = {
+	"HP": "PV",
+	"Attack": "Attaque",
+	"Atk": "Atq",
+	"Defense": "Défense",
+	"Def": "Déf",
+	"Sp. Atk.": "Atq. Sp.",
+	"SpA": "SpA",
+	"Sp. Def.": "Déf. Sp.",
+	"SpD": "SpD",
+	"Speed": "Vitesse",
+	"Spe": "Vit"
+}
+
 export const HeadersDico: { [englishName: string]: string; } = {
 	"Pokémon": "Pokémon",
     "Abilities": "Talents",
@@ -2991,6 +3035,7 @@ export const MenuDico: { [englishName: string]: string; } = {
     "Move": "Déplacement",
     "Delete": "Suppression",
 	" Undo Delete": " Annuler Suppression",
+	"Filter": "Filtrer",
 	"Details": "Détails",
 	"Item": "Objet",
 	"Ability": "Talent",
@@ -3003,7 +3048,11 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Shiny": "Shiny",
 	"Yes": "Oui",
 	"No": "Non",
-	"Dmax Level": "Niveau de Dmax"
+	"Dmax Level": "Niveau de Dmax",
+	"Remaining:": "Restant :",
+	"IV spreads": "Répartition d'IVs",
+	"Protip:": "Astuce de pro :",
+	' You can also set natures by typing "+" and "-" next to a stat.': ' Vous pouvez également choisir une nature en tapant "+" et "-" à côté d\'une stat'
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
@@ -3121,11 +3170,11 @@ export const CosmeticForms: Array<string> = [
 ]
 
 const MainDico: Array<{ [englishName: string]: string; }>  = [
-	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, HeadersDico, MenuDico, FiltersDico
+	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, HeadersDico, MenuDico, FiltersDico
 ]
 
 const LogTranslationType: Array<string> = [
-	"pokémon", "ability", "move", "item", "type", "header", "menu", "filter"
+	"pokémon", "ability", "move", "item", "type", "nature", "stat", "header", "menu", "filter"
 ]
 
 function translateToFrench(englishWord: string, translationType: number)
@@ -3200,6 +3249,14 @@ export function translateType(englishType: string) {
 	return translateToFrench(englishType, TYPE);
 }
 
+export function translateNature(englishNature: string) {
+	return translateToFrench(englishNature, NATURE);
+}
+
+export function translateStat(englishStat: string) {
+	return translateToFrench(englishStat, STAT);
+}
+
 export function translateHeader(englishHeader: string) {
 	return translateToFrench(englishHeader, HEADER);
 }
@@ -3232,6 +3289,14 @@ export function translateItemToEnglish(frenchItem: string) {
 
 export function translateTypeToEnglish(frenchType: string) {
 	return translateToEnglish(frenchType, TYPE);
+}
+
+export function translateNatureToEnglish(frenchNature: string) {
+	return translateToEnglish(frenchNature, NATURE);
+}
+
+export function translateStatToEnglish(frenchStat: string) {
+	return translateToEnglish(frenchStat, STAT);
 }
 
 export function translateHeaderToEnglish(frenchHeader: string) {
@@ -3268,6 +3333,14 @@ export function isValidFrenchType(frenchType: string) {
 	return translateToEnglish(frenchType, TYPE) != frenchType;
 }
 
+export function isValidFrenchNature(frenchNature: string) {
+	return translateToEnglish(frenchNature, NATURE) != frenchNature;
+}
+
+export function isValidFrenchStat(frenchStat: string) {
+	return translateToEnglish(frenchStat, STAT) != frenchStat;
+}
+
 export function isValidFrenchHeader(frenchHeader: string) {
 	return translateToEnglish(frenchHeader, HEADER) != frenchHeader;
 }
@@ -3300,6 +3373,14 @@ export function isValidEnglishItem(englishItem: string) {
 
 export function isValidEnglishType(englishType: string) {
 	return TypesDico[englishType];
+}
+
+export function isValidEnglishNature(englishNature: string) {
+	return NaturesDico[englishNature];
+}
+
+export function isValidEnglishStat(englishStat: string) {
+	return StatsDico[englishStat];
 }
 
 export function isValidEnglishHeader(englishHeader: string) {
