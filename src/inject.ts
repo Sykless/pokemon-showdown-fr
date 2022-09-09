@@ -1,7 +1,7 @@
 import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico,
 	HeadersDico, MenuDico, FiltersDico  } from './translator';
 	
-import { isValidEnglishType, isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility } from './translator';
+import { isValidEnglishType, isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from './translator';
 
 import { CosmeticForms  } from './translator';
 
@@ -9,7 +9,6 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 	translateHeader, translateFilter, translateMenu } from './translator';
 
 // TODO
-// Update cur for the correct input
 // Don't show duplicate Pokémon (english/french name)
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
 // Translate filter (move/ability) on name search input
@@ -24,12 +23,14 @@ declare var BattleSearchIndexOffset: any;
 declare var BattlePokedex: any;
 declare var BattleAbilities: any;
 declare var BattleItems: any;
+declare var BattleMovedex: any;
 
 // Backup the BattlePokedex, BattleAbilities and BattleItems variables, we need them
 // to erase incorrect entries (see updatePokemonInfo method)
 const originalBattlePokedex = structuredClone(BattlePokedex);
 const originalBattleAbilities = structuredClone(BattleAbilities);
 const originalBattleItems = structuredClone(BattleItems);
+const originalBattleMovedex = structuredClone(BattleMovedex);
 
 const FRENCH = 0;
 const ENGLISH = 1;
@@ -142,27 +143,53 @@ function removeCurElement()
 	// For now we remove it, maybe we could find a way to retrieve 
 	// every piece of information in order to manualy create it
 
-	var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
+	var curElements = document.getElementsByClassName("cur");
 
-	console.log("Input value : " + nameInputElement.value);
-
-	// We only remove the cur element if the input is a french word
-	if (isValidFrenchPokemonName(nameInputElement.value))
+	for (var curID = 0 ; curID < curElements.length ; curID++)
 	{
-		var curElements = document.getElementsByClassName("cur");
-		console.log("T'inquiète");
-
-		for (var curID = 0 ; curID < curElements.length ; curID++)
+		var cur = curElements.item(curID);
+		
+		// Only remove the specific Pokemon search cur
+		if (cur?.tagName == "A" && cur.parentElement?.tagName == "LI")
 		{
-			var cur = curElements.item(curID);
+			var curParent = cur.parentElement;
+			var dataType = getDisplayedDataType(curParent);
 			
-			// Only remove the specific Pokemon search cur
-			if (cur?.tagName == "A" && cur.parentElement?.tagName == "LI"
-				&& cur.getAttribute("data-entry")?.includes("pokemon"))
+			if (dataType == "pokemon")
 			{
-				// Remove cur parent node
-				var curParent = cur.parentElement;
+				var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
+
+				// Remove cur parent node only if the provided Pokémon is french
+				if (isValidFrenchPokemonName(nameInputElement.value)) {
+					curParent.remove();
+					break;
+				}
+			}
+			else if (dataType == "item")
+			{
+				var itemInputElement = document.getElementsByName("item")[0] as HTMLInputElement;
+
+				// Remove cur parent node only if the provided Item is french
+				if (isValidFrenchItem(itemInputElement.value)) {
+					curParent.remove();
+					break;
+				}
+			}
+			else if (dataType == "ability")
+			{
+				var abilityInputElement = document.getElementsByName("ability")[0] as HTMLInputElement;
+
+				// Remove cur parent node only if the provided Ability is french
+				if (isValidFrenchAbility(abilityInputElement.value)) {
+					curParent.remove();
+					break;
+				}
+			}
+			else if (dataType == "move")
+			{
+				// Always remove cur element for moves since we can't know which input is currently selected
 				curParent.remove();
+				break;
 			}
 		}
 	}
@@ -174,6 +201,12 @@ function removeInputIncompleteClass()
 	var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
 	var itemInputElement = document.getElementsByName("item")[0] as HTMLInputElement;
 	var abilityInputElement = document.getElementsByName("ability")[0] as HTMLInputElement;
+	var moveInputElement = [
+		document.getElementsByName("move1")[0] as HTMLInputElement,
+		document.getElementsByName("move2")[0] as HTMLInputElement,
+		document.getElementsByName("move3")[0] as HTMLInputElement,
+		document.getElementsByName("move4")[0] as HTMLInputElement
+	];
 
 	// If the provided input search is a french Pokémon, remove the incomplete class
 	if (isValidFrenchPokemonName(nameInputElement.value)){
@@ -188,13 +221,21 @@ function removeInputIncompleteClass()
 	// If the provided input search is a french Ability, remove the incomplete class
 	if (isValidFrenchAbility(abilityInputElement.value)) {
 		abilityInputElement.classList.remove("incomplete");
-	}	
+	}
+
+	// If the provided input search is a french Move, remove the incomplete class
+	for (var i = 0 ; i < moveInputElement.length ; i++)
+	{
+		if (isValidFrenchMove(moveInputElement[i].value)) {
+			moveInputElement[i].classList.remove("incomplete");
+		}
+	}
 }
 
 function updatePokemonInfo()
 {
-	// For some reason, when an unknown Pokémon/Item/Ability is present in a search input
-	// and the user click on another search input, the unknown name is added to the BattlePokedex, BattleAbilities or BattleItems variable,
+	// For some reason, when an unknown Pokémon/Item/Ability/Move is present in a search input
+	// and the user click on another search input, the unknown name is added to the BattlePokedex, BattleAbilities, BattleItems or BattleMovedex variable,
 	// even if the name is incorrect - obviously since we are using french names, the names are always incorrect
 
 	// That causes the name to later be put in lowerCase without special chararacters
@@ -205,6 +246,7 @@ function updatePokemonInfo()
 	BattlePokedex = structuredClone(originalBattlePokedex);
 	BattleAbilities = structuredClone(originalBattleAbilities);
 	BattleItems = structuredClone(originalBattleItems);
+	BattleMovedex = structuredClone(originalBattleMovedex);
 
 	removeCurElement();
 
@@ -358,7 +400,26 @@ function updatePokemonInfo()
 					// Moves
 					else if (classList.contains("setcol-moves"))
 					{
-						
+						pokemonInfoNode.childNodes.forEach(function (moveDivNode) {
+							moveDivNode.childNodes.forEach(function (moveNode) {
+								var moveTag = (moveNode as Element).tagName;
+
+								// Menu element
+								if (moveTag == "LABEL" && moveNode.textContent) {
+									moveNode.textContent = translateMenu(moveNode.textContent);
+								}
+
+								// Ability name
+								if (moveTag == "INPUT")
+								{
+									var inputMoveElement = moveNode as HTMLInputElement;
+
+									if (inputMoveElement.value) {
+										inputMoveElement.value = translateMove(inputMoveElement.value);
+									}
+								}
+							})
+						})
 					}
 					// Stats
 					else if (classList.contains("setcol-stats"))
@@ -811,12 +872,6 @@ function convertPokemonNameToArray(pokemonName: string)
 		// Return the translated Pokémon name and its form
 		return [basePokemonName, alternatePokemonFormName]
 	}
-}
-
-function translatePokemonNameToEnglish(pokemonFrenchName: string)
-{
-	var pokemonEnglishName = Object.keys(PokemonDico).find(key => PokemonDico[key] === pokemonFrenchName);
-	return pokemonEnglishName ? pokemonEnglishName : pokemonFrenchName;
 }
 
 function getDisplayedDataType(element: Element)
