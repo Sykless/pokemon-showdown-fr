@@ -3036,6 +3036,7 @@ export const MenuDico: { [englishName: string]: string; } = {
     "Delete": "Suppression",
 	" Undo Delete": " Annuler Suppression",
 	"Filter": "Filtrer",
+	"Filters: ": "Filtres : ",
 	"Details": "Détails",
 	"Item": "Objet",
 	"Ability": "Talent",
@@ -3052,7 +3053,8 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Remaining:": "Restant :",
 	"IV spreads": "Répartition d'IVs",
 	"Protip:": "Astuce de pro :",
-	' You can also set natures by typing "+" and "-" next to a stat.': ' Vous pouvez également choisir une nature en tapant "+" et "-" à côté d\'une stat'
+	' You can also set natures by typing "+" and "-" next to a stat.': ' Vous pouvez également choisir une nature en tapant "+" et "-" à côté d\'une stat',
+	"(backspace = delete filter)": "(retour arrière = suppression filtre)"
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {

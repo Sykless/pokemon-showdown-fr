@@ -48,7 +48,7 @@ window.addEventListener('RecieveContent', function(evt: any) {
 });
 
 // Create FrenchNamesDico dictionary, containing every french to english translation alphabetically sorted
-const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico, MovesDico, ItemsDico];
+const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico];
 const FrenchNamesDico = populateFrenchDico();
 
 // When Showdown first loads, update the BattleSearchIndex
@@ -166,6 +166,7 @@ function updateResultTag(resultElement: Element)
 	{
 		updateHeader(resultElement);
 		updateSortFilters(resultElement);
+		updateMoveAbilityFilter(resultElement);
 	}
 }
 
@@ -853,6 +854,63 @@ function updateSortFilters(resultElement: Element)
 	}
 }
 
+function updateMoveAbilityFilter(resultElement: Element)
+{
+	var filterTag = resultElement.firstChild as Element;
+
+	if (filterTag.tagName == "P")
+	{
+		filterTag.childNodes.forEach(function (filterNode) {
+			var filterElement = filterNode as Element;
+
+			if (filterElement.tagName == "BUTTON")
+			{
+				var buttonElement = filterElement as HTMLButtonElement;
+
+				buttonElement.childNodes.forEach(function(buttonSubNode) {
+					// Don't want to update the cross icon, only the label
+					if ((buttonSubNode as Element).tagName != "I") {
+						var buttonInfo = buttonElement.value.split(":");
+
+						switch (buttonInfo[0])
+						{
+							case "type":
+								buttonSubNode.textContent = translateType(buttonInfo[1]) + " ";
+								break;
+
+							case "ability":
+								buttonSubNode.textContent = translateAbility(buttonInfo[1]) + " ";
+								break;
+
+							case "move":
+								// For some reason, the moves are in lowercase with no special characters
+								// So we need to make a custom research in our MovesDico
+
+								// Match the move even with formatted id
+								var frenchMatch = Object.keys(MovesDico).find(
+									key => removeSpecialCharacters(key.toLowerCase()) === buttonInfo[1])
+
+								if (frenchMatch) {
+									buttonSubNode.textContent = MovesDico[frenchMatch] + " ";
+								}
+
+								break;
+						}
+					}
+				})
+			}
+			else if (filterElement.textContent) {
+				filterElement.textContent = translateMenu(filterElement.textContent);
+			}
+		})
+	}
+	else if (!resultElement.classList.contains("result"))
+	{
+		console.log("Unknown filter element in results");
+		console.log(resultElement)
+	}
+}
+
 function updateType(resultElement: Element)
 {
 	var typeNameNode = resultElement.querySelector('.namecol');
@@ -1147,7 +1205,7 @@ function updateBattleSearchIndex()
 function populateFrenchDico()
 {
 	let NamesTranslation: Array<any> = [];
-	let searchTypeGetter: Array<string> = ["pokemon", "ability", "move", "item"];
+	let searchTypeGetter: Array<string> = ["pokemon", "ability", "move", "item", "type"];
 
 	for (var i = 0 ; i < searchTypeGetter.length ; i++)
 	{
