@@ -484,6 +484,15 @@ function updatePokemonDetails(buttonDetailsElement: Element)
 	buttonDetailsElement.childNodes.forEach(function (detailsContentNode) {
 		if (detailsContentNode.textContent) {
 			detailsContentNode.textContent = translateMenu(detailsContentNode.textContent);
+
+			// Translate Hidden Power type
+			if (detailsContentNode.textContent == "Type PC") {
+				var hiddenPowerType = detailsContentNode.nextSibling;
+				
+				if (hiddenPowerType?.textContent) {
+					hiddenPowerType.textContent = translateType(hiddenPowerType.textContent);
+				}
+			}
 		}
 	})
 }
