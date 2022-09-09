@@ -1,4 +1,4 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico } from './translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico } from './translator';
 	
 import { isValidEnglishType, isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from './translator';
 
@@ -9,9 +9,9 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 
 // TODO
 // Don't show duplicate Pokémon (english/french name)
-// Translate filter (move/ability) on name search input
-// Smogon guessed spread
 // Don't update multiple times the same node through childNode mutation
+// Hidden Power
+// Details utilichart
 
 // HIDDEN TEXT
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
@@ -79,7 +79,7 @@ function onMutation(mutations: MutationRecord[]) {
 				var newElement = node as Element;
 				var elementClasses = newElement.classList;
 
-				console.log(newElement);
+				// console.log(newElement);
 
 				if (elementClasses)
 				{
@@ -981,6 +981,39 @@ function updateStatForm(statFormNode: Element)
 			{
 				// Translate the "Remaining EV" component
 				updateRemainingEVElement(statsElement);
+			}
+			else if (statsClasses.contains("suggested"))
+			{
+				statsNode.childNodes.forEach(function (suggestedNode) {
+					var suggestedElement = suggestedNode as Element;
+
+					if (suggestedElement.tagName == "BUTTON")
+					{
+						var guessedSpread = suggestedElement.textContent?.split(":");
+
+						if (guessedSpread?.length && guessedSpread.length > 1)
+						{
+							var frenchGuessedSet = translateMenu(guessedSpread[0]);
+							var frenchGuessedSpread = guessedSpread[1];
+
+							// Iterate on all possible stats and translate them if present in the english spread
+							for (var stat in StatsDico) {
+								// Use Regex since we want to update all occurrences
+								frenchGuessedSpread = frenchGuessedSpread.replace(new RegExp(stat, 'g'), StatsDico[stat]);
+							}
+
+							suggestedElement.textContent = frenchGuessedSet + ":" + frenchGuessedSpread;
+						}
+					}
+					else
+					{
+						suggestedElement.childNodes.forEach(function(suggestedTextNode) {
+							if (suggestedTextNode.textContent) {
+								suggestedTextNode.textContent = translateMenu(suggestedTextNode.textContent);
+							}
+						})
+					}
+				})
 			}
 		}
 		else if (statsElement.tagName == "P")
