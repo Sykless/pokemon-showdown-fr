@@ -1,10 +1,10 @@
-import { PokemonDico, AbilitiesDico, MovesDico, TypesDico,
-	HeadersDico, MenuDico, FiltersDico } from './translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico,
+	HeadersDico, MenuDico, FiltersDico,  } from './translator';
 	
 import { CosmeticForms  } from './translator';
 
-import { translatePokemonName, translateAbility, translateMove,
-	translateType, translateHeader, translateFilter, translateMenu } from './translator';
+import { translatePokemonName, translateAbility, translateMove, translateItem, translateType, 
+	translateHeader, translateFilter, translateMenu } from './translator';
 
 // TODO
 // Update cur for the correct input
@@ -39,7 +39,7 @@ window.addEventListener('RecieveContent', function(evt: any) {
 });
 
 // Create FrenchNamesDico dictionary, containing every french to english translation alphabetically sorted
-const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico, MovesDico];
+const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico, MovesDico, ItemsDico];
 const FrenchNamesDico = populateFrenchDico();
 
 // When Showdown first loads, update the BattleSearchIndex
@@ -797,7 +797,7 @@ function updateBattleSearchIndex()
 function populateFrenchDico()
 {
 	let NamesTranslation: Array<any> = [];
-	let searchTypeGetter: Array<string> = ["pokemon", "ability", "move"];
+	let searchTypeGetter: Array<string> = ["pokemon", "ability", "move", "item"];
 
 	for (var i = 0 ; i < searchTypeGetter.length ; i++)
 	{
