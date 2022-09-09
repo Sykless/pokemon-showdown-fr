@@ -2684,6 +2684,7 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"Poison Gem": "Joyau Poison",
 	"Poison Memory": "ROM Poison",
 	"Poisonium Z": "Toxizélite",
+	"Poke Ball": "Poké Ball",
 	"Pomeg Berry": "Baie Grena",
 	"Power Anklet": "Chaîne Pouvoir",
 	"Power Band": "Bandeau Pouvoir",
@@ -2788,8 +2789,109 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"Timer Ball": "Chrono Ball",
 	"Toxic Orb": "Orbe Toxique",
 	"Toxic Plate": "Plaque Toxic",
+	"TR00": "DT00",
+	"TR01": "DT01",
+	"TR02": "DT02",
+	"TR03": "DT03",
+	"TR04": "DT04",
+	"TR05": "DT05",
+	"TR06": "DT06",
+	"TR07": "DT07",
+	"TR08": "DT08",
+	"TR09": "DT09",
+	"TR10": "DT10",
+	"TR11": "DT11",
+	"TR12": "DT12",
+	"TR13": "DT13",
+	"TR14": "DT14",
+	"TR15": "DT15",
+	"TR16": "DT16",
+	"TR17": "DT17",
+	"TR18": "DT18",
+	"TR19": "DT19",
+	"TR20": "DT20",
+	"TR21": "DT21",
+	"TR22": "DT22",
+	"TR23": "DT23",
+	"TR24": "DT24",
+	"TR25": "DT25",
+	"TR26": "DT26",
+	"TR27": "DT27",
+	"TR28": "DT28",
+	"TR29": "DT29",
+	"TR30": "DT30",
+	"TR31": "DT31",
+	"TR32": "DT32",
+	"TR33": "DT33",
+	"TR34": "DT34",
+	"TR35": "DT35",
+	"TR36": "DT36",
+	"TR37": "DT37",
+	"TR38": "DT38",
+	"TR39": "DT39",
+	"TR40": "DT40",
+	"TR41": "DT41",
+	"TR42": "DT42",
+	"TR43": "DT43",
+	"TR44": "DT44",
+	"TR45": "DT45",
+	"TR46": "DT46",
+	"TR47": "DT47",
+	"TR48": "DT48",
+	"TR49": "DT49",
+	"TR50": "DT50",
+	"TR51": "DT51",
+	"TR52": "DT52",
+	"TR53": "DT53",
+	"TR54": "DT54",
+	"TR55": "DT55",
+	"TR56": "DT56",
+	"TR57": "DT57",
+	"TR58": "DT58",
+	"TR59": "DT59",
+	"TR60": "DT60",
+	"TR61": "DT61",
+	"TR62": "DT62",
+	"TR63": "DT63",
+	"TR64": "DT64",
+	"TR65": "DT65",
+	"TR66": "DT66",
+	"TR67": "DT67",
+	"TR68": "DT68",
+	"TR69": "DT69",
+	"TR70": "DT70",
+	"TR71": "DT71",
+	"TR72": "DT72",
+	"TR73": "DT73",
+	"TR74": "DT74",
+	"TR75": "DT75",
+	"TR76": "DT76",
+	"TR77": "DT77",
+	"TR78": "DT78",
+	"TR79": "DT79",
+	"TR80": "DT80",
+	"TR81": "DT81",
+	"TR82": "DT82",
+	"TR83": "DT83",
+	"TR84": "DT84",
+	"TR85": "DT85",
+	"TR86": "DT86",
+	"TR87": "DT87",
+	"TR88": "DT88",
+	"TR89": "DT89",
+	"TR90": "DT90",
+	"TR91": "DT91",
+	"TR92": "DT92",
+	"TR93": "DT93",
+	"TR94": "DT94",
+	"TR95": "DT95",
+	"TR96": "DT96",
+	"TR97": "DT97",
+	"TR98": "DT98",
+	"TR99": "DT99",
 	"Twisted Spoon": "Cuiller Tordue",
 	"Tyranitarite": "Tyranocivite",
+	"Up-Grade": "Améliorator",
 	"Ultra Ball": "Hyper Ball",
 	"Ultranecrozium Z": "Ultranécrozélite",
 	"Utility Umbrella": "Parapluie Solide",
@@ -3030,7 +3132,7 @@ export function translateMove(pokemonEnglishMove: string)
 		return frenchMove;
 	}
 	else {
-		console.log("Unable to translate ability " + pokemonEnglishMove);
+		console.log("Unable to translate move " + pokemonEnglishMove);
 		return pokemonEnglishMove;
 	}
 }
@@ -3050,13 +3152,13 @@ export function translateItem(pokemonEnglishItem: string)
 
 export function translateType(pokemonEnglishType: string)
 {
-	var frenchType = MovesDico[pokemonEnglishType];
+	var frenchType = TypesDico[pokemonEnglishType];
 
 	if (frenchType) {
 		return frenchType;
 	}
 	else {
-		console.log("Unable to translate move " + pokemonEnglishType);
+		console.log("Unable to translate type " + pokemonEnglishType);
 		return pokemonEnglishType;
 	}
 }
@@ -3089,7 +3191,7 @@ export function translateFilter(pokemonEnglishFilter: string)
 
 export function translateMenu(pokemonEnglishMenu: string)
 {
-	var frenchMenu = FiltersDico[pokemonEnglishMenu];
+	var frenchMenu = MenuDico[pokemonEnglishMenu];
 
 	if (frenchMenu) {
 		return frenchMenu;

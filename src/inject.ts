@@ -114,6 +114,10 @@ function updateResultTag(resultElement: Element)
 	{
 		updateMove(resultElement);
 	}
+	else if (displayedDataType == "item")
+	{
+		updateItem(resultElement);
+	}
 	else if (displayedDataType == "type")
 	{
 		updateType(resultElement);
@@ -483,6 +487,28 @@ function updateMove(resultElement: Element)
 			else if (moveClasses.contains("filtercol"))
 			{
 				updateFilterElement(moveElement);
+			}
+		}
+	})
+}
+
+function updateItem(resultElement: Element)
+{
+	resultElement.firstChild?.childNodes.forEach(function (itemNode) {
+		var itemElement = itemNode as Element;
+		var itemClasses = itemElement.classList;
+
+		if (itemClasses)
+		{
+			if (itemClasses.contains("namecol"))
+			{
+				if (itemElement.textContent) {
+					itemNode.textContent = translateItem(itemElement.textContent);
+				}
+			}
+			else if (itemClasses.contains("itemdesccol"))
+			{
+				// Item description
 			}
 		}
 	})
