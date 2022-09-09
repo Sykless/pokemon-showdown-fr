@@ -10,6 +10,7 @@ import { translatePokemonName, translateAbility, translateMove,
 // Update cur for the correct input
 // Don't show duplicate Pokémon (english/french name)
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
+// Translate filter (move/ability) on name search input
 // Le cur est basé sur l'OU
 
 console.log("Extension successfully loaded !");
@@ -181,9 +182,6 @@ function updatePokemonInfo()
 		var teamchartClasses = (node as Element).classList;
 
 		if (teamchartClasses) {
-
-			console.log(teamchartClasses);
-
 			if (teamchartClasses.contains("setmenu"))
 			{
 				// Translate team builder menu
@@ -448,43 +446,44 @@ function updateAbility(element: Element)
 
 function updateMove(resultElement: Element)
 {
-	resultElement.childNodes.forEach(function (moveNode) {
+	resultElement.firstChild?.childNodes.forEach(function (moveNode) {
 		var moveElement = moveNode as Element;
 		var moveClasses = moveElement.classList;
-		
-		if (moveClasses.contains("movenamecol"))
+
+		if (moveClasses)
 		{
-			if (moveElement.textContent) {
-				moveNode.textContent = translateMove(moveElement.textContent);
+			if (moveClasses.contains("movenamecol"))
+			{
+				if (moveElement.textContent) {
+					moveNode.textContent = translateMove(moveElement.textContent);
+				}
 			}
-		}
-		else if (moveClasses.contains("typecol"))
-		{
-			moveNode.childNodes.forEach(function (typeSprite) {
-				updatePokemonTypeSprite(typeSprite as HTMLImageElement);
-			})
-		}
-		else if (moveClasses.contains("labelcol"))
-		{
-			if (moveElement.tagName == "EM" && moveElement.textContent) {
-				moveElement.textContent = translateFilter(moveElement.textContent);
+			else if (moveClasses.contains("typecol"))
+			{
+				moveNode.childNodes.forEach(function (typeSprite) {
+					updatePokemonTypeSprite(typeSprite as HTMLImageElement);
+				})
 			}
-		}
-		else if (moveClasses.contains("widelabelcol"))
-		{
-			
-		}
-		else if (moveClasses.contains("pplabelcol"))
-		{
-			
-		}
-		else if (moveClasses.contains("movedesccol"))
-		{
-			
-		}
-		else if (moveClasses.contains("filtercol"))
-		{
-			updateFilterElement(moveElement);
+			else if (moveClasses.contains("labelcol") || moveClasses.contains("widelabelcol"))
+			{
+				// Power and Accuracy translation
+				moveElement.childNodes.forEach(function (child) {
+					var moveAttribute = child as Element;
+
+					if (moveAttribute.tagName == "EM" && moveAttribute.textContent) {
+						moveAttribute.textContent = translateFilter(moveAttribute.textContent);
+					}
+				})
+				
+			}
+			else if (moveClasses.contains("movedesccol"))
+			{
+				// Move description
+			}
+			else if (moveClasses.contains("filtercol"))
+			{
+				updateFilterElement(moveElement);
+			}
 		}
 	})
 }
@@ -503,9 +502,10 @@ function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
 	if (spriteImage.tagName == "IMG")
 	{
 		// Check that the alt attribute is a valid type
-		if (TypesDico[spriteImage.alt]) {
+		if (isValidEnglishType(spriteImage.alt)) {
 			// Use the french type sprite
 			spriteImage.src = SpriteURL + "French_Type_" + spriteImage.alt + ".png"
+			spriteImage.className = "";
 		}
 	}
 }
@@ -692,6 +692,11 @@ function isValidPokemonName(pokemonName: string)
 {
 	return isValidPokemonFrenchName(pokemonName) 
 		|| isValidPokemonEnglishName(pokemonName);
+}
+
+function isValidEnglishType(type: string)
+{
+	return TypesDico[type];
 }
 
 function getDisplayedDataType(element: Element)
