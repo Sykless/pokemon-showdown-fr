@@ -1,3 +1,12 @@
+const POKEMON = 0;
+const ABILITY = 1;
+const MOVE = 2;
+const ITEM = 3;
+const TYPE = 4;
+const HEADER = 5;
+const MENU = 6;
+const FILTER = 7;
+
 export const PokemonDico: { [englishName: string]: string; } = {
 	"Bulbasaur": "Bulbizarre",
 	"Ivysaur": "Herbizarre",
@@ -2981,7 +2990,20 @@ export const MenuDico: { [englishName: string]: string; } = {
     "Import/Export": "Import/Export",
     "Move": "Déplacement",
     "Delete": "Suppression",
-	" Undo Delete": " Annuler Suppression"
+	" Undo Delete": " Annuler Suppression",
+	"Details": "Détails",
+	"Item": "Objet",
+	"Ability": "Talent",
+	"Moves": "Capacités",
+	"Stats": "Stats",
+	"Level": "Niveau",
+	"Gender": "Genre",
+	"Female": "Femelle",
+	"Male": "Mâle",
+	"Shiny": "Shiny",
+	"Yes": "Oui",
+	"No": "Non",
+	"Dmax Level": "Niveau de Dmax"
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
@@ -3098,106 +3120,170 @@ export const CosmeticForms: Array<string> = [
 	"Alcremie-Rainbow-Swirl"
 ]
 
-export function translatePokemonName(pokemonEnglishName: string)
-{
-	var frenchName = PokemonDico[pokemonEnglishName];
+const MainDico: Array<{ [englishName: string]: string; }>  = [
+	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, HeadersDico, MenuDico, FiltersDico
+]
 
-	if (frenchName) {
-		return frenchName;
+function translateToFrench(englishWord: string, translationType: number)
+{
+	var Dico = MainDico[translationType];
+	var frenchWord = Dico[englishWord];
+
+	if (frenchWord) {
+		return frenchWord;
 	}
 	else {
-		console.log("Unable to translate Pokémon " + pokemonEnglishName);
-		return pokemonEnglishName;
+		console.log("Unable to translate english " + translationType + " : " + englishWord);
+		return englishWord;
 	}
 }
 
-export function translateAbility(pokemonEnglishAbility: string)
+function translateToEnglish(frenchWord: string, translationType: number)
 {
-	var frenchAbility = AbilitiesDico[pokemonEnglishAbility];
+	var Dico = MainDico[translationType];
+	var englishWord = Object.keys(Dico).find(key => Dico[key] === frenchWord)
 
-	if (frenchAbility) {
-		return frenchAbility;
+	if (englishWord) {
+		return englishWord;
 	}
 	else {
-		console.log("Unable to translate ability " + pokemonEnglishAbility);
-		return pokemonEnglishAbility;
+		console.log("Unable to translate french " + translationType + " : " + englishWord);
+		return frenchWord;
 	}
 }
 
-export function translateMove(pokemonEnglishMove: string)
-{
-	var frenchMove = MovesDico[pokemonEnglishMove];
 
-	if (frenchMove) {
-		return frenchMove;
-	}
-	else {
-		console.log("Unable to translate move " + pokemonEnglishMove);
-		return pokemonEnglishMove;
-	}
+// Easy-to-use methods to translate english to french words
+export function translatePokemonName(englishPokemonName: string) {
+	return translateToFrench(englishPokemonName, POKEMON);
 }
 
-export function translateItem(pokemonEnglishItem: string)
-{
-	var frenchItem = ItemsDico[pokemonEnglishItem];
-
-	if (frenchItem) {
-		return frenchItem;
-	}
-	else {
-		console.log("Unable to translate item " + pokemonEnglishItem);
-		return pokemonEnglishItem;
-	}
+export function translateAbility(englishAbility: string) {
+	return translateToFrench(englishAbility, ABILITY);
 }
 
-export function translateType(pokemonEnglishType: string)
-{
-	var frenchType = TypesDico[pokemonEnglishType];
-
-	if (frenchType) {
-		return frenchType;
-	}
-	else {
-		console.log("Unable to translate type " + pokemonEnglishType);
-		return pokemonEnglishType;
-	}
+export function translateMove(englishMove: string) {
+	return translateToFrench(englishMove, MOVE);
 }
 
-export function translateHeader(pokemonEnglishHeader: string)
-{
-	var frenchHeader = HeadersDico[pokemonEnglishHeader];
-
-	if (frenchHeader) {
-		return frenchHeader;
-	}
-	else {
-		console.log("Unable to translate header " + pokemonEnglishHeader);
-		return pokemonEnglishHeader;
-	}
+export function translateItem(englishItem: string) {
+	return translateToFrench(englishItem, ITEM);
 }
 
-export function translateFilter(pokemonEnglishFilter: string)
-{
-	var frenchFilter = FiltersDico[pokemonEnglishFilter];
-
-	if (frenchFilter) {
-		return frenchFilter;
-	}
-	else {
-		console.log("Unable to translate filter " + pokemonEnglishFilter);
-		return pokemonEnglishFilter;
-	}
+export function translateType(englishType: string) {
+	return translateToFrench(englishType, TYPE);
 }
 
-export function translateMenu(pokemonEnglishMenu: string)
-{
-	var frenchMenu = MenuDico[pokemonEnglishMenu];
+export function translateHeader(englishHeader: string) {
+	return translateToFrench(englishHeader, HEADER);
+}
 
-	if (frenchMenu) {
-		return frenchMenu;
-	}
-	else {
-		console.log("Unable to translate menu " + pokemonEnglishMenu);
-		return pokemonEnglishMenu;
-	}
+export function translateMenu(englishMenu: string) {
+	return translateToFrench(englishMenu, MENU);
+}
+
+export function translateFilter(englishFilter: string) {
+	return translateToFrench(englishFilter, MENU);
+}
+
+
+// Easy-to-use methods to translate french to english words
+export function translatePokemonNameToEnglish(frenchPokemonName: string) {
+	return translateToEnglish(frenchPokemonName, POKEMON);
+}
+
+export function translateAbilityToEnglish(frenchAbility: string) {
+	return translateToEnglish(frenchAbility, ABILITY);
+}
+
+export function translateMoveToEnglish(frenchMove: string) {
+	return translateToEnglish(frenchMove, MOVE);
+}
+
+export function translateItemToEnglish(frenchItem: string) {
+	return translateToEnglish(frenchItem, ITEM);
+}
+
+export function translateTypeToEnglish(frenchType: string) {
+	return translateToEnglish(frenchType, TYPE);
+}
+
+export function translateHeaderToEnglish(frenchHeader: string) {
+	return translateToEnglish(frenchHeader, HEADER);
+}
+
+export function translateMenuToEnglish(frenchMenu: string) {
+	return translateToEnglish(frenchMenu, MENU);
+}
+
+export function translateFilterToEnglish(frenchFilter: string) {
+	return translateToEnglish(frenchFilter, FILTER);
+}
+
+
+// Easy-to-use methods to check the validity of french words
+export function isValidFrenchPokemonName(frenchPokemonName: string) {
+	return translateToEnglish(frenchPokemonName, POKEMON) != frenchPokemonName;
+}
+
+export function isValidFrenchAbility(frenchAbility: string) {
+	return translateToEnglish(frenchAbility, ABILITY) != frenchAbility;
+}
+
+export function isValidFrenchMove(frenchMove: string) {
+	return translateToEnglish(frenchMove, MOVE) != frenchMove;
+}
+
+export function isValidFrenchItem(frenchItem: string) {
+	return translateToEnglish(frenchItem, ITEM) != frenchItem;
+}
+
+export function isValidFrenchType(frenchType: string) {
+	return translateToEnglish(frenchType, TYPE) != frenchType;
+}
+
+export function isValidFrenchHeader(frenchHeader: string) {
+	return translateToEnglish(frenchHeader, HEADER) != frenchHeader;
+}
+
+export function isValidFrenchMenu(frenchMenu: string) {
+	return translateToEnglish(frenchMenu, MENU) != frenchMenu;
+}
+
+export function isValidFrenchFilter(frenchFilter: string) {
+	return translateToEnglish(frenchFilter, FILTER) != frenchFilter;
+}
+
+
+// Easy-to-use methods to check the validity of english words
+export function isValidEnglishPokemonName(englishPokemonName: string) {
+	return PokemonDico[englishPokemonName];
+}
+
+export function isValidEnglishAbility(englishAbility: string) {
+	return AbilitiesDico[englishAbility];
+}
+
+export function isValidEnglishMove(englishMove: string) {
+	return MovesDico[englishMove];
+}
+
+export function isValidEnglishItem(englishItem: string) {
+	return ItemsDico[englishItem];
+}
+
+export function isValidEnglishType(englishType: string) {
+	return TypesDico[englishType];
+}
+
+export function isValidEnglishHeader(englishHeader: string) {
+	return HeadersDico[englishHeader];
+}
+
+export function isValidEnglishMenu(englishMenu: string) {
+	return MenuDico[englishMenu];
+}
+
+export function isValidEnglishFilter(englishFilter: string) {
+	return FiltersDico[englishFilter];
 }
