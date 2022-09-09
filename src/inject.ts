@@ -134,7 +134,41 @@ function updateResultTag(resultElement: Element)
 	}
 }
 
-function removeIncorrectData()
+function removeCurElement()
+{
+	// Cur element is the search result entry of the current selected Pokémon 
+	// It is defined by the current Pokémon name, but since the current Pokémon name is in french, cur is bugged
+	
+	// For now we remove it, maybe we could find a way to retrieve 
+	// every piece of information in order to manualy create it
+
+	var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
+
+	console.log("Input value : " + nameInputElement.value);
+
+	// We only remove the cur element if the input is a french word
+	if (isValidFrenchPokemonName(nameInputElement.value))
+	{
+		var curElements = document.getElementsByClassName("cur");
+		console.log("T'inquiète");
+
+		for (var curID = 0 ; curID < curElements.length ; curID++)
+		{
+			var cur = curElements.item(curID);
+			
+			// Only remove the specific Pokemon search cur
+			if (cur?.tagName == "A" && cur.parentElement?.tagName == "LI"
+				&& cur.getAttribute("data-entry")?.includes("pokemon"))
+			{
+				// Remove cur parent node
+				var curParent = cur.parentElement;
+				curParent.remove();
+			}
+		}
+	}
+}
+
+function removeInputIncompleteClass()
 {
 	// Retrieve the input searches values (Pokémon, Item, Ability)
 	var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
@@ -154,29 +188,7 @@ function removeIncorrectData()
 	// If the provided input search is a french Ability, remove the incomplete class
 	if (isValidFrenchAbility(abilityInputElement.value)) {
 		abilityInputElement.classList.remove("incomplete");
-	}
-
-	// Cur element is the search result entry of the current selected Pokémon 
-	// It is defined by the current Pokémon name, but since the current Pokémon name is in french, cur is bugged
-	
-	// For now we remove it, maybe we could find a way to retrieve 
-	// every piece of information in order to manualy create it
-
-	var curElements = document.getElementsByClassName("cur");
-
-	for (var curID = 0 ; curID < curElements.length ; curID++)
-	{
-		var cur = curElements.item(curID);
-		
-		// Only remove the specific Pokemon search cur
-		if (cur?.tagName == "A" && cur.parentElement?.tagName == "LI"
-			&& cur.getAttribute("data-entry")?.includes("pokemon"))
-		{
-			// Remove cur parent node
-			var curParent = cur.parentElement;
-			curParent.remove();
-		}
-	}
+	}	
 }
 
 function updatePokemonInfo()
@@ -193,6 +205,8 @@ function updatePokemonInfo()
 	BattlePokedex = structuredClone(originalBattlePokedex);
 	BattleAbilities = structuredClone(originalBattleAbilities);
 	BattleItems = structuredClone(originalBattleItems);
+
+	removeCurElement();
 
 	// Since we don't always get the teamchart element from MutationObserver, we need to manually retrieve it
 	var teamchartElement = document.getElementsByClassName("teamchart").item(0);
@@ -356,9 +370,10 @@ function updatePokemonInfo()
 		}	
 	})
 
-	// Some of the data might be incorrect after updating the search inputs
-	// So we correct the incorrect fields
-	removeIncorrectData();
+	// Whenever a search input does not match a known english word (Pokémon, Item, etc), 
+	// an "incomplete" class is added to the input, which turns the text in red
+	// So after we update the input text, if the french text is correct, we remove this tag
+	removeInputIncompleteClass();
 }
 
 function updatePokemonName(element: Element)

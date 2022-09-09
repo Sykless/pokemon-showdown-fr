@@ -3124,6 +3124,10 @@ const MainDico: Array<{ [englishName: string]: string; }>  = [
 	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, HeadersDico, MenuDico, FiltersDico
 ]
 
+const LogTranslationType: Array<string> = [
+	"pokémon", "ability", "move", "item", "type", "header", "menu", "filter"
+]
+
 function translateToFrench(englishWord: string, translationType: number)
 {
 	var Dico = MainDico[translationType];
@@ -3133,7 +3137,10 @@ function translateToFrench(englishWord: string, translationType: number)
 		return frenchWord;
 	}
 	else {
-		console.log("Unable to translate english " + translationType + " : " + englishWord);
+		if (!isValidFrenchWord(englishWord, translationType)){
+			console.log("Unable to translate english " + LogTranslationType[translationType] + " : " + englishWord);
+		}
+		
 		return englishWord;
 	}
 }
@@ -3147,9 +3154,20 @@ function translateToEnglish(frenchWord: string, translationType: number)
 		return englishWord;
 	}
 	else {
-		console.log("Unable to translate french " + translationType + " : " + englishWord);
+		if (!isValidEnglishWord(frenchWord, translationType)) {
+			console.log("Unable to translate french " + LogTranslationType[translationType] + " : " + englishWord);
+		}
+		
 		return frenchWord;
 	}
+}
+
+function isValidFrenchWord(frenchWord: string, translationType: number) {
+	return translateToEnglish(frenchWord, translationType) != frenchWord
+}
+
+function isValidEnglishWord(englishWord: string, translationType: number) {
+	return MainDico[translationType][englishWord];
 }
 
 
@@ -3183,7 +3201,7 @@ export function translateMenu(englishMenu: string) {
 }
 
 export function translateFilter(englishFilter: string) {
-	return translateToFrench(englishFilter, MENU);
+	return translateToFrench(englishFilter, FILTER);
 }
 
 
