@@ -869,31 +869,22 @@ function updateMoveAbilityFilter(resultElement: Element)
 
 				buttonElement.childNodes.forEach(function(buttonSubNode) {
 					// Don't want to update the cross icon, only the label
-					if ((buttonSubNode as Element).tagName != "I") {
+					if ((buttonSubNode as Element).tagName != "I" && buttonSubNode.textContent) {
 						var buttonInfo = buttonElement.value.split(":");
 
+						// Translate the button text, remove the last character since it's a space
 						switch (buttonInfo[0])
 						{
 							case "type":
-								buttonSubNode.textContent = translateType(buttonInfo[1]) + " ";
+								buttonSubNode.textContent = translateType(buttonSubNode.textContent.slice(0,-1)) + " ";
 								break;
 
 							case "ability":
-								buttonSubNode.textContent = translateAbility(buttonInfo[1]) + " ";
+								buttonSubNode.textContent = translateAbility(buttonSubNode.textContent.slice(0,-1)) + " ";
 								break;
 
 							case "move":
-								// For some reason, the moves are in lowercase with no special characters
-								// So we need to make a custom research in our MovesDico
-
-								// Match the move even with formatted id
-								var frenchMatch = Object.keys(MovesDico).find(
-									key => removeSpecialCharacters(key.toLowerCase()) === buttonInfo[1])
-
-								if (frenchMatch) {
-									buttonSubNode.textContent = MovesDico[frenchMatch] + " ";
-								}
-
+								buttonSubNode.textContent = translateMove(buttonSubNode.textContent.slice(0,-1)) + " ";
 								break;
 						}
 					}
