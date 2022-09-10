@@ -15,7 +15,7 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 
 // HIDDEN TEXT
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
-// Illegal team
+// Illegal team when entering a battle
 
 console.log("Extension successfully loaded !");
 
@@ -79,7 +79,7 @@ function onMutation(mutations: MutationRecord[]) {
 				var newElement = node as Element;
 				var elementClasses = newElement.classList;
 
-				// console.log(newElement);
+				console.log(newElement);
 
 				if (elementClasses)
 				{
