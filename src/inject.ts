@@ -8,7 +8,7 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 	translateHeader, translateFilter, translateMenu,  translateStat, translateNature } from './translator';
 
 // TODO
-// Don't show duplicate Pokémon (english/french name)
+// Don't show duplicate Pokémon/Item (english/french name)
 // Don't update multiple times the same node through childNode mutation
 // Matching searches in Item/Ability/Move research (Hidden Power small ?)
 // Details utilichart
@@ -185,7 +185,7 @@ function removeCurElement()
 		var cur = curElements.item(curID);
 		
 		// Only remove the specific Pokemon search cur
-		if (cur?.tagName == "A" && cur.parentElement?.tagName == "LI")
+		if (cur?.tagName == "A" && cur.parentElement?.tagName == "LI" && !cur.nextSibling)
 		{
 			var curParent = cur.parentElement;
 			var dataType = getDisplayedDataType(curParent);

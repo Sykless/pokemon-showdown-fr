@@ -3016,6 +3016,17 @@ export const StatsDico: { [englishName: string]: string; } = {
 }
 
 export const HeadersDico: { [englishName: string]: string; } = {
+	"Uber": "Uber",
+	"OU": "OU",
+	"UUBL": "UUBL",
+	"UU": "UU",
+	"RUBL": "RUBL",
+	"RU": "RU",
+	"NUBL": "NUBL",
+	"NU": "NU",
+	"PUBL": "PUBL",
+	"PU": "PU",
+	"LC": "LC",
 	"Pokémon": "Pokémon",
     "Abilities": "Talents",
     "Hidden Ability": "Talent caché",
@@ -3219,7 +3230,8 @@ const LogTranslationType: Array<string> = [
 
 function translateToFrench(englishWord: string, translationType: number)
 {
-	if (!englishWord) {
+	// Don't try to translate null, empty, undefined, numbers or non-letter words
+	if (!englishWord || !isNaN(+englishWord) || englishWord.toLowerCase() == englishWord.toUpperCase()) {
 		return englishWord;
 	}
 
@@ -3230,7 +3242,7 @@ function translateToFrench(englishWord: string, translationType: number)
 		return frenchWord;
 	}
 	else {
-		if (!isValidFrenchWord(englishWord, translationType)){
+		if (!isValidFrenchWord_NoLog(englishWord, translationType)){
 			console.log("Unable to translate english " + LogTranslationType[translationType] + " : " + englishWord);
 		}
 		
@@ -3240,7 +3252,8 @@ function translateToFrench(englishWord: string, translationType: number)
 
 function translateToEnglish(frenchWord: string, translationType: number)
 {
-	if (!frenchWord) {
+	// Don't try to translate null, empty, undefined, numbers or non-letter words
+	if (!frenchWord || !isNaN(+frenchWord) || frenchWord.toLowerCase() == frenchWord.toUpperCase()) {
 		return frenchWord;
 	}
 
@@ -3252,7 +3265,7 @@ function translateToEnglish(frenchWord: string, translationType: number)
 	}
 	else {
 		if (!isValidEnglishWord(frenchWord, translationType)) {
-			console.log("Unable to translate french " + LogTranslationType[translationType] + " : " + englishWord);
+			console.log("Unable to translate french " + LogTranslationType[translationType] + " : " + frenchWord);
 		}
 		
 		return frenchWord;
@@ -3261,6 +3274,10 @@ function translateToEnglish(frenchWord: string, translationType: number)
 
 function isValidFrenchWord(frenchWord: string, translationType: number) {
 	return translateToEnglish(frenchWord, translationType) != frenchWord
+}
+
+function isValidFrenchWord_NoLog(frenchWord: string, translationType: number) {
+	return Object.keys(MainDico[translationType]).find(key => MainDico[translationType][key] === frenchWord) != frenchWord
 }
 
 function isValidEnglishWord(englishWord: string, translationType: number) {
