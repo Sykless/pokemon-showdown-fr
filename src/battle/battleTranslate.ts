@@ -76,6 +76,10 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updateSwitchControls(newElement);
                     }
+                    else if (elementClasses.contains("controls"))
+                    {
+                        updateOpponentWait(newElement);
+                    }
 				}
 			}
 		}
@@ -264,7 +268,7 @@ function updateSwitchControls(switchControls: Element)
                 if (labelOption.tagName == "BUTTON")
                 {
                     if (labelOption.lastChild?.textContent) {
-                        labelOption.lastChild.textContent = " " + translateMenu(labelOption.lastChild.textContent.slice(1));
+                        labelOption.lastChild.textContent = translateMenu(labelOption.lastChild.textContent);
                     }
                 }
                 else {
@@ -299,6 +303,49 @@ function updateSwitchControls(switchControls: Element)
                 }
             })
         }
+    })
+}
+
+function updateOpponentWait(newElement: Element)
+{
+    newElement.childNodes.forEach(function (waitingNode) {
+        waitingNode.childNodes.forEach(function (waitingLabelNode) {
+            var waitingLabelElement = waitingLabelNode as Element;
+
+            if (waitingLabelElement.tagName == "SMALL")
+            {
+                waitingLabelElement.childNodes.forEach(function (textElementNode) {
+                    var textElement = textElementNode as Element;
+
+                    if (textElement.tagName == "EM")
+                    {
+                        // The text content is in the EM tag
+                        if (textElement.firstChild?.textContent) {
+                            textElement.firstChild.textContent = translateMenu(textElement.firstChild.textContent);
+                        }
+                    }
+                    else if (textElement.tagName != "BR")
+                    {
+                        // The remaining non-line break is a regular text node including the Pokémon name
+                        if (textElement.textContent) {
+                            var pokemonNameSplit = textElement.textContent.split(" will ");
+
+                            textElement.textContent = translatePokemonName(pokemonNameSplit[0]) + " "
+                                + translateMenu(textElement.textContent.slice(pokemonNameSplit[0].length));
+                        }
+                    }
+                })
+            }
+            else if (waitingLabelElement.tagName == "BUTTON")
+            {
+                console.log(waitingLabelElement.lastChild);
+
+                // The text content is always the button last child
+                if (waitingLabelElement.lastChild?.textContent) {
+                    waitingLabelElement.lastChild.textContent = translateMenu(waitingLabelElement.lastChild.textContent);
+                }
+            }
+        })
     })
 }
 

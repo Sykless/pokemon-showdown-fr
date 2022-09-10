@@ -3138,8 +3138,11 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"tricked": "échangé",
 	"disturbed": "dérangé",
 	"How will you start the battle?": "Comment commencerez-vous le combat ?",
-	"Timer": "Minuteur",
-	"Choose Lead": "Choisir un Lead"
+	" Timer": " Minuteur",
+	"Choose Lead": "Choisir un Lead",
+	" will be sent out first.": " sera envoyé en premier.",
+	"Waiting for opponent...": "En attente de l'adversaire...",
+	"Cancel": "Annuler"
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
