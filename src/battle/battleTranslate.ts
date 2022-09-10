@@ -45,7 +45,7 @@ function onMutation(mutations: MutationRecord[])
 				var newElement = node as Element;
 				var elementClasses = newElement.classList;
 
-                console.log(newElement);
+                // console.log(newElement);
 
 				if (elementClasses)
 				{
@@ -76,9 +76,16 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updateSwitchControls(newElement);
                     }
+                    // Main control interface : Moves, 
                     else if (elementClasses.contains("controls"))
                     {
-                        updateOpponentWait(newElement);
+                        // Waiting and Active control panel use different structures
+                        if ((newElement.firstChild as Element).tagName == "P") {
+                            updateOpponentWait(newElement);
+                        }
+                        else {
+                            updateControlPanel(newElement);
+                        }
                     }
 				}
 			}
@@ -306,9 +313,33 @@ function updateSwitchControls(switchControls: Element)
     })
 }
 
+function updateControlPanel(newElement: Element)
+{
+    // Main control board (moves, switches, timer)
+    newElement.childNodes.forEach(function (selectOptionNode)
+    {
+        var selectionOption = selectOptionNode as Element;
+
+        if (selectionOption.className == "whatdo") 
+        {
+
+        }
+        else if (selectionOption.className == "movecontrols")
+        {
+
+        }
+        else if (selectionOption.className == "switchcontrols")
+        {
+
+        }
+    })
+}
+
 function updateOpponentWait(newElement: Element)
 {
-    newElement.childNodes.forEach(function (waitingNode) {
+    // Main control board (moves, switches, timer)
+    newElement.childNodes.forEach(function (waitingNode)
+    {
         waitingNode.childNodes.forEach(function (waitingLabelNode) {
             var waitingLabelElement = waitingLabelNode as Element;
 
@@ -327,19 +358,50 @@ function updateOpponentWait(newElement: Element)
                     else if (textElement.tagName != "BR")
                     {
                         // The remaining non-line break is a regular text node including the Pokémon name
-                        if (textElement.textContent) {
-                            var pokemonNameSplit = textElement.textContent.split(" will ");
+                        if (textElement.textContent)
+                        {
+                            // Translate the message depending on the selected option
+                            if (textElement.textContent.includes(" will be "))
+                            {
+                                // A Lead has been selected
+                                var optionSplit = textElement.textContent.split(" will ");
 
-                            textElement.textContent = translatePokemonName(pokemonNameSplit[0]) + " "
-                                + translateMenu(textElement.textContent.slice(pokemonNameSplit[0].length));
+                                // Separate the Pokémon name and the rest of the sentence, then translate them both
+                                textElement.textContent = translatePokemonName(optionSplit[0]) + " "
+                                    + translateMenu(textElement.textContent.slice(optionSplit[0].length));
+                            }
+                            else if (textElement.textContent.includes(" will use "))
+                            {
+                                // A Move has been selected
+                                var optionPokemonSplit = textElement.textContent.split(" will ");
+                                var optionMoveSplit = textElement.textContent.split(" use ");
+
+                                console.log(textElement.textContent.slice(optionPokemonSplit[0].length, - optionMoveSplit[1].length - 1));
+
+                                // Separate the Pokémon name, the Move and the rest of the sentence, then translate them all
+                                textElement.textContent = translatePokemonName(optionPokemonSplit[0]) + " "
+                                    + translateMenu(textElement.textContent.slice(optionPokemonSplit[0].length, - optionMoveSplit[1].length)) + " "
+                                    + translateMove(optionMoveSplit[1].slice(0,-1)) + ".";
+                            }
+                            else if (textElement.textContent.includes(" will switch "))
+                            {
+                                // A Move has been selected
+                                var switchInSplit = textElement.textContent.split(" will ");
+                                var switchOutSplit = textElement.textContent.split(" replacing ");
+
+                                console.log(textElement.textContent.slice(switchInSplit[0].length, - switchOutSplit[1].length - 1));
+
+                                // Separate the Pokémon names and the rest of the sentence, then translate them all
+                                textElement.textContent = translatePokemonName(switchInSplit[0]) + " "
+                                    + translateMenu(textElement.textContent.slice(switchInSplit[0].length, - switchOutSplit[1].length)) + " "
+                                    + translatePokemonName(switchOutSplit[1].slice(0,-1)) + ".";
+                            }
                         }
                     }
                 })
             }
             else if (waitingLabelElement.tagName == "BUTTON")
             {
-                console.log(waitingLabelElement.lastChild);
-
                 // The text content is always the button last child
                 if (waitingLabelElement.lastChild?.textContent) {
                     waitingLabelElement.lastChild.textContent = translateMenu(waitingLabelElement.lastChild.textContent);
