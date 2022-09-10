@@ -1,4 +1,4 @@
-import { isValidEnglishType, translateAbility, translateItem, translateMenu, translateMove, translatePokemonName } from "../translator";
+import { isValidEnglishType, translateAbility, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType } from "../translator";
 
 console.log("BattleTranslate successfully loaded !");
 
@@ -52,7 +52,7 @@ function onMutation(mutations: MutationRecord[])
 					// The whole room has been loaded
 					if (elementClasses.contains("innerbattle"))
 					{
-                        console.log(newElement.outerHTML);
+                        // console.log(newElement.outerHTML);
 					}
 					// Tooltip has been opened
 					else if (elementClasses.contains("tooltipinner"))
@@ -79,6 +79,8 @@ function onMutation(mutations: MutationRecord[])
                     // Main control interface : Moves, 
                     else if (elementClasses.contains("controls"))
                     {
+                        // console.log(newElement);
+
                         // Waiting and Active control panel use different structures
                         if ((newElement.firstChild as Element).tagName == "P") {
                             updateOpponentWait(newElement);
@@ -86,6 +88,14 @@ function onMutation(mutations: MutationRecord[])
                         else {
                             updateControlPanel(newElement);
                         }
+                    }
+                    else if (elementClasses.contains("timerbutton"))
+                    {
+                        updateTimerButton(newElement);
+                    }
+                    else
+                    {
+                        console.log(newElement);
                     }
 				}
 			}
@@ -316,21 +326,98 @@ function updateSwitchControls(switchControls: Element)
 function updateControlPanel(newElement: Element)
 {
     // Main control board (moves, switches, timer)
-    newElement.childNodes.forEach(function (selectOptionNode)
-    {
+    newElement.childNodes.forEach(function (selectOptionNode) {
         var selectionOption = selectOptionNode as Element;
 
         if (selectionOption.className == "whatdo") 
         {
+            selectionOption.childNodes.forEach(function (whatToDoNode) {
+                var whatToDo = whatToDoNode as Element;
 
+                if (whatToDo.textContent)
+                {
+                    // Remaining HP
+                    if (whatToDo.tagName == "SMALL") {
+                        whatToDo.textContent = translateStat(whatToDo.textContent.slice(0,2)) + whatToDo.textContent.slice(2);
+                    }
+                    // Pokémon name
+                    else if (whatToDo.tagName == "STRONG") {
+                        whatToDo.textContent = translatePokemonName(whatToDo.textContent);
+                    }
+                    // Timer
+                    else if (whatToDo.tagName == "BUTTON") {
+                        updateTimerButton(whatToDo);
+                    }
+                    // Regular text
+                    else {
+                        whatToDo.textContent = translateMenu(whatToDo.textContent);
+                    }
+                }
+            })
         }
         else if (selectionOption.className == "movecontrols")
         {
+            selectionOption.childNodes.forEach(function (moveOptionNode) {
+                var moveOption = moveOptionNode as Element;
 
+                if (moveOption.className == "moveselect")
+                {
+                    // Attack menu name
+                    if (moveOption.firstChild?.textContent) {
+                        moveOption.firstChild.textContent = translateMenu(moveOption.firstChild.textContent);
+                    }
+                }
+                else if (moveOption.className == "movemenu")
+                {
+                    moveOption.childNodes.forEach(function (moveMainNode) {
+                        moveMainNode.childNodes.forEach(function (moveButtonNode) {
+                            var moveButton = moveButtonNode as Element;
+
+                            if (moveButton.textContent)
+                            {
+                                // Type
+                                if (moveButton.tagName == "SMALL")
+                                {
+                                    if (moveButton.className == "type") {
+                                        moveButton.textContent = translateType(moveButton.textContent);
+                                    }
+                                }
+                                // Move
+                                else if (moveButton.tagName != "BR") {
+                                    moveButton.textContent = translateMove(moveButton.textContent);
+                                }
+                            }
+                        })
+                    })
+                }
+            })
         }
         else if (selectionOption.className == "switchcontrols")
         {
+            selectionOption.childNodes.forEach(function (switchOptionNode) {
+                var switchOption = switchOptionNode as Element;
 
+                if (switchOption.className == "switchselect")
+                {
+                    // Switch menu name
+                    if (switchOption.firstChild?.textContent) {
+                        switchOption.firstChild.textContent = translateMenu(switchOption.firstChild.textContent);
+                    }
+                }
+                else if (switchOption.className == "switchmenu")
+                {
+                    switchOption.childNodes.forEach(function (pokemonMainNode) {
+                        pokemonMainNode.childNodes.forEach(function (pokemonButtonNode) {
+                            var pokemonButton = pokemonButtonNode as Element;
+
+                            // The only non-span element is the Pokémon name
+                            if (pokemonButton.tagName != "SPAN" && pokemonButton.textContent) {
+                                pokemonButton.textContent = translatePokemonName(pokemonButton.textContent);
+                            }
+                        })
+                    })
+                }
+            })
         }
     })
 }
@@ -409,6 +496,14 @@ function updateOpponentWait(newElement: Element)
             }
         })
     })
+}
+
+function updateTimerButton(timerElement: Element)
+{
+    // Translate Timer button
+    if (timerElement.lastChild?.textContent) {
+        timerElement.lastChild.textContent = translateMenu(timerElement.lastChild.textContent);
+    }
 }
 
 function getCurrentDisplayedInfo(infoTitle: string)

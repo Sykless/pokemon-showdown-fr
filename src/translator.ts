@@ -3144,7 +3144,11 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" will use ": "va utiliser ",
 	" will switch in, replacing ": " va être envoyé et remplacera ",
 	"Waiting for opponent...": "En attente de l'adversaire...",
-	"Cancel": "Annuler"
+	"Cancel": "Annuler",
+	" What will ": "Que va faire ",
+	" do? ": " ? ",
+	"Attack": "Attaquer",
+	"Switch": "Switcher"
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
