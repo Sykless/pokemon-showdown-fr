@@ -2949,7 +2949,8 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"Ice Berry": "Baie Gel",
 	"Mint Berry": "Baie Menthe",
 	"Pink Bow": "Ruban Rose",
-	"Polkadot Bow": "Ruban à Pois"
+	"Polkadot Bow": "Ruban à Pois",
+	"None": "Aucun"
 }
 
 export const TypesDico: { [englishName: string]: string; } = {
@@ -3111,7 +3112,31 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Fast Special Sweeper": "Sweeper Spécial rapide",
 	"Fast Bulky Support": "Support Bulky rapide",
 	"Bulky Physical Sweeper": "Sweeper Physique Bulky",
-	"Bulky Special Sweeper": "Sweeper Spécial Bulky"
+	"Possible abilities": "Talents possibles",
+	"Bulky Special Sweeper": "Sweeper Spécial Bulky",
+	"HP": "PV",
+	"Atk ": "Atq ",
+	" / Def ": " / Déf ",
+	" / SpA ": " / SpA ",
+	" / SpD ": " / SpD ",
+	" / Spe ": " / Vit ",
+	"Spe": "Vit",
+	"(After stat modifiers:": "(Après altération de stats)",
+	"(before items/abilities/modifiers)": "(avant objets/talents/modifications)",
+	"stolen": "volé",
+	"eaten": "mangé",
+	"flung": "dégommé",
+	"knocked off": "saboté",
+	"consumed": "utilisé",
+	"incinerated": "calciné",
+	"popped": "éclaté",
+	"held up": "utilisé",
+	"found": "trouvé",
+	"frisked": "fouillé",
+	"harvested": "récolté",
+	"bestowed": "offert",
+	"tricked": "échangé",
+	"disturbed": "dérangé"
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {

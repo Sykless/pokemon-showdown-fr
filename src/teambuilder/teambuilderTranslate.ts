@@ -12,9 +12,12 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 // Don't update multiple times the same node through childNode mutation
 // Matching searches in Item/Ability/Move research (Hidden Power small ?)
 // Details utilichart
+// Translate non-text node with TreeWalker in order to not trigger observer
+// Conjuger les objets/
 
 // HIDDEN TEXT
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
+// The battle you're looking for has expired
 // Illegal team when entering a battle
 
 console.log("TeambuilderTranslate successfully loaded !");
@@ -758,9 +761,9 @@ function updateItem(resultElement: Element)
 
 function updatePokemonType(typesElement: Element)
 {
-	var twoAbilitiesNode = typesElement.querySelector('.typecol');
+	var mainTypeNode = typesElement.querySelector('.typecol');
 
-	twoAbilitiesNode?.childNodes.forEach(function(typeNode) {
+	mainTypeNode?.childNodes.forEach(function(typeNode) {
 		updatePokemonTypeSprite(typeNode as HTMLImageElement)
 	})
 }
