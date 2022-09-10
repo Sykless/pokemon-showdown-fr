@@ -150,7 +150,13 @@ function onMutation(mutations: MutationRecord[])
 function isTeambuilderOpen()
 {
 	var teambuilderElement = document.getElementById("room-teambuilder");
-	return !teambuilderElement?.getAttribute("style")?.includes("display: none")
+	var teambuilderStyle = teambuilderElement?.getAttribute("style");
+
+	if (teambuilderStyle) {
+		return !teambuilderStyle.includes("display: none");
+	}
+
+	return false;
 }
 
 function updateResultTag(resultElement: Element)
