@@ -1,11 +1,11 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico } from './translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico } from '../translator';
 	
-import { isValidEnglishType, isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from './translator';
+import { isValidEnglishType, isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
 
-import { CosmeticForms  } from './translator';
+import { CosmeticForms  } from '../translator';
 
 import {translatePokemonName, translateAbility, translateMove, translateItem, translateType, 
-	translateHeader, translateFilter, translateMenu,  translateStat, translateNature } from './translator';
+	translateHeader, translateFilter, translateMenu,  translateStat, translateNature } from '../translator';
 
 // TODO
 // Don't show duplicate Pokémon/Item (english/french name)
@@ -15,9 +15,9 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 
 // HIDDEN TEXT
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
-// Illegal team
+// Illegal team when entering a battle
 
-console.log("Extension successfully loaded !");
+console.log("TeambuilderTranslate successfully loaded !");
 
 // Variable defined by Showdown containing every piece of data
 // (Pokémon names, moves, abilities) needed in the teambuilder research
@@ -51,12 +51,13 @@ window.addEventListener('RecieveContent', function(evt: any) {
 const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico];
 const FrenchNamesDico = populateFrenchDico();
 
-// When Showdown first loads, update the BattleSearchIndex
+// When Teambuilder first loads, update the BattleSearchIndex
 updateBattleSearchIndex();
 
 // Create a MutationObserver element in order to track every page change
 // So we can it dynamically translate new content
 var observer = new MutationObserver(onMutation);
+
 observer.observe(document, {
 	childList: true, // report added/removed nodes
 	subtree: true,   // observe any descendant elements
@@ -67,8 +68,14 @@ observer.observe(document, {
 });
 
 // Everytime a new element is added to the page, onMutation method is called
-function onMutation(mutations: MutationRecord[]) {
-	for (var i = 0, len = mutations.length; i < len; i++)
+function onMutation(mutations: MutationRecord[])
+{
+	// If the Teambuilding tab is not visible, stop the mutation observation
+	if (!isTeambuilderOpen()) {
+		return;
+	}
+
+	for (var i = 0, len = mutations.length; i < len ; i++)
 	{		
 		if (mutations[i].type == "childList")
 		{
@@ -79,7 +86,7 @@ function onMutation(mutations: MutationRecord[]) {
 				var newElement = node as Element;
 				var elementClasses = newElement.classList;
 
-				// console.log(newElement);
+				console.log(newElement);
 
 				if (elementClasses)
 				{
@@ -138,6 +145,12 @@ function onMutation(mutations: MutationRecord[]) {
 			}
 		}
 	}
+}
+
+function isTeambuilderOpen()
+{
+	var teambuilderElement = document.getElementById("room-teambuilder");
+	return !teambuilderElement?.getAttribute("style")?.includes("display: none")
 }
 
 function updateResultTag(resultElement: Element)
