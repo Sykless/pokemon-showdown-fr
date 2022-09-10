@@ -2953,6 +2953,7 @@ export const ItemsDico: { [englishName: string] : string; } = {
 }
 
 export const TypesDico: { [englishName: string]: string; } = {
+	"(automatic type)": "(Type automatique)",
     "Bug": "Insecte",
 	"Dark": "Ténèbres",
 	"Dragon": "Dragon",
@@ -3054,6 +3055,7 @@ export const HeadersDico: { [englishName: string]: string; } = {
     "NFEs not in a higher tier": "NFEs non présents dans un tier supérieur",
     "Illegal results": "Résultats illégaux",
     "CAP moves": "Capacités CAP",
+	"EVs": "Evs"
 }
 
 export const MenuDico: { [englishName: string]: string; } = {
@@ -3074,15 +3076,21 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Gender": "Genre",
 	"Female": "Femelle",
 	"Male": "Mâle",
+	"Random": "Aléatoire",
 	"Shiny": "Shiny",
 	"Yes": "Oui",
 	"No": "Non",
 	"Happiness": "Bonheur",
 	"Dmax Level": "Niveau de Dmax",
 	"HP Type": "Type PC",
-	"Hidden Power": "Puissance Cachée",
+	"Hidden Power": "Pui. Cachée",
+	"Pokeball": "Ball",
 	"Remaining:": "Restant :",
 	"IV spreads": "Répartition d'IVs",
+	"min Atk": "Atq mini",
+	"min Atk, min Spe": "Atq mini, Vit mini",
+	"max all": "Tout au max",
+	"min Spe": "Vit mini",
 	"Protip:": "Astuce de pro :",
 	' You can also set natures by typing "+" and "-" next to a stat.': ' Vous pouvez également choisir une nature en tapant "+" et "-" à côté d\'une stat',
 	"(backspace = delete filter)": "(retour arrière = suppression filtre)",

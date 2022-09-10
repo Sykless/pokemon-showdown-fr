@@ -105,7 +105,7 @@ function onMutation(mutations: MutationRecord[]) {
 					// Pokémon info has been updated
 					else if (elementClasses.contains("statrow-head"))
 					{
-						// When the stat block is updated, the element "Remaining EVs" is reset
+						// When the stat block is updated, the element "Remaining EVs" is reset (if present)
 						// So we need to re-translate it, but we don't need to update the whole StatForm component
 						updateRemainingEVElement(document.querySelector(".graphcol"))
 					}
@@ -119,6 +119,11 @@ function onMutation(mutations: MutationRecord[]) {
 					{
 						// If a detailcell is updated, just translate it again
 						updatePokemonDetails(newElement);
+					}
+					// Pokémon details page (Level, Gender, etc) has been loaded
+					else if (elementClasses.contains("detailsform"))
+					{
+						updatePokemonDetailsForm(newElement);
 					}
 				}
 			}
@@ -476,24 +481,6 @@ function updatePokemonInfo()
 				})
 			}
 		}	
-	})
-}
-
-function updatePokemonDetails(buttonDetailsElement: Element)
-{
-	buttonDetailsElement.childNodes.forEach(function (detailsContentNode) {
-		if (detailsContentNode.textContent) {
-			detailsContentNode.textContent = translateMenu(detailsContentNode.textContent);
-
-			// Translate Hidden Power type
-			if (detailsContentNode.textContent == "Type PC") {
-				var hiddenPowerType = detailsContentNode.nextSibling;
-				
-				if (hiddenPowerType?.textContent) {
-					hiddenPowerType.textContent = translateType(hiddenPowerType.textContent);
-				}
-			}
-		}
 	})
 }
 
@@ -966,23 +953,25 @@ function updateStatForm(statFormNode: Element)
 				statsNode.lastChild?.firstChild?.childNodes.forEach(function (ivSpreadOption) {
 					var ivSpreadElement = ivSpreadOption as Element;
 
-					// Translate the option select title
-					if (ivSpreadElement.tagName == "OPTION" && ivSpreadElement.textContent) {
-						ivSpreadElement.textContent = translateMenu(ivSpreadElement.textContent);
-					}
-
-					if (ivSpreadElement.tagName == "OPTGROUP")
+					if (ivSpreadElement.textContent)
 					{
-						var optgroupElement = ivSpreadElement as HTMLOptGroupElement;
-						var optgroupWords = optgroupElement.label.split(" ");
-						var translatedLabel = "";
-
-						for (var i = 0 ; i < optgroupWords.length ; i++) {
-							translatedLabel += translateStat(optgroupWords[i].replace(",","").replace("all", "tout"));
-							translatedLabel += i == optgroupWords.length - 1 ? "" : " ";
+						// Translate the option select title
+						if (ivSpreadElement.tagName == "OPTION")
+						{
+							// The spread could be a custom Hidden Power spread
+							if (ivSpreadElement.textContent.includes("HP ")) {
+								ivSpreadElement.textContent = "PC " + translateType(ivSpreadElement.textContent.split(" ")[1]) + " IVs";
+							}
+							else  {
+								ivSpreadElement.textContent = translateMenu(ivSpreadElement.textContent);
+							}
+							
 						}
-
-						optgroupElement.label = translatedLabel;
+						else if (ivSpreadElement.tagName == "OPTGROUP")
+						{
+							var optgroupElement = ivSpreadElement as HTMLOptGroupElement;
+							optgroupElement.label = translateMenu(optgroupElement.label);
+						}
 					}
 				});
 			}
@@ -1011,11 +1000,12 @@ function updateStatForm(statFormNode: Element)
 								frenchGuessedSpread = frenchGuessedSpread.replace(new RegExp(stat, 'g'), StatsDico[stat]);
 							}
 
-							suggestedElement.textContent = frenchGuessedSet + ":" + frenchGuessedSpread;
+							suggestedElement.textContent = frenchGuessedSet + " :" + frenchGuessedSpread;
 						}
 					}
 					else
 					{
+						// Just a regular text element
 						suggestedElement.childNodes.forEach(function(suggestedTextNode) {
 							if (suggestedTextNode.textContent) {
 								suggestedTextNode.textContent = translateMenu(suggestedTextNode.textContent);
@@ -1085,6 +1075,90 @@ function updateStatForm(statFormNode: Element)
 			}
 		}
 
+	})
+}
+
+function updatePokemonDetails(buttonDetailsElement: Element)
+{
+	buttonDetailsElement.childNodes.forEach(function (detailsContentNode) {
+		if (detailsContentNode.textContent) {
+			detailsContentNode.textContent = translateMenu(detailsContentNode.textContent);
+
+			// Translate Hidden Power type
+			if (detailsContentNode.textContent == "Type PC") {
+				var hiddenPowerType = detailsContentNode.nextSibling;
+				
+				if (hiddenPowerType?.textContent) {
+					hiddenPowerType.textContent = translateType(hiddenPowerType.textContent);
+				}
+			}
+		}
+	})
+}
+
+function updatePokemonDetailsForm(resultElement: Element)
+{
+	resultElement.childNodes.forEach(function (detailsContentNode)
+	{
+		var detailsContentResult = detailsContentNode as Element;
+		
+		// Some details might not be displayed
+		if (detailsContentResult.getAttribute("style") != "display:none")
+		{
+			detailsContentResult.childNodes.forEach(function (detailsNode)
+			{
+				var detailsElement = detailsNode as Element;
+
+				if (detailsElement.tagName == "LABEL")
+				{
+					if (detailsNode.textContent)
+					{
+						if ("Dmax Level:" == detailsNode.textContent) {
+							// The regular translation is too long
+							detailsNode.textContent = "Niv. Dmax :"
+						}
+						else {
+							// Labels have a ":" character at the end, so we remove it and put it back again
+							detailsNode.textContent = translateMenu(detailsNode.textContent.slice(0,-1)) + " :"
+						}
+					}
+				}
+				else if (detailsElement.tagName == "DIV")
+				{
+					detailsNode.childNodes.forEach(function (detailsValue)
+					{
+						var detailsValueElement = detailsValue as Element;
+
+						if (detailsValueElement.tagName == "LABEL")
+						{
+							// Labels are in fact composed of radio button and text, so we still need to iterate on children
+							detailsValue.childNodes.forEach(function (detailsLabel)
+							{
+								// Only translate the text
+								if ((detailsLabel as Element).tagName != "INPUT" && detailsLabel.textContent) {
+									detailsLabel.textContent = " " + translateMenu(detailsLabel.textContent.slice(1))
+								}
+							})
+						}
+						else if (detailsValueElement.tagName == "SELECT")
+						{
+							var detailsSelect = detailsValueElement as HTMLSelectElement;
+
+							// Iterate on all options, could be a pokeball variant or a type selection
+							for (var i = 0 ; i < detailsSelect.options.length ; i++)
+							{
+								if (detailsSelect.name == "pokeball") {
+									detailsSelect.options[i].text = translateItem(detailsSelect.options[i].text);
+								}
+								else if (detailsSelect.name == "hptype") {
+									detailsSelect.options[i].text = translateType(detailsSelect.options[i].text);
+								}
+							}
+						}
+					})
+				}
+			})
+		}
 	})
 }
 
