@@ -52,13 +52,13 @@ function onMutation(mutations: MutationRecord[])
 					// The whole room has been loaded
 					if (elementClasses.contains("innerbattle"))
 					{
-                        console.log(newElement);
+                        console.log(newElement.outerHTML);
 					}
 					// Tooltip has been opened
 					else if (elementClasses.contains("tooltipinner"))
 					{
                         var tooltip = newElement.firstChild as Element;
-                        console.log(tooltip.outerHTML);
+                        //console.log(tooltip.outerHTML);
 
                         updatePokemonTooltip(tooltip);
 
@@ -72,6 +72,10 @@ function onMutation(mutations: MutationRecord[])
                         //     console.log(tooltip.innerHTML);
                         // }
 					}
+                    else if (elementClasses.contains("switch-controls"))
+                    {
+                        updateSwitchControls(newElement);
+                    }
 				}
 			}
 		}
@@ -241,6 +245,57 @@ function updatePokemonTooltip(tooltip: Element)
                             }
                         }
                     }
+                }
+            })
+        }
+    })
+}
+
+function updateSwitchControls(switchControls: Element)
+{
+    switchControls.childNodes.forEach(function (bottomOptionNode) {
+        var bottomOption = bottomOptionNode as Element;
+
+        if (bottomOption.className == "whatdo")
+        {
+            bottomOptionNode.childNodes.forEach(function (labelOptionNode) {
+                var labelOption = labelOptionNode as Element;
+
+                if (labelOption.tagName == "BUTTON")
+                {
+                    if (labelOption.lastChild?.textContent) {
+                        labelOption.lastChild.textContent = " " + translateMenu(labelOption.lastChild.textContent.slice(1));
+                    }
+                }
+                else {
+                    if (labelOption.textContent) {
+                        labelOption.textContent = translateMenu(labelOption.textContent);
+                    }
+                }
+            })
+        }
+        else if (bottomOption.className == "switchcontrols")
+        {
+            bottomOptionNode.childNodes.forEach(function (switchOptionNode) {
+                var switchOption = switchOptionNode as Element;
+
+                if (switchOption.className == "switchselect")
+                {
+                    if (switchOption.firstChild?.textContent) {
+                        switchOption.firstChild.textContent = translateMenu(switchOption.firstChild.textContent);
+                    }
+                }
+                if (switchOption.className == "switchmenu")
+                {
+                    switchOption.childNodes.forEach(function (pokemonButtonNode) {
+                        pokemonButtonNode.childNodes.forEach(function (pokemonButton)
+                        {
+                            // The Pokémon name is not in the Span tag
+                            if ((pokemonButton as Element).tagName != "SPAN" && pokemonButton.textContent) {
+                                pokemonButton.textContent = translatePokemonName(pokemonButton.textContent);
+                            }
+                        })
+                    })
                 }
             })
         }

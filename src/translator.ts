@@ -3136,7 +3136,10 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"harvested": "récolté",
 	"bestowed": "offert",
 	"tricked": "échangé",
-	"disturbed": "dérangé"
+	"disturbed": "dérangé",
+	"How will you start the battle?": "Comment commencerez-vous le combat ?",
+	"Timer": "Minuteur",
+	"Choose Lead": "Choisir un Lead"
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
