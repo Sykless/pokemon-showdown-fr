@@ -10,7 +10,7 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 // TODO
 // Don't show duplicate Pokémon (english/french name)
 // Don't update multiple times the same node through childNode mutation
-// Hidden Power
+// Matching searches in Item/Ability/Move research (Hidden Power small ?)
 // Details utilichart
 
 // HIDDEN TEXT
