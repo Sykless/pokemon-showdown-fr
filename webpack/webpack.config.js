@@ -5,10 +5,11 @@ module.exports = {
    mode: "production",
    entry: {
       background: path.resolve(__dirname, "..", "src", "background.ts"),
-      teambuilderContentScript: path.resolve(__dirname, "..", "src", "teambuilderContentScript.ts"),
-      teambuilderTranslate: path.resolve(__dirname, "..", "src", "teambuilderTranslate.ts"),
       translator: path.resolve(__dirname, "..", "src", "translator.ts"),
-      
+      teambuilderContentScript: path.resolve(__dirname, "..", "src/teambuilder", "teambuilderContentScript.ts"),
+      teambuilderTranslate: path.resolve(__dirname, "..", "src/teambuilder", "teambuilderTranslate.ts"),
+      battleContentScript: path.resolve(__dirname, "..", "src/battle", "battleContentScript.ts"),
+      battleTranslate: path.resolve(__dirname, "..", "src/battle", "battleTranslate.ts"),
    },
    output: {
       path: path.join(__dirname, "../dist"),

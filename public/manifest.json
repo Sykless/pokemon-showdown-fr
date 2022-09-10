@@ -18,6 +18,7 @@
   "web_accessible_resources": [{
     "resources": [
       "teambuilderTranslate.js",
+      "battleTranslate.js",
       "sprites/*"],
     "matches": ["https://play.pokemonshowdown.com/*"]
   }],
