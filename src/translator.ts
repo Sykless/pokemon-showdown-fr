@@ -8,7 +8,8 @@ const STAT = 6;
 const CONDITION = 7;
 const HEADER = 8;
 const MENU = 9;
-const FILTER = 10;
+const BATTLEMESSAGE = 10
+const FILTER = 11;
 
 export const PokemonDico: { [englishName: string]: string; } = {
 	"Bulbasaur": "Bulbizarre",
@@ -3153,7 +3154,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"tricked": "échangé",
 	"disturbed": "possédé",
 	"How will you start the battle?": "Comment commencerez-vous le combat ?",
-	" Timer": " Minuteur",
+	" Timer": " Temps",
 	"Choose Lead": "Choisir un Lead",
 	" will be sent out first.": " sera envoyé en premier.",
 	" will use ": "va utiliser ",
@@ -3164,6 +3165,23 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" do? ": " ? ",
 	"Attack": "Attaquer",
 	"Switch": "Switcher"
+}
+
+export const BattleMessagesDico:  { [englishName: string]: string; } = {
+	" was badly poisoned!": "est gravement empoisonné !",
+	" was hurt by poison!": "souffre du poison !",
+	" evasiveness fell!": "L'esquive du {POKEMON} baisse !",
+	"It's not very effective...": "Ce n'est pas très efficace...",
+	"It's super effective!": "C'est super efficace !",
+	"Go! ": "En avant ! ",
+	" sent out ": " a envoyé ",
+	" withdrew ": " a retiré ",
+	", come back!": ", reviens !",
+	" used ": " a utilisé ",
+	" fainted!": " est K.O. !",
+	"The opposing ": "Le {POKEMON} adverse ",
+	")!": ") !",
+	"!": " !"
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
@@ -3281,17 +3299,17 @@ export const CosmeticForms: Array<string> = [
 ]
 
 const MainDico: Array<{ [englishName: string]: string; }>  = [
-	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, ConditionsDico, HeadersDico, MenuDico, FiltersDico
+	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, ConditionsDico, HeadersDico, MenuDico, BattleMessagesDico, FiltersDico
 ]
 
 const LogTranslationType: Array<string> = [
-	"pokémon", "ability", "move", "item", "type", "nature", "stat", "condition", "header", "menu", "filter"
+	"pokémon", "ability", "move", "item", "type", "nature", "stat", "condition", "header", "menu", "battlemessage" ,"filter"
 ]
 
 function translateToFrench(englishWord: string, translationType: number)
 {
-	// Don't try to translate null, empty, undefined, numbers or non-letter words
-	if (!englishWord || !isNaN(+englishWord) || englishWord.toLowerCase() == englishWord.toUpperCase()) {
+	// Don't try to translate null, empty, undefined or numbers
+	if (!englishWord || !isNaN(+englishWord)) {
 		return englishWord;
 	}
 
@@ -3312,8 +3330,8 @@ function translateToFrench(englishWord: string, translationType: number)
 
 function translateToEnglish(frenchWord: string, translationType: number)
 {
-	// Don't try to translate null, empty, undefined, numbers or non-letter words
-	if (!frenchWord || !isNaN(+frenchWord) || frenchWord.toLowerCase() == frenchWord.toUpperCase()) {
+	// Don't try to translate null, empty, undefined or numbers
+	if (!frenchWord || !isNaN(+frenchWord)) {
 		return frenchWord;
 	}
 
@@ -3386,6 +3404,10 @@ export function translateMenu(englishMenu: string) {
 	return translateToFrench(englishMenu, MENU);
 }
 
+export function translateBattleMessage(englishBattleMessage: string) {
+	return translateToFrench(englishBattleMessage, BATTLEMESSAGE);
+}
+
 export function translateFilter(englishFilter: string) {
 	return translateToFrench(englishFilter, FILTER);
 }
@@ -3430,6 +3452,10 @@ export function translateHeaderToEnglish(frenchHeader: string) {
 
 export function translateMenuToEnglish(frenchMenu: string) {
 	return translateToEnglish(frenchMenu, MENU);
+}
+
+export function translateBattleMessageToEnglish(frenchBattleMessage: string) {
+	return translateToEnglish(frenchBattleMessage, BATTLEMESSAGE);
 }
 
 export function translateFilterToEnglish(frenchFilter: string) {
@@ -3478,6 +3504,10 @@ export function isValidFrenchMenu(frenchMenu: string) {
 	return translateToEnglish(frenchMenu, MENU) != frenchMenu;
 }
 
+export function isValidFrenchBattleMessage(frenchBattleMessage: string) {
+	return translateToEnglish(frenchBattleMessage, BATTLEMESSAGE) != frenchBattleMessage;
+}
+
 export function isValidFrenchFilter(frenchFilter: string) {
 	return translateToEnglish(frenchFilter, FILTER) != frenchFilter;
 }
@@ -3522,6 +3552,10 @@ export function isValidEnglishHeader(englishHeader: string) {
 
 export function isValidEnglishMenu(englishMenu: string) {
 	return MenuDico[englishMenu];
+}
+
+export function isValidEnglishBattleMessage(englishBattleMessage: string) {
+	return BattleMessagesDico[englishBattleMessage];
 }
 
 export function isValidEnglishFilter(englishFilter: string) {

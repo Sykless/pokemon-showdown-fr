@@ -17,7 +17,7 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 
 // HIDDEN TEXT
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
-// The battle you're looking for has expired
+// The battle you're looking for has expired (class ps-overlay)
 // Illegal team when entering a battle
 
 console.log("TeambuilderTranslate successfully loaded !");
