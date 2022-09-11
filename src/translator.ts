@@ -3561,30 +3561,30 @@ export function isValidEnglishFilter(englishFilter: string) {
 
 
 const RegexBattleMessagesMap = new Map();
-RegexBattleMessagesMap.set(/Battle started between (.*) and (.*)!/g, "Le combat entre {TRAINER1} et {TRAINER2} a commencé !");
-RegexBattleMessagesMap.set(/(.*) was badly poisoned!/g, "{POKEMON} est gravement empoisonné !");
-RegexBattleMessagesMap.set(/(.*) was hurt by poison!/g, "{POKEMON} souffre du poison !");
-RegexBattleMessagesMap.set(/(.*)'s evasiveness fell!/g, "L'esquive du {POKEMON} a baissé !");
-RegexBattleMessagesMap.set(/(.*)'s Attack fell!/g, "L'Attaque du {POKEMON} a baissé !");
-RegexBattleMessagesMap.set(/(.*)'s Sp. Atk rose!/g, "L'Atq Spé. du {POKEMON} a augmenté !");
-RegexBattleMessagesMap.set(/(.*)'s Sp. Def rose!/g, "La Déf Spé. du {POKEMON} a augmenté !");
-RegexBattleMessagesMap.set(/(.*) sent out (.*) \(/g, "{TRAINER} a envoyé {POKEMON} (");
-RegexBattleMessagesMap.set(/(.*) sent out /g, "{TRAINER} a envoyé ");
-RegexBattleMessagesMap.set(/Go! (.*) \(/g, "En avant ! {POKEMON} (");
-RegexBattleMessagesMap.set(/(.*), come back!/g, "{POKEMON}, reviens !");
-RegexBattleMessagesMap.set(/(.*) withdrew (.*)!/g, "{TRAINER} a retiré {POKEMON} !");
-RegexBattleMessagesMap.set(/(.*) used /g, "{POKEMON} a utilisé ");
-RegexBattleMessagesMap.set(/(.*) fainted!/g, "{POKEMON} est K.O. !");
-RegexBattleMessagesMap.set(/(.*) was dragged out!/g, "{POKEMON} est traîné de force au combat !");
-RegexBattleMessagesMap.set(/\((.*) lost (.*) of its health!\)/g, "({POKEMON} a perdu {PERCENTAGE} de ses points de vie !)");
-RegexBattleMessagesMap.set(/(.*) restored a little HP using its (.*)/g, "{POKEMON} a récupéré un peu de PV avec son {ITEM} !");
-RegexBattleMessagesMap.set(/(.*) is switched out with the Eject Button!/g, "{POKEMON} se retire grâce au Bouton Fuite !");
-RegexBattleMessagesMap.set(/(.*) held up its Red Card against the opposing (.*)!/g, "{POKEMON_1} a mis un Carton Rouge au {POKEMON_2} !");
-RegexBattleMessagesMap.set(/(.*) floats in the air with its Air Balloon!/g, "{POKEMON} flotte grâce à son Ballon !");
-RegexBattleMessagesMap.set(/(.*)'s HP is full!/g, "Les PV de {POKEMON} sont au max !");
-RegexBattleMessagesMap.set(/\[(.*)'s (.*)\]/g, "[{SWAP_1_ABILITY} de {SWAP_0_POKEMON}]");
-RegexBattleMessagesMap.set(/(.*)'s team:/g, "Équipe de {TRAINER}");
-RegexBattleMessagesMap.set(/Turn (.*)/g, "Tour {NUMBER}");
+RegexBattleMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le combat entre {TRAINER1} et {TRAINER2} a commencé !");
+RegexBattleMessagesMap.set(/(.*) was badly poisoned!/, "{POKEMON} est gravement empoisonné !");
+RegexBattleMessagesMap.set(/(.*) was hurt by poison!/, "{POKEMON} souffre du poison !");
+RegexBattleMessagesMap.set(/(.*)'s evasiveness fell!/, "L'esquive du {POKEMON} a baissé !");
+RegexBattleMessagesMap.set(/(.*)'s Attack fell!/, "L'Attaque du {POKEMON} a baissé !");
+RegexBattleMessagesMap.set(/(.*)'s Sp. Atk rose!/, "L'Atq Spé. du {POKEMON} a augmenté !");
+RegexBattleMessagesMap.set(/(.*)'s Sp. Def rose!/, "La Déf Spé. du {POKEMON} a augmenté !");
+RegexBattleMessagesMap.set(/(.*) sent out (.*) \(/, "{TRAINER} a envoyé {POKEMON} (");
+RegexBattleMessagesMap.set(/(.*) sent out /, "{TRAINER} a envoyé ");
+RegexBattleMessagesMap.set(/Go! (.*) \(/, "En avant ! {POKEMON} (");
+RegexBattleMessagesMap.set(/(.*), come back!/, "{POKEMON}, reviens !");
+RegexBattleMessagesMap.set(/(.*) withdrew (.*)!/, "{TRAINER} a retiré {POKEMON} !");
+RegexBattleMessagesMap.set(/(.*) used /, "{POKEMON} a utilisé ");
+RegexBattleMessagesMap.set(/(.*) fainted!/, "{POKEMON} est K.O. !");
+RegexBattleMessagesMap.set(/(.*) was dragged out!/, "{POKEMON} est traîné de force au combat !");
+RegexBattleMessagesMap.set(/\((.*) lost (.*) of its health!\)/, "({POKEMON} a perdu {PERCENTAGE} de ses points de vie !)");
+RegexBattleMessagesMap.set(/(.*) restored a little HP using its (.*)/, "{POKEMON} a récupéré un peu de PV avec son {ITEM} !");
+RegexBattleMessagesMap.set(/(.*) is switched out with the Eject Button!/, "{POKEMON} se retire grâce au Bouton Fuite !");
+RegexBattleMessagesMap.set(/(.*) held up its Red Card against the opposing (.*)!/, "{POKEMON_1} a mis un Carton Rouge au {POKEMON_2} !");
+RegexBattleMessagesMap.set(/(.*) floats in the air with its Air Balloon!/, "{POKEMON} flotte grâce à son Ballon !");
+RegexBattleMessagesMap.set(/(.*)'s HP is full!/, "Les PV de {POKEMON} sont au max !");
+RegexBattleMessagesMap.set(/\[(.*)'s (.*)\]/, "[{SWAP_1_ABILITY} de {SWAP_0_POKEMON}]");
+RegexBattleMessagesMap.set(/(.*)'s team:/, "Équipe de {TRAINER}");
+RegexBattleMessagesMap.set(/Turn (.*)/, "Tour {NUMBER}");
 
 export function translateMessage(originalString: string)
 {
