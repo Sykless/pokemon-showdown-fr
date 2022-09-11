@@ -1,4 +1,5 @@
-import { isValidEnglishAbility, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishType, translateAbility, translateBattleMessage, translateCondition, translateItem, translateMenu, translateMenuToEnglish, translateMove, translatePokemonName, translateStat, translateType } from "../translator";
+import { isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishType } from "../translator";
+import { translateAbility, translateCondition, translateItem, translateMenu, translateMessage, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 
 console.log("BattleTranslate successfully loaded !");
 
@@ -601,107 +602,9 @@ function updateShowdownMessage(messageElement: Element)
                     console.log("Unknown info in strong tag : " + messagePart.outerHTML);
                 }
             }
-            // Small tags refer to the effect of a move, ability, such as status condition, stat drop, etc
-            else if (messagePart.tagName == "SMALL")
-            {
-                // Default : try to translate as a battle message
-                messagePart.textContent = translateBattleMessage(messagePart.textContent);
-                
-            }
-            // All remaining non-line break tags are regular text messages
-            else if (messagePart.tagName != "BR" && messagePart.textContent) 
-            {
-                // Pokémon sent out
-                if (messagePart.textContent.includes("Go! "))
-                {
-                    // Alternate form present, you need to isolate the Pokémon name
-                    if (messagePart.textContent.includes(" (")) {
-                        messagePart.textContent = translateBattleMessage(messagePart.textContent.slice(0,4)) // Battle message
-                            + translatePokemonName(messagePart.textContent.slice(4,-2)) + " ("; // Pokémon name
-                    }
-                    // Regular "Go! " message
-                    else  {
-                        messagePart.textContent = translateBattleMessage(messagePart.textContent); // Battle message
-                    }
-                }
-                else if (messagePart.textContent.includes(" sent out "))
-                {
-                    // In "sent out" message, you need to isolate the trainer name from the battle message
-                    var sentOutMessage = messagePart.textContent.split(" sent out ");
-
-                    // Alternate form present, you also need to isolate the Pokémon name
-                    if (messagePart.textContent.includes(" (")) {
-                        messagePart.textContent = messagePart.textContent.slice(0,sentOutMessage[0].length) // Trainer name
-                            + translateBattleMessage(messagePart.textContent.slice(sentOutMessage[0].length, - sentOutMessage[1].length)) // Battle message
-                            + translatePokemonName(sentOutMessage[1].slice(0,-2)) + " ("; // Pokémon name
-                    }
-                    // Regular "sent out" message
-                    else {
-                        messagePart.textContent = messagePart.textContent.slice(0,sentOutMessage[0].length) // Trainer name
-                        + translateBattleMessage(messagePart.textContent.slice(sentOutMessage[0].length)) // Battle message
-                    }
-                }
-                else if (messagePart.textContent.includes(", come back!"))
-                {
-                    // Isolate the battle message from the Pokémon name
-                    messagePart.textContent = translatePokemonName(messagePart.textContent.slice(0,-12)) // Pokemon name
-                        + translateBattleMessage(messagePart.textContent.slice(-12)); // Battle message
-                }
-                else if (messagePart.textContent.includes(" withdrew "))
-                {
-                    var withdrewMessage = messagePart.textContent.split(" withdrew ");
-
-                    // Isolate the battle message, Trainer name and Pokémon name
-                    messagePart.textContent = messagePart.textContent.slice(0,withdrewMessage[0].length) // Trainer name
-                            + translateBattleMessage(messagePart.textContent.slice(withdrewMessage[0].length, - withdrewMessage[1].length)) // Battle message
-                            + translatePokemonName(withdrewMessage[1].slice(0,-1)) + " !"; // Pokémon name
-                }
-                else if (messagePart.textContent.includes(" used "))
-                {
-                    var moveUsedMessage = messagePart.textContent.split(" used ");
-                    var opposingMessage = "The opposing ";
-                    var pokemonName = "";
-
-                    // Opposing Pokémon used a move
-                    if (moveUsedMessage[0].includes(opposingMessage)) {
-                        pokemonName = translateBattleMessage(opposingMessage);
-                        pokemonName = pokemonName.replace("{POKEMON}", translatePokemonName(moveUsedMessage[0].replace(opposingMessage, "")));
-                    }
-                    // Ally Pokémon used a move
-                    else {
-                        pokemonName = translatePokemonName(moveUsedMessage[0]);
-                    }
-
-                    // Isolate the battle message, Move name and Pokémon name
-                    messagePart.textContent = pokemonName // Pokémon name
-                            + translateBattleMessage(" used ") // Battle message
-                            + translateMove(moveUsedMessage[1]); // Move
-                }
-                else if (messagePart.textContent.includes(" fainted!"))
-                {
-                    var faintedMessage = messagePart.textContent.split(" fainted");
-                    var opposingMessage = "The opposing ";
-                    var pokemonName = "";
-
-                    // Opposing Pokémon fainted
-                    if (faintedMessage[0].includes(opposingMessage)) {
-                        pokemonName = translateBattleMessage(opposingMessage);
-                        pokemonName = pokemonName.replace("{POKEMON}", translatePokemonName(faintedMessage[0].replace(opposingMessage, "")));
-                    }
-                    // Ally Pokémon fainted
-                    else {
-                        pokemonName = translatePokemonName(faintedMessage[0]);
-                    }
-
-                    // Isolate the battle message and Pokémon name
-                    messagePart.textContent = pokemonName // Pokémon name
-                            + translateBattleMessage(" fainted!"); // Battle message
-                }
-                else
-                {
-                    // Default : try to translate as a battle message
-                    messagePart.textContent = translateBattleMessage(messagePart.textContent);
-                }
+            // Small tags or text tags : various battle messages
+            else if (messagePart.tagName == "SMALL" || messagePart.tagName != "BR") {
+                messagePart.textContent = translateMessage(messagePart.textContent);
             }
         }
     })
