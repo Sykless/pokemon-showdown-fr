@@ -3168,20 +3168,17 @@ export const MenuDico: { [englishName: string]: string; } = {
 }
 
 export const BattleMessagesDico:  { [englishName: string]: string; } = {
-	" was badly poisoned!": "est gravement empoisonné !",
-	" was hurt by poison!": "souffre du poison !",
-	" evasiveness fell!": "L'esquive du {POKEMON} baisse !",
+
 	"It's not very effective...": "Ce n'est pas très efficace...",
 	"It's super effective!": "C'est super efficace !",
+	"A soothing aroma wafted through the area!": "Une odeur apaisante flotte dans l'air !",
+	"The battlefield got weird!": "Le sol se met à réagir de façon bizarre...",
+	"The weirdness disappeared from the battlefield!": "Le sol redevient normal !",
+	" was dragged out!": " est traîné de force au combat !",
+	"But it failed!": "Mais cela échoue !",
 	"Go! ": "En avant ! ",
-	" sent out ": " a envoyé ",
-	" withdrew ": " a retiré ",
-	", come back!": ", reviens !",
-	" used ": " a utilisé ",
-	" fainted!": " est K.O. !",
-	"The opposing ": "Le {POKEMON} adverse ",
 	")!": ") !",
-	"!": " !"
+	"!": " !",
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
@@ -3560,4 +3557,149 @@ export function isValidEnglishBattleMessage(englishBattleMessage: string) {
 
 export function isValidEnglishFilter(englishFilter: string) {
 	return FiltersDico[englishFilter];
+}
+
+
+const RegexBattleMessagesMap = new Map();
+RegexBattleMessagesMap.set(/Battle started between (.*) and (.*)!/g, "Le combat entre {TRAINER1} et {TRAINER2} a commencé !");
+RegexBattleMessagesMap.set(/(.*) was badly poisoned!/g, "{POKEMON} est gravement empoisonné !");
+RegexBattleMessagesMap.set(/(.*) was hurt by poison!/g, "{POKEMON} souffre du poison !");
+RegexBattleMessagesMap.set(/(.*)'s evasiveness fell!/g, "L'esquive du {POKEMON} a baissé !");
+RegexBattleMessagesMap.set(/(.*)'s Attack fell!/g, "L'Attaque du {POKEMON} a baissé !");
+RegexBattleMessagesMap.set(/(.*)'s Sp. Atk rose!/g, "L'Atq Spé. du {POKEMON} a augmenté !");
+RegexBattleMessagesMap.set(/(.*)'s Sp. Def rose!/g, "La Déf Spé. du {POKEMON} a augmenté !");
+RegexBattleMessagesMap.set(/(.*) sent out (.*) \(/g, "{TRAINER} a envoyé {POKEMON} (");
+RegexBattleMessagesMap.set(/(.*) sent out /g, "{TRAINER} a envoyé ");
+RegexBattleMessagesMap.set(/Go! (.*) \(/g, "En avant ! {POKEMON} (");
+RegexBattleMessagesMap.set(/(.*), come back!/g, "{POKEMON}, reviens !");
+RegexBattleMessagesMap.set(/(.*) withdrew (.*)!/g, "{TRAINER} a retiré {POKEMON} !");
+RegexBattleMessagesMap.set(/(.*) used /g, "{POKEMON} a utilisé ");
+RegexBattleMessagesMap.set(/(.*) fainted!/g, "{POKEMON} est K.O. !");
+RegexBattleMessagesMap.set(/(.*) was dragged out!/g, "{POKEMON} est traîné de force au combat !");
+RegexBattleMessagesMap.set(/\((.*) lost (.*) of its health!\)/g, "({POKEMON} a perdu {PERCENTAGE} de ses points de vie !)");
+RegexBattleMessagesMap.set(/(.*) restored a little HP using its (.*)/g, "{POKEMON} a récupéré un peu de PV avec son {ITEM} !");
+RegexBattleMessagesMap.set(/(.*) is switched out with the Eject Button!/g, "{POKEMON} se retire grâce au Bouton Fuite !");
+RegexBattleMessagesMap.set(/(.*) held up its Red Card against the opposing (.*)!/g, "{POKEMON_1} a mis un Carton Rouge au {POKEMON_2} !");
+RegexBattleMessagesMap.set(/(.*) floats in the air with its Air Balloon!/g, "{POKEMON} flotte grâce à son Ballon !");
+RegexBattleMessagesMap.set(/(.*)'s HP is full!/g, "Les PV de {POKEMON} sont au max !");
+RegexBattleMessagesMap.set(/\[(.*)'s (.*)\]/g, "[{SWAP_1_ABILITY} de {SWAP_0_POKEMON}]");
+RegexBattleMessagesMap.set(/(.*)'s team:/g, "Équipe de {TRAINER}");
+RegexBattleMessagesMap.set(/Turn (.*)/g, "Tour {NUMBER}");
+
+export function translateMessage(originalString: string)
+{
+    // If the message can be directly translated (no Pokémon name, move, etc)
+    if (isValidEnglishBattleMessage(originalString)) {
+        return translateBattleMessage(originalString);
+    }
+    // The message probably contains a variable english name (Pokémon name, move, etc)
+    else  {
+        console.log("Regex message : " + originalString);
+
+        // Use a Regex match in order to translate the message
+        var translated = translateRegexBattleMessage(originalString);
+
+        if (translated.length > 0)
+        {
+            var englishMessage = translated[0].source.split("(.*)");
+            var variablesToTranslate = translated[1].match(/{(.*?)}/g);
+
+            console.log(englishMessage);
+
+            // If a SWAP parameter is present in the template variable, order them by swap id
+            if (variablesToTranslate[0].includes("SWAP")) 
+			{
+                // Alphabetically sort the swaps
+                variablesToTranslate.sort();
+
+                // Remove the SWAP_i_ in the tags
+                for (var i = 0 ; i < variablesToTranslate.length ; i++) {
+                    translated[1] = translated[1].replace("SWAP_" + i + "_", "");
+                    variablesToTranslate[i] = variablesToTranslate[i].replace("SWAP_" + i + "_","");
+                }
+            }
+
+            for (var i = 0 ; i < englishMessage.length - 1 ; i++)
+            {
+                // Remove escaped escaped character
+                if (i == 0) { englishMessage[0] = englishMessage[0].replace("\\","");}
+                englishMessage[i + 1] = englishMessage[i + 1].replace("\\","");
+                
+                // Get english variable from the original string
+                var variableName = originalString.slice((i == 0 && englishMessage[i] == "" ? 0 : originalString.indexOf(englishMessage[i]) + englishMessage[i].length),
+                                                              (englishMessage[i + 1] == "" ? originalString.length : originalString.indexOf(englishMessage[i + 1])));
+
+                console.log(variableName);
+
+                // Replace the template variable by the translated value
+                if (variablesToTranslate[i].includes("{POKEMON"))
+                {
+                    // Display the Pokémon name differently depending on if it's the opponent one, or its position in the word, 
+                    if (variableName.includes("The opposing ")) {
+                        if (isFirstWord("{POKEMON}", translated[1])) {
+                            translated[1] = translated[1].replace("{POKEMON}", "Le " + translatePokemonName(variableName.replace("The opposing ", "")) + " adverse");
+                        }
+                        else {
+                            translated[1] = translated[1].replace("{POKEMON}", translatePokemonName(variableName.replace("The opposing ", "")) + " adverse");
+                        }
+                    }
+                    else {
+                        translated[1] = translated[1].replace("{POKEMON}", translatePokemonName(variableName));
+                    }
+                }
+                else if (variablesToTranslate[i] == "{ABILITY}") {
+                    translated[1] = translated[1].replace("{ABILITY}", translateAbility(variableName));
+                }
+                else if (variablesToTranslate[i] == "{MOVE}") {
+                    translated[1] = translated[1].replace("{MOVE}", translateMove(variableName));
+                }
+                else {
+                    translated[1] = translated[1].replace(variablesToTranslate[i], variableName); // Default,just replace the template variable
+                }
+            }
+
+            return translated[1];
+        }
+        else {
+            // No translation found, return the original string
+            return originalString;
+        }
+    }
+}
+
+function translateRegexBattleMessage(messageString: string)
+{
+	console.log(RegexBattleMessagesMap);
+	console.log(messageString);
+
+	for (let RegexTranslation of RegexBattleMessagesMap)
+	{
+		console.log(RegexTranslation[0] + " vs " + messageString);
+
+		if (RegexTranslation[0].test(messageString))
+		{
+			console.log("It's a match !");
+			return RegexTranslation;
+		}
+	}
+
+	console.log("No match found for : " + messageString);
+
+	return [];
+}
+
+function isFirstWord(word: string, sentence: string) {
+    var wordPosition = sentence.indexOf(word) - 1;
+
+    while (wordPosition >= 0)
+    {
+        // Check if the character is a letter
+        if (sentence[wordPosition].toLowerCase() == sentence[wordPosition].toUpperCase()) {
+            return false;
+        }
+
+        wordPosition--;
+    }
+
+    return true;
 }
