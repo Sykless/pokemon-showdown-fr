@@ -5,9 +5,10 @@ const ITEM = 3;
 const TYPE = 4;
 const NATURE = 5;
 const STAT = 6;
-const HEADER = 7;
-const MENU = 8;
-const FILTER = 9;
+const CONDITION = 7;
+const HEADER = 8;
+const MENU = 9;
+const FILTER = 10;
 
 export const PokemonDico: { [englishName: string]: string; } = {
 	"Bulbasaur": "Bulbizarre",
@@ -3014,7 +3015,21 @@ export const StatsDico: { [englishName: string]: string; } = {
 	"Sp. Def.": "Déf. Sp.",
 	"SpD": "SpD",
 	"Speed": "Vitesse",
-	"Spe": "Vit"
+	"Spe": "Vit",
+	"Accuracy": "Précision",
+	"Evasion": "Esquive",
+	"Spc": "Spc"
+}
+
+export const ConditionsDico: { [englishName: string]: string; } = {
+	"PAR": "PAR",
+	"BRN": "BRU",
+	"PSN": "PSN",
+	"TOX": "TOX",
+	"SLP": "SOM",
+	"FRZ": "GEL",
+	"Confused": "Confus",
+	"Must recharge": "Doit se recharger"
 }
 
 export const HeadersDico: { [englishName: string]: string; } = {
@@ -3136,7 +3151,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"harvested": "récolté",
 	"bestowed": "offert",
 	"tricked": "échangé",
-	"disturbed": "dérangé",
+	"disturbed": "possédé",
 	"How will you start the battle?": "Comment commencerez-vous le combat ?",
 	" Timer": " Minuteur",
 	"Choose Lead": "Choisir un Lead",
@@ -3266,11 +3281,11 @@ export const CosmeticForms: Array<string> = [
 ]
 
 const MainDico: Array<{ [englishName: string]: string; }>  = [
-	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, HeadersDico, MenuDico, FiltersDico
+	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, ConditionsDico, HeadersDico, MenuDico, FiltersDico
 ]
 
 const LogTranslationType: Array<string> = [
-	"pokémon", "ability", "move", "item", "type", "nature", "stat", "header", "menu", "filter"
+	"pokémon", "ability", "move", "item", "type", "nature", "stat", "condition", "header", "menu", "filter"
 ]
 
 function translateToFrench(englishWord: string, translationType: number)
@@ -3359,6 +3374,10 @@ export function translateStat(englishStat: string) {
 	return translateToFrench(englishStat, STAT);
 }
 
+export function translateCondition(englishCondition: string) {
+	return translateToFrench(englishCondition, CONDITION);
+}
+
 export function translateHeader(englishHeader: string) {
 	return translateToFrench(englishHeader, HEADER);
 }
@@ -3399,6 +3418,10 @@ export function translateNatureToEnglish(frenchNature: string) {
 
 export function translateStatToEnglish(frenchStat: string) {
 	return translateToEnglish(frenchStat, STAT);
+}
+
+export function translateConditionToEnglish(frenchCondition: string) {
+	return translateToEnglish(frenchCondition, CONDITION);
 }
 
 export function translateHeaderToEnglish(frenchHeader: string) {
@@ -3443,6 +3466,10 @@ export function isValidFrenchStat(frenchStat: string) {
 	return translateToEnglish(frenchStat, STAT) != frenchStat;
 }
 
+export function isValidFrenchCondition(frenchCondition: string) {
+	return translateToEnglish(frenchCondition, CONDITION) != frenchCondition;
+}
+
 export function isValidFrenchHeader(frenchHeader: string) {
 	return translateToEnglish(frenchHeader, HEADER) != frenchHeader;
 }
@@ -3483,6 +3510,10 @@ export function isValidEnglishNature(englishNature: string) {
 
 export function isValidEnglishStat(englishStat: string) {
 	return StatsDico[englishStat];
+}
+
+export function isValidEnglishCondition(englishCondition: string) {
+	return ConditionsDico[englishCondition];
 }
 
 export function isValidEnglishHeader(englishHeader: string) {

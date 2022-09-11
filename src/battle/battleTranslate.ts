@@ -1,4 +1,4 @@
-import { isValidEnglishType, translateAbility, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType } from "../translator";
+import { isValidEnglishType, translateAbility, translateCondition, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType } from "../translator";
 
 console.log("BattleTranslate successfully loaded !");
 
@@ -89,11 +89,17 @@ function onMutation(mutations: MutationRecord[])
                             updateControlPanel(newElement);
                         }
                     }
+                    // Timer button
                     else if (elementClasses.contains("timerbutton"))
                     {
                         updateTimerButton(newElement);
                     }
-                    else
+                    // Pokémon name and status
+                    else if (elementClasses.contains("statbar"))
+                    {
+                        updatePokemonStatus(newElement);
+                    }
+                    else 
                     {
                         console.log(newElement);
                     }
@@ -495,6 +501,64 @@ function updateOpponentWait(newElement: Element)
                 }
             }
         })
+    })
+}
+
+function updatePokemonStatus(pokemonMainElement: Element)
+{
+    pokemonMainElement.childNodes.forEach(function (pokemonNode) {
+        var pokemonElement = pokemonNode as Element;
+
+        // Pokémon name
+        if (pokemonElement.tagName == "STRONG")
+        {
+            pokemonElement.childNodes.forEach(function (pokemonIdentityNode) {
+                var pokemonIdentityElement = pokemonIdentityNode as Element;
+
+                if (pokemonIdentityElement.textContent)
+                {
+                    // Level
+                    if (pokemonIdentityElement.tagName == "SMALL") {
+                        pokemonIdentityElement.textContent = pokemonIdentityElement.textContent.replace("L","N");
+                    }
+                    // Pokémon name
+                    else if (pokemonIdentityElement.tagName != "IMG") {
+                        // The Pokémon name might have a space character to make space for the next info
+                        if (pokemonIdentityElement.textContent.slice(-1) == " ") {
+                            pokemonIdentityElement.textContent = translatePokemonName(pokemonIdentityElement.textContent.slice(0,-1)) + " ";
+                        }
+                        else {
+                            pokemonIdentityElement.textContent = translatePokemonName(pokemonIdentityElement.textContent);
+                        }
+                    }
+                }
+            })
+        }
+        // Pokémon status
+        else if (pokemonElement.className == "hpbar")
+        {
+            pokemonElement.childNodes.forEach(function (statusNode) {
+                if ((statusNode as Element).className == "status") {
+                    statusNode.childNodes.forEach(function (statusBuffsNode) {
+                        var statusBuffs = statusBuffsNode as Element;
+
+                        if (statusBuffs.textContent)
+                        {
+                            // Buffs and debuffs
+                            if (["bad", "good"].includes(statusBuffs.className)) {
+                                // Translate stat
+                                var buffStatSplit = statusBuffs.textContent.split(" ")
+                                statusBuffs.textContent = buffStatSplit[0] + " " + translateStat(buffStatSplit[1]);
+                            }
+                            // Status condition
+                            else {
+                                statusBuffs.textContent = translateCondition(statusBuffs.textContent);
+                            }
+                        }
+                    })
+                }
+            })
+        }
     })
 }
 
