@@ -17,22 +17,60 @@ RegexBattleMessagesMap.set(/(.*)'s team:/, "Équipe de {TRAINER}");
 RegexBattleMessagesMap.set(/Turn (.*)/, "Tour {NUMBER}");
 
 // STATUS
-RegexBattleMessagesMap.set(/(.*) was badly poisoned!/, "{POKEMON} est gravement empoisonné !");
-RegexBattleMessagesMap.set(/(.*) was hurt by poison!/, "{POKEMON} souffre du poison !");
-RegexBattleMessagesMap.set(/(.*) was hurt by its burn!/, "{POKEMON} souffre de sa brûlure !");
 RegexBattleMessagesMap.set(/(.*) was burned!/, "{POKEMON} est brûlé !");
-RegexBattleMessagesMap.set(/(.*) is paralyzed! It may be unable to move!/, "{POKEMON} est paralysé ! Il aura du mal à attaquer !");
-RegexBattleMessagesMap.set(/(.*) is fast asleep./, "{POKEMON} dort profondément.");
-RegexBattleMessagesMap.set(/(.*) woke up!/, "{POKEMON} se réveille !");
+RegexBattleMessagesMap.set(/(.*) was burned by the (.*)!/, "{POKEMON} est brûlé par {ITEM} !");
 RegexBattleMessagesMap.set(/(.*) is already burned!/, "{POKEMON} est déjà brûlé.");
+RegexBattleMessagesMap.set(/(.*)'s burn was healed!/, "{POKEMON} n'est plus brûlé !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) healed its burn!/, "La {SWAP_1_ITEM} du {SWAP_0_POKEMON} le guérit de sa brûlure !");
+RegexBattleMessagesMap.set(/(.*) was hurt by its burn!/, "{POKEMON} souffre de sa brûlure !");
+
+RegexBattleMessagesMap.set(/(.*) was frozen solid!/, "{POKEMON}  est gelé !");
+RegexBattleMessagesMap.set(/(.*) is already frozen solid!/, "{POKEMON} est déjà gelé.");
+RegexBattleMessagesMap.set(/(.*) thawed out!/, "{POKEMON} n'est plus gelé !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) defrosted it!/, "La {SWAP_1_ITEM} du {SWAP_0_POKEMON} le dégèle !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) melted the ice!/, "La glace a fondu grâce à la capacité {SWAP_1_MOVE} du {SWAP_0_POKEMON} !");
+RegexBattleMessagesMap.set(/(.*) is frozen solid!/, "{POKEMON} est gelé ! Il ne peut plus attaquer !");
+
+RegexBattleMessagesMap.set(/(.*) is paralyzed! It may be unable to move!/, "{POKEMON} est paralysé ! Il aura du mal à attaquer !");
 RegexBattleMessagesMap.set(/(.*) is already paralyzed!/, "{POKEMON} est déjà paralysé.");
+RegexBattleMessagesMap.set(/(.*) was cured of paralysis!/, "{POKEMON} n'est plus paralysé !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) cured its paralysis!/, "La {SWAP_1_ITEM} du {SWAP_0_POKEMON} le sort de sa paralysie !");
+RegexBattleMessagesMap.set(/(.*) is paralyzed! It can't move!/, "{POKEMON} est paralysé ! Il n'a pas pu attaquer !");
+
+RegexBattleMessagesMap.set(/(.*) was poisoned!/, "{POKEMON} est empoisonné !");
+RegexBattleMessagesMap.set(/(.*) is already poisoned!/, "{POKEMON} est déjà empoisonné.");
+RegexBattleMessagesMap.set(/(.*) was cured of its poisoning!/, "{POKEMON} n'est plus empoisonné !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) cured its poison!/, "La {SWAP_1_ITEM} du {SWAP_0_POKEMON} le guérit de son empoisonnement !");
+RegexBattleMessagesMap.set(/(.*) was hurt by poison!/, "{POKEMON} souffre du poison !");
+
+RegexBattleMessagesMap.set(/(.*) was badly poisoned!/, "{POKEMON} est gravement empoisonné !");
+RegexBattleMessagesMap.set(/(.*) was badly poisoned by the (.*)!/, "{POKEMON} est gravement empoisonné par {ITEM} !");
+
+RegexBattleMessagesMap.set(/(.*) fell asleep!/, "{POKEMON} s'est endormi !");
+RegexBattleMessagesMap.set(/(.*) slept and became healthy!/, "{POKEMON} a récupéré en dormant !");
 RegexBattleMessagesMap.set(/(.*) is already asleep!/, "{POKEMON} dort déjà.");
+RegexBattleMessagesMap.set(/(.*) woke up!/, "{POKEMON} se réveille !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) woke it up!/, "La {SWAP_1_ITEM} du {SWAP_0_POKEMON} le réveille !");
+RegexBattleMessagesMap.set(/(.*) is fast asleep./, "{POKEMON} dort profondément.");
+
+RegexBattleMessagesMap.set(/(.*) became confused!/, "Ça rend {POKEMON} confus !");
+RegexBattleMessagesMap.set(/(.*) became confused due to fatigue!/, "La fatigue rend {POKEMON} confus !");
+RegexBattleMessagesMap.set(/(.*) snapped out of its confusion!/, "{POKEMON} n'est plus confus !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) snapped it out of its confusion!/, "La {SWAP_1_ITEM} du {SWAP_0_POKEMON} le tire de sa confusion !");
+RegexBattleMessagesMap.set(/(.*) is already confused!/, "{POKEMON} est déjà confus !");
+RegexBattleMessagesMap.set(/(.*) is confused!/, "{POKEMON} est confus !");
+
 
 // STATS
-RegexBattleMessagesMap.set(/(.*)'s (.*) fell!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} baisse !");
 RegexBattleMessagesMap.set(/(.*)'s (.*) rose!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} augmente !");
 RegexBattleMessagesMap.set(/(.*)'s (.*) rose sharply!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} augmente beaucoup !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) rose drastically!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} augmente énormément !");
 RegexBattleMessagesMap.set(/(.*)'s (.*) won't go any higher!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} ne peut plus augmenter !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) fell!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} baisse !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) fell harshly!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} baisse beaucoup !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) fell severely!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} baisse énormément !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) won't go any lower!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} ne peut plus baisser !");
+
 
 // POKEMON
 RegexBattleMessagesMap.set(/Go! (.*) \(/, "En avant ! {POKEMON} (");
@@ -48,6 +86,12 @@ RegexBattleMessagesMap.set(/(.*) used /, "{POKEMON} a utilisé ");
 RegexBattleMessagesMap.set(/\((.*) lost (.*) of its health!\)/, "({POKEMON} a perdu {PERCENTAGE} de ses points de vie !)");
 RegexBattleMessagesMap.set(/(.*)'s HP is full!/, "Les PV de {POKEMON} sont au max !");
 RegexBattleMessagesMap.set(/\[(.*)'s (.*)\]/, "[{SWAP_1_ABILITY} de {SWAP_0_POKEMON}]");
+RegexBattleMessagesMap.set(/"(.*) and (.*) switched places!"/, "{POKEMON_1} et {POKEMON_2} échangent leur place !");
+RegexBattleMessagesMap.set(/It's super effective on (.*)!/, "C'est super efficace sur {POKEMON} !");
+RegexBattleMessagesMap.set(/It's not very effective on (.*)\./, "Ce n'est pas très efficace sur {POKEMON}...");
+RegexBattleMessagesMap.set(/A critical hit on (.*)!/, "Coup critique infligé à {POKEMON} !");
+RegexBattleMessagesMap.set(/It doesn't affect (.*)\.\.\./, "Ça n'affecte pas {POKEMON}...");
+
 
 // ITEMS
 RegexBattleMessagesMap.set(/(.*) restored a little HP using its Leftovers!/, "{POKEMON} a récupéré un peu de PV avec ses Restes !");
@@ -68,18 +112,401 @@ RegexBattleMessagesMap.set(/Bright light is about to burst out of (.*)!/, "Une l
 RegexBattleMessagesMap.set(/(.*) regained its true power through Ultra Burst!/, "{POKEMON} a pris une nouvelle forme grâce à l'Ultra-Explosion !");
 RegexBattleMessagesMap.set(/(.*) returned its stats to normal using its White Herb!/, "L'Herbe Blanche de {} le fait revenir à la normale.");
 RegexBattleMessagesMap.set(/(.*) became fully charged due to its Power Herb!/, "{POKEMON} est complètement chargé grâce à l'Herbe Pouvoir !");
+RegexBattleMessagesMap.set(/(.*) restored PP to its move (.*) using its Leppa Berry!/, "La Baie Mepo du {POKEMON} restaure les PP de sa capacité {MOVE} !");
+RegexBattleMessagesMap.set(/(.*) restored PP to its (.*) move using Mystery Berry!/, "La Baie Mystère du {POKEMON} restaure les PP de sa capacité {MOVE} !");
+RegexBattleMessagesMap.set(/(.*) protected itself with its Protective Pads!/, "{POKEMON} s'est protégé grâce au Pare-Effet !");  // TOFIND : Protection avec Pare-Effet (noacier ?)
+RegexBattleMessagesMap.set(/(.*) is not affected by [MOVE] thanks to its Safety Goggles!/, "{POKEMON} n'est pas affecté par {MOVE} grâce aux Lunettes Filtres !"); // TOFIND - Lunettes Filtre en se protégeant
 
-// TO CHECK
-RegexBattleMessagesMap.set(/(.*) restored PP to its move (.*) using its Leppa Berry!/, "{POKEMON} a récupéré des PP sur sa capacité {MOVE} en utilisant sa Baie Mepo !");
-RegexBattleMessagesMap.set(/(.*) restored PP to its (.*) move using Mystery Berry!/, "{POKEMON} a récupéré des PP sur sa capacité {MOVE} en utilisant sa Baie Mystère !");
-RegexBattleMessagesMap.set(/(.*) protected itself with its Protective Pads!/, "{POKEMON} s'est protégé grâce au Pare-Effet !");
-RegexBattleMessagesMap.set(/(.*) is not affected by [MOVE] thanks to its Safety Goggles!/, "{POKEMON} n'est pas affecté par {MOVE} grâce aux Lunettes Filtres !");
 
 // MOVES
+RegexBattleMessagesMap.set(/Pointed stones float in the air around (.*)!/, "Des pierres pointues lévitent autour de {TEAM} !");
 RegexBattleMessagesMap.set(/Pointed stones dug into (.*)!/, "Des pierres pointues transpercent {POKEMON} !");
-RegexBattleMessagesMap.set(/(.*) put in a substitute!/, "{POKEMON} crée un clone !");
+RegexBattleMessagesMap.set(/The pointed stones disappeared from around (.*)!/, "Les pierres pointues autour de {TEAM} ont disparu !");
+RegexBattleMessagesMap.set(/(.*) was seeded!/, "{POKEMON} est infecté !");
+RegexBattleMessagesMap.set(/(.*)'s health is sapped by Leech Seed!/, "Vampigraine draine l'énergie du {POKEMON} !");
+RegexBattleMessagesMap.set(/(.*) was freed from Leech Seed!/, "{POKEMON}"); // TOFIND - Vampigraine end
+RegexBattleMessagesMap.set(/(.*) put in a substitute!/, "{POKEMON} a déjà un clone !");
+RegexBattleMessagesMap.set(/(.*) already has a substitute!/, "{POKEMON} crée un clone !");
 RegexBattleMessagesMap.set(/(.*)'s substitute faded!/, "Le clone du {POKEMON} disparaît...");
+RegexBattleMessagesMap.set(/The substitute took damage for (.*)!/, "Le clone prend les dégâts à la place du {POKEMON} !");
+RegexBattleMessagesMap.set(/(.*) surrounded itself with a veil of water!/, "{POKEMON} s’entoure d’un voile d’eau !");
+RegexBattleMessagesMap.set(/A veil of water restored (.*)'s HP!/, "{POKEMON}");
+RegexBattleMessagesMap.set(/(.*) fell in love!/, "{POKEMON} est amoureux !");
+RegexBattleMessagesMap.set(/(.*) fell in love because of the (.*)!/, "{SWAP_1_ITEM} rend {SWAP_0_POKEMON} amoureux !");
+RegexBattleMessagesMap.set(/(.*) got over its infatuation!/, "{POKEMON} n’est plus amoureux !");
+RegexBattleMessagesMap.set(/(.*) cured its infatuation using its [ITEM]!/, "La {SWAP_1_ITEM} du {SWAP_0_POKEMON} fait faner son amour !");
+RegexBattleMessagesMap.set(/(.*) is in love with (.*)!/, "{POKEMON_1} est amoureux du {POKEMON_2}");
+RegexBattleMessagesMap.set(/(.*) is immobilized by love!/, "L’amour empêche {POKEMON} d’agir !");
+RegexBattleMessagesMap.set(/A sea of fire enveloped (.*)!/, "{TEAM} est cernée par une mer de feu !");
+RegexBattleMessagesMap.set(/The sea of fire around (.*) disappeared!/, "La mer de feu autour de {TEAM} a disparu !");
+RegexBattleMessagesMap.set(/(.*) was hurt by the sea of fire!/, "{POKEMON} est "); // TOFIND - Aire de Feu + Aire de Plante
+RegexBattleMessagesMap.set(/(.*) became trapped in the fiery vortex!/, "{POKEMON} est piégé dans le tourbillon de feu !");
+RegexBattleMessagesMap.set(/The bursting flame hit (.*)!/, "{POKEMON}"); // TOFIND - Rebondifeu sur combat double
+RegexBattleMessagesMap.set(/(.*) flung its (.*)!/, "{POKEMON} lance son objet (.*) !"); // TODO Conjugaison
+RegexBattleMessagesMap.set(/(.*) flew up high!/, "{POKEMON} s'envole !");
+RegexBattleMessagesMap.set(/(.*) is getting pumped!/, "{POKEMON} se gonfle !");
+RegexBattleMessagesMap.set(/(.*) used the (.*) to get pumped!/, "{POKEMON}"); // TOFIND - Item giving Puissance
+RegexBattleMessagesMap.set(/(.*) boosted its critical-hit ratio using its Z-Power!/, "{POKEMON}"); // TOFIND - Puissance-Z
+RegexBattleMessagesMap.set(/(.*) is tightening its focus!/, "{POKEMON} se concentre au maximum !");
+RegexBattleMessagesMap.set(/(.*) lost its focus and couldn't move!/, "{POKEMON} n’est plus concentré. Il ne peut plus attaquer !");
+RegexBattleMessagesMap.set(/(.*) became the center of attention!/, "{POKEMON} devient le centre d’attention !");
+RegexBattleMessagesMap.set(/(.*) was identified!/, "{POKEMON} est identifié !");
+RegexBattleMessagesMap.set(/(.*) became cloaked in a freezing light!/, "{POKEMON} est baigné d’une lumière blafarde !");
+RegexBattleMessagesMap.set(/(.*) foresaw an attack!/, "{POKEMON} prévoit une attaque !");
+RegexBattleMessagesMap.set(/(.*) took the Future Sight attack!/, "{POKEMON} subit l'attaque Prescience !");
+RegexBattleMessagesMap.set(/(.*)'s Ability was suppressed!/, "Le Talent de {POKEMON} a été rendu inactif !");
+RegexBattleMessagesMap.set(/(.*) is absorbing power!/, "{POKEMON} concentre son énergie !");
+RegexBattleMessagesMap.set(/(.*) got caught in the vortex of water!/, "{PARTY}"); //TOFIND - Canonnade G-Max
+RegexBattleMessagesMap.set(/(.*) is hurt by G-Max Cannonade’s vortex!/, "{POKEMON}"); //TOFIND - Canonnade G-Max
+RegexBattleMessagesMap.set(/(.*)'s PP was reduced!/, "{POKEMON}"); // TOFIND - G-Max Depletion
+RegexBattleMessagesMap.set(/Sharp-pointed pieces of steel started floating around (.*)!/, "{PARTY}"); // TOFIND - G-Max Steelsurge
+RegexBattleMessagesMap.set(/The pieces of steel surrounding (.*) disappeared!/, "{PARTY}");  // TOFIND - G-Max Steelsurge
+RegexBattleMessagesMap.set(/The sharp steel bit into (.*)!/, "{POKEMON}"); //  // TOFIND - G-Max Steelsurge
+RegexBattleMessagesMap.set(/(.*) got trapped with vines!/, "{PARTY}"); // TOFIND - G-Max Vine Lash
+RegexBattleMessagesMap.set(/(.*) is hurt by G-Max Vine Lash’s ferocious beating!/, "{POKEMON}"); // TOFIND - G-Max Vine Lash
+RegexBattleMessagesMap.set(/(.*) became surrounded by rocks!/, "{PARTY}"); // TOFIND - G-Max Volcalith
+RegexBattleMessagesMap.set(/(.*) is hurt by the rocks thrown out by G-Max Volcalith!/, "{POKEMON}"); // TOFIND - G-Max Volcalith
+RegexBattleMessagesMap.set(/(.*) were surrounded by fire!/, "{PARTY}"); // TOFIND - G-Max Wildfire
+RegexBattleMessagesMap.set(/(.*) is burning up within G-Max Wildfire’s flames!/, "{POKEMON}"); // TOFIND - G-Max Wildfire
+RegexBattleMessagesMap.set(/A swamp enveloped (.*)!/, "{TEAM} est cernée par un marécage !");
+RegexBattleMessagesMap.set(/The swamp around (.*) disappeared!/, "Le marécage autour de {TEAM} a disparu !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) lost all of its PP due to the grudge!/, "La capacité {SWAP_1_MOVE} du {SWAP_0_POKEMON} perd ses PP à cause de la Rancune !");
+RegexBattleMessagesMap.set(/(.*) wants its target to bear a grudge!/, "{POKEMON} veut que son adversaire subisse sa Rancune !");
+RegexBattleMessagesMap.set(/(.*) shared its guard with the target!/, "{POKEMON} additionne sa garde à celle de sa cible et les redistribue équitablement !");
+RegexBattleMessagesMap.set(/(.*) shared its power with the target!/, "{POKEMON} additionne sa force à celle de sa cible et les redistribue équitablement !");
+RegexBattleMessagesMap.set(/(.*) was prevented from healing!/, "{POKEMON} ne peut pas guérir !");
+RegexBattleMessagesMap.set(/(.*)'s Heal Block wore off!/, "{POKEMON} peut à nouveau guérir !");
+RegexBattleMessagesMap.set(/(.*) can't use (.*) because of Heal Block!/, "{POKEMON} ne peut pas utiliser la capacité {MOVE} à cause d'Anti-Soin !");
+RegexBattleMessagesMap.set(/But it failed to affect (.*)!/, "{POKEMON} n’est pas affecté !");
+RegexBattleMessagesMap.set(/The healing wish came true for (.*)!/, "Le Voeu Soin est exaucé et profite à {POKEMON}");
+RegexBattleMessagesMap.set(/(.*) is ready to help (.*)!/, "{POKEMON_1} est prêt à aider {POKEMON_2} !");
+RegexBattleMessagesMap.set(/(.*) became cloaked in freezing air!/, "{POKEMON} est entouré d’un air glacial !");
+RegexBattleMessagesMap.set(/(.*) sealed any moves its target shares with it!/, "{POKEMON} bloque les capacités en commun avec l’adversaire !");
+RegexBattleMessagesMap.set(/(.*) can't use its sealed (.*)!/, "{POKEMON} ne peut pas utiliser la capacité bloquée {MOVE} !");
+RegexBattleMessagesMap.set(/(.*)'s (.*) was burned up!/, "{POKEMON}"); // TOFIND - Calcination brûle une baie
+RegexBattleMessagesMap.set(/(.*) has been afflicted with an infestation by (.*)!/, "{POKEMON_1} est harcelé par {POKEMON_2}!");
+RegexBattleMessagesMap.set(/(.*) planted its roots!/, "{POKEMON} plante ses racines !");
+RegexBattleMessagesMap.set(/(.*) is anchored in place with its roots!/, "{POKEMON} s’accroche avec ses racines !");
+RegexBattleMessagesMap.set(/(.*) absorbed nutrients with its roots!/, "{POKEMON} absorbe des nutriments avec ses racines !");
+RegexBattleMessagesMap.set(/(.*) followed (.*)'s instructions!/, "{POKEMON_1} obéit à la Sommation du {POKEMON_2} !");
+RegexBattleMessagesMap.set(/(.*) knocked off (.*)'s (.*)!/, "{SWAP_0_POKEMON_1} fait tomber l'objet {SWAP_2_ITEM} du {SWAP_1_POKEMON_2} !"); // Conjugaison
+RegexBattleMessagesMap.set(/(.*) concentrated intensely!/, "{POKEMON} aiguise son esprit !");
+RegexBattleMessagesMap.set(/Light Screen made (.*) stronger against special moves!/, "Mur Lumière augmente la résistance de {TEAM} aux capacités spéciales !");
+RegexBattleMessagesMap.set(/(.*)'s Light Screen wore off!/, "Mur Lumière n’a plus d’effet sur {TEAM} !");
+RegexBattleMessagesMap.set(/(.*) took aim at (.*)!/, "{POKEMON_1} vise {POKEMON_2}");
+RegexBattleMessagesMap.set(/Lucky Chant shielded (.*) from critical hits!/, "L’Air Veinard immunise {TEAM} contre les coups critiques !");
+RegexBattleMessagesMap.set(/(.*)'s Lucky Chant wore off!/, "L’Air Veinard de {TEAM} prend fin !");
+RegexBattleMessagesMap.set(/(.*) became cloaked in mystical moonlight!/, "{POKEMON} est baigné par des rayons de lune !");
+RegexBattleMessagesMap.set(/(.*) shrouded itself with Magic Coat!/, "{POKEMON} s’entoure du Reflet Magik !");
+RegexBattleMessagesMap.set(/(.*) bounced the (.*) back!/, "{POKEMON} repousse la capacité {MOVE} ! Retour à l’envoyeur !");
+RegexBattleMessagesMap.set(/(.*) became trapped by swirling magma!/, "{POKEMON} est piégé dans un tourbillon de magma !");
+RegexBattleMessagesMap.set(/(.*) levitated with electromagnetism!/, "{POKEMON} lévite sur un champ magnétique !");
+RegexBattleMessagesMap.set(/(.*)'s electromagnetism wore off!/, "Le magnétisme du {POKEMON} se dissipe !");
+RegexBattleMessagesMap.set(/Magnitude (.*)!/, "Ampleur {NUMBER} !");
+RegexBattleMessagesMap.set(/(.*) intends to flip up a mat and block incoming attacks!/, "{POKEMON} se prépare à utiliser un tatami pour bloquer les attaques !");
+RegexBattleMessagesMap.set(/(.*) was blocked by the kicked-up mat!/, "La capacité {MOVE} a été bloquée par un tatami !");
+RegexBattleMessagesMap.set(/(.*) protected itself!/, "{POKEMON} se protège !");
+RegexBattleMessagesMap.set(/(.*)'s HP was restored by the Z-Power!/, "{POKEMON}"); // TOFIND - Z-Souvenir
+RegexBattleMessagesMap.set(/(.*) is overflowing with space power!/, "La puissance du cosmos afflue dans le corps du {POKEMON} !");
+RegexBattleMessagesMap.set(/Waggling a finger let it use (.*)!/, "Grâce à Métronome, le Pokémon lance {MOVE} !");
+RegexBattleMessagesMap.set(/(.*) learned (.*)!/, "{POKEMON} apprend {MOVE} !");
+RegexBattleMessagesMap.set(/\((.*) cut its own HP to power up its move!\)/, "({POKEMON})"); // TOFIND - Caboche-Kaboum
+RegexBattleMessagesMap.set(/(.*) became shrouded in mist!/, "{TEAM} s’entoure de Brume !");
+RegexBattleMessagesMap.set(/(.*) is no longer protected by mist!/, "La Brume autour de {TEAM} s’est dissipée !");
+RegexBattleMessagesMap.set(/(.*) is protected by the mist!"/, "{POKEMON} est protégé par la Brume !");
+RegexBattleMessagesMap.set(/Nature Power turned into (.*)!/, "Force-Nature provoque {MOVE}.");
+RegexBattleMessagesMap.set(/(.*) began having a nightmare!/, "{POKEMON} commence à cauchemarder !");
+RegexBattleMessagesMap.set(/(.*) is locked in a nightmare!/, "{POKEMON} est prisonnier d’un cauchemar !");
+RegexBattleMessagesMap.set(/(.*) can no longer escape because it used No Retreat!/, "{POKEMON} ne peut plus fuir à cause d'Ultime Bastion !");
+RegexBattleMessagesMap.set(/(.*) can no longer escape because of Octolock!/, "{POKEMON} ne peut plus fuir à cause d'Octoprise !");
+RegexBattleMessagesMap.set(/(.*)'s perish count fell to (.*)\./, "Le compte à rebours du Requiem du {POKEMON} descend à {NUMBER} !");
+RegexBattleMessagesMap.set(/(.*) is about to be attacked by its (.*)!/, "{POKEMON} {MOVE}"); // TOFIND - Esprit Frappeur
+RegexBattleMessagesMap.set(/(.*) is covered in powder!/, "{POKEMON}  est couvert de poudre !");
+RegexBattleMessagesMap.set(/(.*) switched its Attack and Defense!/, "{POKEMON} échange son Attaque et sa Défense !");
+RegexBattleMessagesMap.set(/\((.*) is being withdrawn\.\.\.\)/, "({POKEMON})"); // TOFIND - Poursuite sur switch
+RegexBattleMessagesMap.set(/(.*)'s move was postponed!/, "{POKEMON} doit retourner à la queue !");
+RegexBattleMessagesMap.set(/Quick Guard protected (.*)!/, "{POKEMON/TEAM} est protégé par la capacité Prévention !");
+RegexBattleMessagesMap.set(/(.*) whipped up a whirlwind!/, "{POKEMON} se prépare à lancer une bourrasque !");
+RegexBattleMessagesMap.set(/(.*) found one (.*)!/, "{POKEMON} trouve un {ITEM} !"); // Conjugaison
+RegexBattleMessagesMap.set(/Reflect made (.*) stronger against physical moves!/, "Protection augmente la résistance de {TEAM} aux capacités physiques !");
+RegexBattleMessagesMap.set(/(.*)'s Reflect wore off!/, "Protection n’a plus d’effet sur {TEAM} !");
+RegexBattleMessagesMap.set(/(.*)'s type became the same as (.*)'s type!/, "{POKEMON_1} prend le type du {POKEMON_2} !");
+RegexBattleMessagesMap.set(/(.*) copied (.*)'s (.*) Ability!/, "{SWAP_0_POKEMON_1} copie le talent {SWAP_2_ABILITY} du {SWAP_1_POKEMON_1} !");
+RegexBattleMessagesMap.set(/\((.*) loses Flying type this turn\.\)/, "({POKEMON} perd le type Vol pour ce tour.)");
+RegexBattleMessagesMap.set(/(.*) cloaked itself in a mystical veil!/, "{TEAM} est recouverte par un voile mystérieux !");
+RegexBattleMessagesMap.set(/(.*) is no longer protected by Safeguard!/, "{TEAM} n’est plus protégée par le voile mystérieux !");
+RegexBattleMessagesMap.set(/(.*) is protected by Safeguard!/, "{POKEMON} est protégé par la capacité Rune Protect !");
+RegexBattleMessagesMap.set(/(.*) became trapped by the quicksand!/, "{POKEMON} est piégé par le Tourbi-Sable !");
+RegexBattleMessagesMap.set(/It broke through (.*)'s protection!/, "{POKEMON}"); // TOFIND - Hantise à travers d'Abri
+RegexBattleMessagesMap.set(/(.*) vanished instantly!/, "{POKEMON} disparaît instantanément !");
+RegexBattleMessagesMap.set(/(.*) set a shell trap!/, "{POKEMON} déclenche le Carapiège !");
+RegexBattleMessagesMap.set(/(.*)'s shell trap didn't work!/, "{POKEMON}"); // TOFIND - Carapiège pas triggered
+RegexBattleMessagesMap.set(/(.*) sketched (.*)!/, "{POKEMON} apprend {MOVE} !");
+RegexBattleMessagesMap.set(/(.*) swapped Abilities with its target!/, "{POKEMON} et sa cible échangent leurs talents !");
+RegexBattleMessagesMap.set(/(.*) tucked in its head!/, "{POKEMON} baisse la tête !");
+RegexBattleMessagesMap.set(/(.*) became cloaked in a harsh light!/, "{POKEMON} est entouré d’une lumière intense !");
+RegexBattleMessagesMap.set(/(.*) took (.*) into the sky!/, "{POKEMON_1} emporte {POKEMON_2} haut dans le ciel !");
+RegexBattleMessagesMap.set(/(.*) was freed from the Sky Drop!/, "{POKEMON} est lâché en Chute Libre !");
+RegexBattleMessagesMap.set(/Sky Drop won't let (.*) go!/, "{POKEMON}"); // TOFIND - Fail switch ?
+RegexBattleMessagesMap.set(/(.*) is too heavy to be lifted!/, "{POKEMON}"); // TOFIND - Chute Libre sur > 200kg
+RegexBattleMessagesMap.set(/(.*) fell straight down!/, "{POKEMON}"); // TOCHECK - "La cible est touchée en plein vol et s’écrase au sol." ?
+RegexBattleMessagesMap.set(/(.*) is waiting for a target to make a move!/, "{POKEMON} attend qu’une cible agisse !");
+RegexBattleMessagesMap.set(/(.*) snatched (.*)'s move!/, "{POKEMON_1} saisit la capacité du {POKEMON_2} !");
+RegexBattleMessagesMap.set(/(.*) absorbed light!/, "{POKEMON} absorbe la lumière !");
+RegexBattleMessagesMap.set(/(.*) stole the target's boosted stats!/, "{POKEMON}"); // TOFIND - Clepto-Mânes
+RegexBattleMessagesMap.set(/(.*) switched Speed with its target!/, "{POKEMON} et sa cible échangent leur Vitesse !");
+RegexBattleMessagesMap.set(/Spikes were scattered on the ground all around (.*)!/, "Des Picots s’éparpillent autour de {TEAM} !");
+RegexBattleMessagesMap.set(/The spikes disappeared from the ground around (.*)!/, "Il n’y a plus de Picots autour de {TEAM} !");
+RegexBattleMessagesMap.set(/(.*) was hurt by the spikes!/, "{POKEMON} est blessé par les Picots !");
+RegexBattleMessagesMap.set(/It reduced the PP of (.*)'s (.*) by (.*)!/, "Les PP de la capacité {SWAP_1_MOVE} du {SWAP_0_POKEMON} baissent de {SWAP_2_NUMBER} !");
+RegexBattleMessagesMap.set(/A sticky web has been laid out on the ground around (.*)!/, "Le terrain est couvert d’une Toile Gluante du côté de {TEAM} !");
+RegexBattleMessagesMap.set(/The sticky web has disappeared from the ground around (.*)!/, "La Toile Gluante du côté de {TEAM} a disparu !");
+RegexBattleMessagesMap.set(/(.*) was caught in a sticky web!/, "{POKEMON} est pris dans la Toile Gluante !");
+RegexBattleMessagesMap.set(/(.*) stockpiled [NUMBER]!/, "{POKEMON} utilise la capacité Stockage {NUMBER} fois !");
+RegexBattleMessagesMap.set(/(.*)'s stockpiled effect wore off!/, "Les effets accumulés par {POKEMON} se dissipent !");
+RegexBattleMessagesMap.set(/The Tailwind blew from behind (.*)!/, "Un Vent Arrière souffle sur {TEAM} !");
+RegexBattleMessagesMap.set(/(.*)'s Tailwind petered out!/, "Le Vent Arrière soufflant sur {TEAM} s’arrête !");
+RegexBattleMessagesMap.set(/(.*) became weaker to fire!/, "{POKEMON} est maintenant vulnérable au feu !");
+RegexBattleMessagesMap.set(/(.*) fell for the taunt!/, "{POKEMON} répond à la Provoc !");
+RegexBattleMessagesMap.set(/(.*) shook off the taunt!/, "{POKEMON} a oublié la Provoc !");
+RegexBattleMessagesMap.set(/(.*) can't use (.*) after the taunt!/, "{POKEMON} ne peut pas utiliser\nla capacité {MOVE} après la Provoc !");
+RegexBattleMessagesMap.set(/(.*) was hurled into the air!/, "Ça fait léviter {POKEMON} !");
+RegexBattleMessagesMap.set(/(.*) was freed from the telekinesis!/, "{POKEMON} est libéré de la capacité Lévikinésie !");
+RegexBattleMessagesMap.set(/The effects of Throat Chop prevent (.*) from using certain moves!/, "Exécu-Son empêche {POKEMON} d’utiliser la capacité !");
+RegexBattleMessagesMap.set(/(.*) trapped (.*)!/, "{POKEMON_1} emprisonne {POKEMON_1} !");
+RegexBattleMessagesMap.set(/(.*) was subjected to torment!/, "{POKEMON} est tourmenté !");
+RegexBattleMessagesMap.set(/(.*) is no longer tormented!/, "Les tourments du {POKEMON} sont apaisés !");
+RegexBattleMessagesMap.set(/Poison spikes were scattered on the ground all around (.*)!/, "Des pics toxiques se répandent autour de {TEAM} !");
+RegexBattleMessagesMap.set(/The poison spikes disappeared from the ground around (.*)!/, "Il n’y a plus de pics toxiques autour de {TEAM} !");
+RegexBattleMessagesMap.set(/(.*) transformed into (.*)!/, "{POKEMON_1} prend l’apparence du {POKEMON_2} !");
+RegexBattleMessagesMap.set(/(.*) switched items with its target!/, "{POKEMON} échange son objet avec celui de sa cible !");
+RegexBattleMessagesMap.set(/(.*) caused an uproar!/, "{POKEMON} provoque un Brouhaha !");
+RegexBattleMessagesMap.set(/(.*) calmed down\./, "{POKEMON} se calme.");
+RegexBattleMessagesMap.set(/(.*) is making an uproar!/, "{POKEMON} continue son Brouhaha !");
+RegexBattleMessagesMap.set(/But the uproar kept (.*) awake!/, "Mais le Brouhaha tient {POKEMON} éveillé !");
+RegexBattleMessagesMap.set(/(.*) can't sleep in an uproar!/, "Mais son Brouhaha empêche {POKEMON} de dormir !");
+RegexBattleMessagesMap.set(/(.*) is waiting for (.*)'s move\.\.\./, "{POKEMON}"); // TOFIND - Aire d'eau activate
+RegexBattleMessagesMap.set(/A rainbow appeared in the sky on (.*)'s side!/, "Un arc-en-ciel apparaît au-dessus de {TEAM} !");
+RegexBattleMessagesMap.set(/The rainbow on (.*)'s side disappeared!/, "L’arc-en-ciel au-dessus de {TEAM} a disparu !");
+RegexBattleMessagesMap.set(/Breakneck Blitz turned into (.*) due to the weather!/, "La météo change Turbo-Charge Bulldozer en {MOVE} !");
+RegexBattleMessagesMap.set(/(.*) became trapped in the vortex!/, "{POKEMON} est piégé dans le tourbillon !");
+RegexBattleMessagesMap.set(/Wide Guard protected (.*)!/, "{POKEMON/TEAM} est protégé par la Garde Large !");
+RegexBattleMessagesMap.set(/(.*)'s wish came true!/, "Le Voeu du {POKEMON} se réalise !");
+RegexBattleMessagesMap.set(/(.*) was wrapped by (.*)!/, "{POKEMON_1} est ligoté par {POKEMON_2} !");
+RegexBattleMessagesMap.set(/(.*)'s attack continues!/, "{POKEMON} attaque encore !");
+RegexBattleMessagesMap.set(/(.*) grew drowsy!/, "Ça rend {POKEMON} somnolent !");
+RegexBattleMessagesMap.set(/(.*) clamped down on (.*)!/, "{POKEMON_1} est pris dans le Claquoir de {POKEMON_2} !");
+RegexBattleMessagesMap.set(/(.*)'s fervent wish has reached (.*)!/, "L'esprit de {TRAINER} entre en résonance avec la volonté de {POKEMON} !");
 
+
+export const BattleMessagesDico:  { [englishName: string]: string; } = {
+	"It's not very effective...": "Ce n'est pas très efficace...",
+	"It's super effective!": "C'est super efficace !",
+	"A critical hit!": "Coup critique !",
+	"It hurt itself in its confusion!": "Il se blesse dans sa confusion.",
+	"But it does not have enough HP left to make a substitute!": "Trop faible pour créer un clone !",
+
+	"A soothing aroma wafted through the area!": "Une odeur apaisante flotte dans l'air !",
+	"The battlefield got weird!": "Le sol se met à réagir de façon bizarre...",
+	"The weirdness disappeared from the battlefield!": "Le sol redevient normal !",
+	"A deluge of ions showers the battlefield!": "Un déluge de plasma s'abat sur le terrain !",
+	"But nothing happened!": "Mais rien ne se passe !",
+	"Everyone is caught up in the happy atmosphere!": "L'ambiance est euphorique !",
+	"A bell chimed!": "Un grelot sonne !",
+	"Coins were scattered everywhere!": "Une pluie de pièces !",
+	"All Pok\u00E9mon that heard the song will faint in three turns!": "Tous les Pokémon ayant entendu le Requiem seront K.O. après trois tours.",
+	"All STATUS changes are eliminated!": "Les changements de STATUT ont tous été annulés !",
+	"All stat changes were eliminated!": "Les changements de stats ont tous été annulés !",
+	"The battlers shared their pain!": "Les adversaires partagent leurs PV !",
+	"When the flame touched the powder on the Pok\u00E9mon, it exploded!": "La Nuée de Poudre entre en réaction avec la flamme et explose !",
+	"But it failed!": "Mais cela échoue !",
+	"Go! ": "En avant ! ",
+	")!": ") !",
+	"!": " !",
+}
+
+
+
+
+// the opposing team -> l'équipe ennemie
+// your team -> votre équipe
+
+
+
+// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
+// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
+// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
+// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
+
+// TODO
+// [POKEMON] moved to the center!
+// [TRAINER] can dynamax now!"
+// Dynamax Energy gathered around [TRAINER]!
+// [POKEMON] unleashes its full-force Z-Move!
+// [POKEMON]'s [ITEM] is reacting to the Key Stone!
+// [POKEMON] is reacting to [TRAINER]'s Key Stone!
+// [POKEMON]'s [ITEM] is reacting to [TRAINER]'s Mega Bracelet!
+// [POKEMON] has Mega Evolved into [POKEMON]!
+// [POKEMON]'s Primal Reversion! It reverted to its primal state!
+// [POKEMON] surrounded itself with its Z-Power!
+// [POKEMON] couldn't fully protect itself and got hurt!
+// [POKEMON] can't use [MOVE]!
+// [POKEMON] can't move!
+// [POKEMON] transformed!
+// [POKEMON]'s type changed to [TYPE]!
+// [POKEMON]'s [EFFECT] made it the [TYPE] type!
+// [TYPE] type was added to [POKEMON]!
+// ([EFFECT] started on [POKEMON]!)
+// [POKEMON] was freed from [EFFECT]!
+// ([EFFECT] activated!)
+// ([EFFECT] started on [TEAM]!)
+// ([EFFECT] ended on [TEAM]!)
+// ([EFFECT] started!)
+// ([EFFECT] ended!)
+
+// [POKEMON] acquired [ABILITY]!
+// [POKEMON] obtained one [ITEM]. // Trick, Switcheroo
+// [POKEMON] stole [SOURCE]'s [ITEM]! // Thief, Covet, Magician, Pickpocket
+// ([POKEMON] ate its [ITEM]!)
+// The [ITEM] strengthened [POKEMON]'s power!
+// The [ITEM] weakened damage to [POKEMON]!
+// [POKEMON] lost its [ITEM]!
+// ([POKEMON] used its [ITEM]!)
+// The [ITEM] weakened the damage to [POKEMON]!
+
+// ([POKEMON] was hurt!)
+// [POKEMON] was hurt by [SOURCE]'s [ITEM]! // Jaboca/Rowap Berry
+// [POKEMON] was hurt by its [ITEM]! // Sticky Barb
+// [POKEMON] is hurt by [MOVE]!
+// [POKEMON] had its HP restored.
+// [POKEMON] restored its HP using its Z-Power!
+// [POKEMON] restored HP using its [EFFECT]!
+
+// The [ITEM] raised [POKEMON]'s [STAT]!
+// The [ITEM] sharply raised [POKEMON]'s [STAT]!
+// The [ITEM] drastically raised [POKEMON]'s [STAT]!
+// [POKEMON] boosted its [STAT] using its Z-Power!
+// [POKEMON] boosted its [STAT] sharply using its Z-Power!
+// [POKEMON] boosted its [STAT] drastically using its Z-Power!
+// [POKEMON] boosted its stats using its Z-Power!
+
+// The [ITEM] lowered [POKEMON]'s [STAT]!
+// The [ITEM] harshly lowered [POKEMON]'s [STAT]!
+// The [ITEM] drastically lowered [POKEMON]'s [STAT]!
+
+// [POKEMON] switched stat changes with its target!
+// [POKEMON] switched all changes to its Attack and Sp. Atk with its target!
+// [POKEMON] switched all changes to its Defense and Sp. Def with its target!
+// [POKEMON] copied [TARGET]'s stat changes!
+// [POKEMON]'s stat changes were removed!
+// [POKEMON] returned its decreased stats to normal using its Z-Power!
+// [POKEMON]'s stat changes were inverted!
+// All stat changes were eliminated!
+
+// It had no effect! // old gens
+// [POKEMON] is unaffected!
+// [SOURCE]'s attack missed! // old gens
+
+// Automatic center!
+// But there was no target... // gen 5 and earlier
+// It's a one-hit KO!
+// The two moves have become one! It's a combined move!
+// The Pok\u00E9mon was hit [NUMBER] times!
+// The Pok\u00E9mon was hit 1 time!
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+// "Heavy Rain "Strong Winds "Intense Sun "Hail "Rain "Sun "Sandstorm"
+
+// [SOURCE] had its energy drained!
+// [POKEMON] flinched and couldn't move!
+// [POKEMON]'s HP is full!
+// [POKEMON] will restore its replacement's HP using its Z-Power!
+// [POKEMON] used [MOVE]!\n  But there was no PP left for the move!
+// [POKEMON] must recharge!
+// [POKEMON] was damaged by the recoil!
+// [POKEMON]'s stats were not lowered!
+// [POKEMON]'s [STAT] was not lowered!
+// [POKEMON] has no moves left!
+// [POKEMON] can no longer escape!
+
+// ([POKEMON]'s Dynamax!)
+// ([POKEMON] returned to normal!)
+// The move was blocked by the power of Dynamax!
+// [POKEMON] shook its head. It seems like it can't use this move...
+
+// A sandstorm kicked up!
+// The sandstorm subsided.
+// (The sandstorm is raging.)
+// [POKEMON] is buffeted by the sandstorm!
+
+// The sunlight turned harsh!
+// The harsh sunlight faded.
+// (The sunlight is strong.)
+
+// It started to rain!
+// The rain stopped.
+// (Rain continues to fall.)
+
+// It started to hail!
+// The hail stopped.
+// (The hail is crashing down.)
+// [POKEMON] is buffeted by the hail!
+
+// The sunlight turned extremely harsh!
+// The extremely harsh sunlight faded.
+// The extremely harsh sunlight was not lessened at all!
+// The Water-type attack evaporated in the harsh sunlight!
+
+// A heavy rain began to fall!
+// The heavy rain has lifted!
+// There is no relief from this heavy rain!
+// The Fire-type attack fizzled out in the heavy rain!
+
+// Mysterious strong winds are protecting Flying-type Pok\u00E9mon!
+// The mysterious strong winds have dissipated!
+// The mysterious strong winds weakened the attack!
+// The mysterious strong winds blow on regardless!
+
+// An electric current ran across the battlefield!
+// The electricity disappeared from the battlefield.
+// [POKEMON] is protected by the Electric Terrain!
+
+// Grass grew to cover the battlefield!
+// The grass disappeared from the battlefield.
+// [POKEMON]'s HP was restored.
+
+// Mist swirled around the battlefield!
+// The mist disappeared from the battlefield.
+// [POKEMON] surrounds itself with a protective mist!
+
+// The battlefield got weird!
+// The weirdness disappeared from the battlefield!
+// [POKEMON] is protected by the Psychic Terrain!
+
+// Gravity intensified!
+// Gravity returned to normal!
+// [POKEMON] can't use [MOVE] because of gravity!
+// [POKEMON] fell from the sky due to the gravity!
+
+// It created a bizarre area in which Pok\u00E9mon's held items lose their effects!
+// Magic Room wore off, and held items' effects returned to normal!
+
+// Electricity's power was weakened!
+// The effects of Mud Sport have faded.
+
+// [POKEMON] twisted the dimensions!
+// The twisted dimensions returned to normal!
+
+// Fire's power was weakened!
+// The effects of Water Sport have faded.
+
+// It created a bizarre area in which Defense and Sp. Def stats are swapped!
+// Wonder Room wore off, and Defense and Sp. Def stats returned to normal!
+
+// [POKEMON] kept going and crashed!
 
 
 
@@ -3243,25 +3670,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Switch": "Switcher"
 }
 
-export const BattleMessagesDico:  { [englishName: string]: string; } = {
 
-	"It's not very effective...": "Ce n'est pas très efficace...",
-	"It's super effective!": "C'est super efficace !",
-	"A critical hit!": "Coup critique !",
-	"Pointed stones float in the air around your team!": "Des pierres pointues lévitent autour de votre équipe !",
-	"Pointed stones float in the air around the opposing team!": "Des pierres pointues lévitent autour de l'équipe ennemie !",
-	"The pointed stones disappeared from around the opposing team!": "Les pierres pointues autour de l'équipe ennemie ont disparu !",
-	"The pointed stones disappeared from around your team!": "Les pierres pointues autour de votre équipe ont disparu !",
-	"But it does not have enough HP left to make a substitute!": "Trop faible pour créer un clone !",
-	"A soothing aroma wafted through the area!": "Une odeur apaisante flotte dans l'air !",
-	"The battlefield got weird!": "Le sol se met à réagir de façon bizarre...",
-	"The weirdness disappeared from the battlefield!": "Le sol redevient normal !",
-	" was dragged out!": " est traîné de force au combat !",
-	"But it failed!": "Mais cela échoue !",
-	"Go! ": "En avant ! ",
-	")!": ") !",
-	"!": " !",
-}
 
 export const FiltersDico:  { [englishName: string]: string; } = {
     "HP": "PV",
