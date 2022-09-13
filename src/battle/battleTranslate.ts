@@ -1,5 +1,6 @@
-import { isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishType } from "../translator";
-import { translateAbility, translateCondition, translateItem, translateMenu, translateMessage, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
+import { isValidEnglishAbility, isValidEnglishBattleMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishResult, isValidEnglishType, translateBattleMessage, translateResult } from "../translator";
+import { translateAbility, translateCondition, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
+import { RegexBattleMessagesMap }  from "../translator"; 
 
 console.log("BattleTranslate successfully loaded !");
 
@@ -53,6 +54,7 @@ function onMutation(mutations: MutationRecord[])
 					// The whole room has been loaded
 					if (elementClasses.contains("innerbattle"))
 					{
+                        console.log("Whole room, rien d'intéressant");
                         // console.log(newElement.outerHTML);
 					}
 					// Tooltip has been opened
@@ -100,6 +102,16 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updatePokemonStatus(newElement);
                     }
+                    // Pokémon result (little toast on the Pokémon to display what happened)
+                    else if (elementClasses.contains("result"))
+                    {
+                        updatePokemonResult(newElement);
+                    }
+                    // Type sprite
+                    else if (newElement.tagName == "IMG")
+                    {
+                        updatePokemonTypeSprite(newElement as HTMLImageElement);
+                    }
                     else if (newElement.tagName == "P")
                     {
                         if (newElement.getAttribute("style")?.includes("display: block; opacity: 0") ) {
@@ -111,15 +123,27 @@ function onMutation(mutations: MutationRecord[])
                             console.log("Not my style : " + newElement.outerHTML);
                         }
                     }
+                    else if (newElement.tagName == "EM")
+                    {
+                        console.log("Weather ? " + newElement.parentElement?.outerHTML);
+                    }
                     else if (elementClasses.contains("battle-history"))
                     {
                         console.log("Raw history message : " + newElement.outerHTML);
                         updateShowdownMessage(newElement);
                         console.log("Updated history message : " + newElement.outerHTML);
                     }
+                    // Various chat messages
+                    else if (elementClasses.contains("battle-log-add"))
+                    {
+                        console.log("battle-log-add : " + newElement.outerHTML)
+                        // This room is expired
+                        // Connecting...
+                        // <form><button name="login">Join chat</button></form>
+                    }
                     else 
                     {
-                        // console.log(newElement);
+                        console.log("Non-processed nodes : " + newElement.outerHTML);
                     }
 				}
 			}
@@ -161,8 +185,7 @@ function updatePokemonTooltip(tooltip: Element)
             tooltipContent.childNodes.forEach(function (pokemonInfoNode) {
                 var pokemonInfo = pokemonInfoNode as Element;
 
-                if (pokemonInfo.tagName == "IMG")
-                {
+                if (pokemonInfo.tagName == "IMG") {
                     updatePokemonTypeSprite(pokemonInfo as HTMLImageElement);
                 }
                 // Level/Alternate form
@@ -580,6 +603,39 @@ function updatePokemonStatus(pokemonMainElement: Element)
     })
 }
 
+function updatePokemonResult(newElement: Element)
+{
+    var textInfoTag = newElement.firstChild as Element;
+    console.log("raw result element : " + textInfoTag.outerHTML);
+
+    if (textInfoTag.tagName == "STRONG" && textInfoTag.textContent) {
+        if (newElement.className.includes("abilityresult")){
+            textInfoTag.textContent = translateAbility(textInfoTag.textContent);
+        }
+        else
+        {
+            // Most likely in ResultDico
+            if (isValidEnglishResult(textInfoTag.textContent)) {
+                textInfoTag.textContent = translateResult(textInfoTag.textContent);
+            }
+            // If not, the result could be a stolen/recycled item
+            else if (isValidEnglishItem(textInfoTag.textContent)) {
+                textInfoTag.textContent = translateItem(textInfoTag.textContent);
+            }
+            // If none of the above, the last possible result should be stat boost/drop
+            else if (textInfoTag.textContent.includes("×")) { // "Multiply" character
+                var boostedStat = textInfoTag.textContent.split(" ");
+                textInfoTag.textContent = boostedStat[0].replace("already ", "déjà ") + " " + translateStat(boostedStat[1]);
+            }
+            else {
+                console.log("Unknown result " + newElement.outerHTML)
+            }
+        }
+    }
+
+    console.log("updated result element : " + textInfoTag.outerHTML);
+}
+
 function updateShowdownMessage(messageElement: Element)
 {
     messageElement.childNodes.forEach(function (messagePartNode) {
@@ -606,7 +662,7 @@ function updateShowdownMessage(messageElement: Element)
             // Small tags or text tags : various battle messages
             else if (messagePart.tagName == "SMALL" || messagePart.tagName != "BR") {
                 console.log("Child text : " + messagePart.textContent);
-                messagePart.textContent = translateMessage(messagePart.textContent);
+                messagePart.textContent = translateRegexMessage(messagePart.textContent);
             }
         }
     })
@@ -618,6 +674,158 @@ function updateTimerButton(timerElement: Element)
     if (timerElement.lastChild?.textContent) {
         timerElement.lastChild.textContent = translateMenu(timerElement.lastChild.textContent);
     }
+}
+
+// Method used to get Regex matches in battle messages templates
+function translateRegexMessage(originalString: string)
+{
+    // If the message can be directly translated (no Pokémon name, move, etc)
+    if (isValidEnglishBattleMessage(originalString)) {
+        return translateBattleMessage(originalString);
+    }
+    // The message probably contains a variable english name (Pokémon name, move, etc)
+    else  {
+        console.log("Regex message : " + originalString);
+
+        // Use a Regex match in order to translate the message
+        var translated = translateRegexBattleMessage(originalString);
+
+        if (translated.length > 0)
+        {
+            var englishMessage = translated[0].source.split("(.*)");
+            var variablesToTranslate = translated[1].match(/{(.*?)}/g);
+
+            console.log(englishMessage);
+
+            // If a SWAP parameter is present in the template variable, order them by swap id
+            if (variablesToTranslate[0].includes("SWAP")) 
+			{
+                // Alphabetically sort the swaps
+                variablesToTranslate.sort();
+
+                // Remove the SWAP_i_ in the tags
+                for (var i = 0 ; i < variablesToTranslate.length ; i++) {
+                    translated[1] = translated[1].replace("SWAP_" + i + "_", "");
+                    variablesToTranslate[i] = variablesToTranslate[i].replace("SWAP_" + i + "_","");
+                }
+            }
+
+            for (var i = 0 ; i < englishMessage.length - 1 ; i++)
+            {
+                // Remove escaped escaped character
+                if (i == 0) { englishMessage[0] = englishMessage[0].replace(/\\/g,"");}
+                englishMessage[i + 1] = englishMessage[i + 1].replace(/\\/g,"");
+                
+                // Get english variable from the original string
+                var variableName = originalString.slice((i == 0 && englishMessage[i] == "" ? 0 : originalString.indexOf(englishMessage[i]) + englishMessage[i].length),
+                                                              (englishMessage[i + 1] == "" ? originalString.length : originalString.indexOf(englishMessage[i + 1])));
+
+                console.log(variableName);
+
+                // Replace the template variable by the translated value
+                if (variablesToTranslate[i].includes("{POKEMON"))
+                {
+                    // Display the Pokémon name differently depending on if it's the opponent one, or its position in the word, 
+                    if (variableName.includes("he opposing ")) {
+                        if (isFirstWord(variablesToTranslate[i], translated[1])) {
+                            translated[1] = translated[1].replace(variablesToTranslate[i],
+								"Le " + translatePokemonName(variableName.replace("The opposing ", "").replace("the opposing ", "")) + " adverse");
+                        }
+                        else {
+                            translated[1] = translated[1].replace(variablesToTranslate[i],
+								translatePokemonName(variableName.replace("the opposing ", "").replace("The opposing ", "")) + " adverse");
+                        }
+                    }
+                    else {
+                        translated[1] = translated[1].replace(variablesToTranslate[i], translatePokemonName(variableName));
+                    }
+                }
+				else if (variablesToTranslate[i] == "{TEAM}")
+				{
+					if (variableName.includes("he opposing")) {
+						translated[1] = translated[1].replace(variablesToTranslate[i],
+							isFirstWord(variablesToTranslate[i], translated[1]) ? "L'équipe adverse" : "l'équipe adverse");
+						continue;
+					}
+					else if (variableName.includes("our")) {
+						translated[1] = translated[1].replace(variablesToTranslate[i],
+							isFirstWord(variablesToTranslate[i], translated[1]) ? "Votre équipe" : "votre équipe");
+						continue;
+					}
+				}
+				else if (variablesToTranslate[i] == "{STATS}") {
+					if (["Attack", "Sp. Atk", "evasiveness"].includes(variableName)) {
+						translated[1] = translated[1].replace("{STATS}", "L'" + translateStat(variableName));
+					}
+					else {
+						translated[1] = translated[1].replace("{STATS}", "La " + translateStat(variableName));
+					}
+				}
+                else if (variablesToTranslate[i] == "{ABILITY}") {
+                    translated[1] = translated[1].replace("{ABILITY}", translateAbility(variableName));
+                }
+                else if (variablesToTranslate[i] == "{MOVE}") {
+                    translated[1] = translated[1].replace("{MOVE}", translateMove(variableName));
+                }
+				else if (variablesToTranslate[i] == "{ITEM}") {
+                    translated[1] = translated[1].replace("{ITEM}", translateItem(variableName));
+                }
+				else if (variablesToTranslate[i] == "{TYPE}") {
+                    translated[1] = translated[1].replace("{TYPE}", translateType(variableName));
+                }
+				else if (variablesToTranslate[i] == "{EFFECT}") {
+					// Effects could be anything, so we try Abilities, Moves and Items
+					if (isValidEnglishAbility(variableName)) {
+						translated[1] = translated[1].replace("{EFFECT}", translateAbility(variableName));
+					}
+					else if (isValidEnglishMove(variableName)) {
+						translated[1] = translated[1].replace("{EFFECT}", translateMove(variableName));
+					}
+					else if (isValidEnglishItem(variableName)) {
+						translated[1] = translated[1].replace("{EFFECT}", translateItem(variableName));
+					}
+                }
+                else {
+					// Default,just replace the template variable
+                    translated[1] = translated[1].replace(variablesToTranslate[i], variableName);
+                }
+            }
+
+            return translated[1];
+        }
+        else {
+            // No translation found, return the original string
+            return originalString;
+        }
+    }
+}
+
+function translateRegexBattleMessage(messageString: string)
+{
+	for (let RegexTranslation of RegexBattleMessagesMap)
+	{
+		if (RegexTranslation[0].test(messageString)) {
+			return RegexTranslation;
+		}
+	}
+
+	return [];
+}
+
+function isFirstWord(word: string, sentence: string) {
+    var wordPosition = sentence.indexOf(word) - 1;
+
+    while (wordPosition >= 0)
+    {
+        // Check if the character is a letter
+        if (sentence[wordPosition].toLowerCase() == sentence[wordPosition].toUpperCase()) {
+            return false;
+        }
+
+        wordPosition--;
+    }
+
+    return true;
 }
 
 function getCurrentDisplayedInfo(infoTitle: string)
@@ -643,13 +851,9 @@ function getCurrentDisplayedInfo(infoTitle: string)
 
 function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
 {
-	if (spriteImage.tagName == "IMG")
-	{
-		// Check that the alt attribute is a valid type
-		if (isValidEnglishType(spriteImage.alt)) {
-			// Use the french type sprite
-			spriteImage.src = SpriteURL + "French_Type_" + spriteImage.alt + ".png"
-			spriteImage.className = "";
-		}
-	}
+	// Check that the alt attribute is a valid type
+    if (isValidEnglishType(spriteImage.alt)) {
+        // Use the french type sprite
+        spriteImage.src = SpriteURL + "French_Type_" + spriteImage.alt + ".png"
+    }
 }

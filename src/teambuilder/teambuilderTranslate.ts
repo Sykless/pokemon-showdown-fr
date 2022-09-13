@@ -776,7 +776,6 @@ function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
 		if (isValidEnglishType(spriteImage.alt)) {
 			// Use the french type sprite
 			spriteImage.src = SpriteURL + "French_Type_" + spriteImage.alt + ".png"
-			spriteImage.className = "";
 		}
 	}
 }
@@ -1392,8 +1391,7 @@ function getDecalage(frenchWordsID:Array<number>, id: number)
 {
 	for (var i = 0 ; i < frenchWordsID.length ; i++)
 	{
-		if (id < frenchWordsID[i])
-		{
+		if (id < frenchWordsID[i]) {
 			return i;
 		}
 	}

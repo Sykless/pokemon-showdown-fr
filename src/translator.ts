@@ -9,9 +9,10 @@ const CONDITION = 7;
 const HEADER = 8;
 const MENU = 9;
 const BATTLEMESSAGE = 10
-const FILTER = 11;
+const RESULT = 11
+const FILTER = 12;
 
-const RegexBattleMessagesMap = new Map();
+export const RegexBattleMessagesMap = new Map();
 RegexBattleMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le combat entre {TRAINER} et {TRAINER} a commencé !");
 RegexBattleMessagesMap.set(/Tie between (.*) and (.*)!/, "Égalité entre {TRAINER} et {TRAINER} !");
 RegexBattleMessagesMap.set(/(.*)'s team\:/, "Équipe de {TRAINER}");
@@ -337,23 +338,6 @@ RegexBattleMessagesMap.set(/(.*) endured the hit!/, "{POKEMON} encaisse les coup
 RegexBattleMessagesMap.set(/(.*) fell for the feint!/, "{POKEMON s'est fait avoir par une ruse !");
 RegexBattleMessagesMap.set(/(.*) got trapped by a snap trap/, "{POKEMON} est tombé dans un Troquenard !");
 
-
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-// RegexBattleMessagesMap.set(/(.*)/, "{POKEMON}");
-
-
-
 // ABILITIES
 RegexBattleMessagesMap.set(/(.*) was hurt!/, "{POKEMON} est blessé !");
 RegexBattleMessagesMap.set(/(.*) maxed its Attack!/, "{POKEMON} monte son Attaque au maximum !");
@@ -406,17 +390,6 @@ RegexBattleMessagesMap.set(/(.*) is radiating a blazing aura!/, "{POKEMON} déga
 RegexBattleMessagesMap.set(/(.*) is too nervous to eat Berries!/, "{TEAM} est tendue et ne peut plus manger de Baies !");
 RegexBattleMessagesMap.set(/(.*) extends (.*) by 2 turns!/, "{POKEMON} prolonge {MOVE} de 2 tours !");
 
-// EFFECTS : Unknown
-RegexBattleMessagesMap.set(/(.*)'s (.*) made it the (.*) type!/, "{EFFECT} du {POKEMON} lui fait prendre le type {TYPE} !"); // Protean, Libero, Color Change, Pixilate, Aerilate
-RegexBattleMessagesMap.set(/(.*) was freed from (.*)!/, "{POKEMON} est libéré de {EFFECT} !");
-RegexBattleMessagesMap.set(/(.*) restored HP using its (.*)!/, "{POKEMON} récupère des PV avec {EFFECT} !");
-RegexBattleMessagesMap.set(/\((.*) started on (.*) team!\)/, "({EFFECT} est actif sur {TEAM} !)");
-RegexBattleMessagesMap.set(/\((.*) started on (.*)!\)/, "({EFFECT} est actif sur {POKEMON} !)");
-RegexBattleMessagesMap.set(/\((.*) started!\)/, "({EFFECT} est actif !)");
-RegexBattleMessagesMap.set(/\((.*) activated!\)/, "({EFFECT} est activé !)");
-RegexBattleMessagesMap.set(/\((.*) ended on (.*)!\)/, "({EFFECT} n'est plus actif sur {TEAM})");
-RegexBattleMessagesMap.set(/\((.*) ended!\)/, "({EFFECT} n'est plus actif !)");
-
 // MISC
 RegexBattleMessagesMap.set(/(.*) moved to the center!/, "{POKEMON} s'est déplacé au milieu !");
 RegexBattleMessagesMap.set(/(.*) can dynamax now!/, "{TRAINER} peut dynamaxer !");
@@ -462,7 +435,7 @@ RegexBattleMessagesMap.set(/The (.*) lowered drastically (.*)'s (.*)!/, "L'objet
 RegexBattleMessagesMap.set(/(.*) switched stat changes with its target!/, "{POKEMON} intervertit ses changements de stats avec ceux de sa cible !");
 RegexBattleMessagesMap.set(/(.*) switched all changes to its Attack and Sp. Atk with its target!/, "{POKEMON} intervertit les changements d'Attaque et d'Attaque Spéciale avec ceux de sa cible !");
 RegexBattleMessagesMap.set(/(.*) switched all changes to its Defense and Sp. Def with its target!/, "{POKEMON} intervertit les changements de Défense et de Défense Spéciale avec ceux de sa cible !");
-RegexBattleMessagesMap.set(/(.*) copied (.*)'s stat changes!)/, "{POKEMON_1} copie les changements de stats du {POKEMON_2} !");
+RegexBattleMessagesMap.set(/(.*) copied (.*)'s stat changes!\)/, "{POKEMON_1} copie les changements de stats du {POKEMON_2} !");
 RegexBattleMessagesMap.set(/(.*)'s stat changes were removed!/, "Les stats du {POKEMON} sont revenues à la normale !");
 RegexBattleMessagesMap.set(/(.*) returned its decreased stats to normal using its Z-Power!/, "{POKEMON}");
 RegexBattleMessagesMap.set(/(.*)'s stat changes were inverted!/, "Les changements de stats du {POKEMON} sont inversés !");
@@ -492,10 +465,18 @@ RegexBattleMessagesMap.set(/(.*) fell from the sky due to the gravity!/, "{POKEM
 RegexBattleMessagesMap.set(/(.*) twisted the dimensions!/, "{POKEMON} fausse les dimensions !");
 RegexBattleMessagesMap.set(/(.*) kept going and crashed!/, "{POKEMON} s'écrase au sol !");
 
-
+// EFFECTS : Unknown
+RegexBattleMessagesMap.set(/(.*)'s (.*) made it the (.*) type!/, "{EFFECT} du {POKEMON} lui fait prendre le type {TYPE} !"); // Protean, Libero, Color Change, Pixilate, Aerilate
+RegexBattleMessagesMap.set(/(.*) was freed from (.*)!/, "{POKEMON} est libéré de {EFFECT} !");
+RegexBattleMessagesMap.set(/(.*) restored HP using its (.*)!/, "{POKEMON} récupère des PV avec {EFFECT} !");
+RegexBattleMessagesMap.set(/\((.*) started on (.*) team!\)/, "({EFFECT} est actif sur {TEAM} !)");
+RegexBattleMessagesMap.set(/\((.*) started on (.*)!\)/, "({EFFECT} est actif sur {POKEMON} !)");
+RegexBattleMessagesMap.set(/\((.*) started!\)/, "({EFFECT} est actif !)");
+RegexBattleMessagesMap.set(/\((.*) activated!\)/, "({EFFECT} est activé !)");
+RegexBattleMessagesMap.set(/\((.*) ended on (.*)!\)/, "({EFFECT} n'est plus actif sur {TEAM})");
+RegexBattleMessagesMap.set(/\((.*) ended!\)/, "({EFFECT} n'est plus actif !)");
 
 // "Heavy Rain "Strong Winds "Intense Sun "Hail "Rain "Sun "Sandstorm"
-
 
 
 export const PokemonDico: { [englishName: string]: string; } = {
@@ -3524,6 +3505,42 @@ export const ConditionsDico: { [englishName: string]: string; } = {
 	"Must recharge": "Doit se recharger"
 }
 
+export const WeatherDicos: { [englishName: string]: string; } = {
+	// Weathers
+	"Sun": "",
+	"Rain": "",
+	"Sandstorm": "",
+	"Hail": "",
+	"Intense Sun": "",
+	"Heavy Rain": "",
+	"Strong Winds": "",
+
+	// Terrains
+	"mistyterrain": "",
+	"electricterrain": "",
+	"grassyterrain": "",
+	"psychicterrain": "",
+
+	// Side-conditions
+	"auroraveil": "",
+	"reflect": "",
+	"lightscreen": "",
+	"safeguard": "",
+	"mist": "",
+
+	// Pseudo weathers
+	"magicroom": "",
+	"gravity": "",
+	"trickroom": "",
+	"echoedvoice": "",
+	"echoedvoiceclone": "",
+	"fairylock": "",
+	"iondeluge": "",
+	"mudsport": "",
+	"watersport": "",
+	"wonderroom": "",
+}
+
 export const HeadersDico: { [englishName: string]: string; } = {
 	"Uber": "Uber",
 	"OU": "OU",
@@ -3765,6 +3782,115 @@ export const BattleMessagesDico:  { [englishName: string]: string; } = {
 	"!": " !",
 }
 
+export const ResultsDico: { [englishName: string]: string; } = {
+	"Damage": "Dégâts",
+	"Heal": "Soin",
+	"Paralyzed": "Paralysé",
+	"Frozen": "Gelé",
+	"Asleep": "Endormi",
+	"Burned": "Brûlé",
+	"Poisoned": "Empoisonné",
+	"Toxic poison": "Toxik",
+	"Confused": "Confus",
+	"Burn cured": "Brûlure guérie",
+	"Paralysis cured": "Paralysie guérie",
+	"Poison cured": "Poison guéri",
+	"Woke up": "Se réveille",
+	"Thawed": "Dégelé",
+	"Cured": "Guéri",
+	"Team Cured": "Équipe guérie",
+	"Loafing around": "Paresse",
+	"Must recharge": "Ne peut pas bouger",
+	"Lost focus": "Déconcentré",
+	"Trap failed": "Échec du piège",
+	"Flinched": "Trouille",
+	"Immobilized": "Amoureux",
+	"already": "déjà",
+	"Stats swapped": "Stats échangées",
+	"Stats copied": "Stats copiées",
+	"Stats reset": "Stats réinitialisées",
+	"Stats inverted": "Stats inversées",
+	"Boosts lost": "Améliorations perdues",
+	"Restored": "Restauré",
+	"Critical hit": "Coup critique",
+	"Super-effective": "Super efficace",
+	"Resisted": "Résisté",
+	"Immune": "Immunisé",
+	"Missed": "Raté",
+	"Already burned": "Déjà brûlé",
+	"Already poisoned": "Déjà empoisonné",
+	"Already asleep": "Déjà endormi",
+	"Already paralyzed": "Déjà paralysé",
+	"Already frozen": "Déjà gelé",
+	"Stat drop blocked": "Pas de baisse de stats",
+	"Failed": "Échoué",
+	"Quick Guard": "Prévention",
+	"Wide Guard": "Garde Large",
+	"Crafty Shield": "Vigilance",
+	"Protected": "Abri",
+	"Item Stolen": "Objet volé",
+	"Item knocked off": "Objet saboté",
+	"Balloon": "Ballon",
+	"Balloon popped": "Ballon éclaté",
+	"Sash": "Ceinture Force",
+	"Focus Band": "Bandeau",
+	"Transformed": "Transformé",
+	"Power Trick": "Astuce Force",
+	"Identified": "Identifié",
+	"Telekinesis": "Lévikinésie",
+	"Heal Block": "Anti-Soin",
+	"Drowsy": "Somnolent",
+	"Taunted": "Provoqué",
+	"Imprisoning": "Possessif",
+	"Disabled": "Entravé",
+	"Embargo": "Embargo",
+	"Tormented": "Tourmenté",
+	"Ingrained": "Enraciné",
+	"Aqua Ring": "Anneau Hydro",
+	"Stockpile": "Stockage",
+	"Stockpile&times;2": "Stockage&times;2",
+	"Stockpile&times;3": "Stockage&times;3",
+	"Perish next turn": "K.O. prochain tour",
+	"Perish in 2": "K.O. dans 2 tours",
+	"Perish in 3": "K.O. dans 3 tours",
+	"Encored": "Encore",
+	"Bide": "Patience",
+	"Attracted": "Amoureux",
+	"Lightened": "Léger",
+	"+Crit rate": "+Taux critiques",
+	"Cursed": "Maudit",
+	"Nightmare": "Cauchemar",
+	"Magnet Rise": "Vol Magnétik",
+	"Smacked Down": "Anti-Air",
+	"Blocked": "Bloqué",
+	"Mist": "Brume",
+	"Light Screen": "Mur Lumière",
+	"Reflect": "Protection",
+	"Telekinesis&nbsp;ended": "Fin de Lévikinésie",
+	"Confusion&nbsp;ended": "Fin de confusion",
+	"De-seeded": "Plus infecté",
+	"Heal Block ended": "Fin de Anti-Soin",
+	"Attract&nbsp;ended": "Fin d'Attraction",
+	"Taunt&nbsp;ended": "Fin de Provocation",
+	"Disable&nbsp;ended": "Fin d'Entrave",
+	"Embargo ended": "Fin d'Embargo",
+	"Torment&nbsp;ended": "Fin de Tourmente",
+	"Encore&nbsp;ended": "Fin d'Encore",
+	"Illusion ended": "Fin de l'Illusion",
+	"Slow Start ended": "Début Calme plus actif",
+	"Faded": "Disparu",
+	"Landed": "Atterri",
+	"Mat Block": "Tatamigaeshi",
+	"Enduring": "Encaisse le coup",
+	"Helping Hand": "Coup d'Main",
+	"Focusing": "Concentré",
+	"Trap set": "Piège posé",
+	"Beak Blast": "Bec-Canon",
+	"Grudge": "Rancune",
+	"Destiny Bond": "Lien du Destin",
+	"Protection broken": "Protection détruite",
+}
+
 export const FiltersDico:  { [englishName: string]: string; } = {
     "HP": "PV",
     "Atk": "Atq",
@@ -3880,11 +4006,11 @@ export const CosmeticForms: Array<string> = [
 ]
 
 const MainDico: Array<{ [englishName: string]: string; }>  = [
-	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, ConditionsDico, HeadersDico, MenuDico, BattleMessagesDico, FiltersDico
+	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, ConditionsDico, HeadersDico, MenuDico, BattleMessagesDico, ResultsDico, FiltersDico
 ]
 
 const LogTranslationType: Array<string> = [
-	"pokémon", "ability", "move", "item", "type", "nature", "stat", "condition", "header", "menu", "battlemessage" ,"filter"
+	"pokémon", "ability", "move", "item", "type", "nature", "stat", "condition", "header", "menu", "battlemessage", "result", "filter"
 ]
 
 function translateToFrench(englishWord: string, translationType: number)
@@ -3989,6 +4115,10 @@ export function translateBattleMessage(englishBattleMessage: string) {
 	return translateToFrench(englishBattleMessage, BATTLEMESSAGE);
 }
 
+export function translateResult(englishResult: string) {
+	return translateToFrench(englishResult, RESULT);
+}
+
 export function translateFilter(englishFilter: string) {
 	return translateToFrench(englishFilter, FILTER);
 }
@@ -4037,6 +4167,10 @@ export function translateMenuToEnglish(frenchMenu: string) {
 
 export function translateBattleMessageToEnglish(frenchBattleMessage: string) {
 	return translateToEnglish(frenchBattleMessage, BATTLEMESSAGE);
+}
+
+export function translateResultToEnglish(frenchResult: string) {
+	return translateToEnglish(frenchResult, RESULT);
 }
 
 export function translateFilterToEnglish(frenchFilter: string) {
@@ -4089,6 +4223,10 @@ export function isValidFrenchBattleMessage(frenchBattleMessage: string) {
 	return translateToEnglish(frenchBattleMessage, BATTLEMESSAGE) != frenchBattleMessage;
 }
 
+export function isValidFrenchResult(frenchResult: string) {
+	return translateToEnglish(frenchResult, RESULT) != frenchResult;
+}
+
 export function isValidFrenchFilter(frenchFilter: string) {
 	return translateToEnglish(frenchFilter, FILTER) != frenchFilter;
 }
@@ -4139,159 +4277,10 @@ export function isValidEnglishBattleMessage(englishBattleMessage: string) {
 	return BattleMessagesDico[englishBattleMessage];
 }
 
+export function isValidEnglishResult(englishResult: string) {
+	return ResultsDico[englishResult];
+}
+
 export function isValidEnglishFilter(englishFilter: string) {
 	return FiltersDico[englishFilter];
-}
-
-
-// Methods used to get Regex matches in battle messages templates
-export function translateMessage(originalString: string)
-{
-    // If the message can be directly translated (no Pokémon name, move, etc)
-    if (isValidEnglishBattleMessage(originalString)) {
-        return translateBattleMessage(originalString);
-    }
-    // The message probably contains a variable english name (Pokémon name, move, etc)
-    else  {
-        console.log("Regex message : " + originalString);
-
-        // Use a Regex match in order to translate the message
-        var translated = translateRegexBattleMessage(originalString);
-
-        if (translated.length > 0)
-        {
-            var englishMessage = translated[0].source.split("(.*)");
-            var variablesToTranslate = translated[1].match(/{(.*?)}/g);
-
-            console.log(englishMessage);
-
-            // If a SWAP parameter is present in the template variable, order them by swap id
-            if (variablesToTranslate[0].includes("SWAP")) 
-			{
-                // Alphabetically sort the swaps
-                variablesToTranslate.sort();
-
-                // Remove the SWAP_i_ in the tags
-                for (var i = 0 ; i < variablesToTranslate.length ; i++) {
-                    translated[1] = translated[1].replace("SWAP_" + i + "_", "");
-                    variablesToTranslate[i] = variablesToTranslate[i].replace("SWAP_" + i + "_","");
-                }
-            }
-
-            for (var i = 0 ; i < englishMessage.length - 1 ; i++)
-            {
-                // Remove escaped escaped character
-                if (i == 0) { englishMessage[0] = englishMessage[0].replace(/\\/g,"");}
-                englishMessage[i + 1] = englishMessage[i + 1].replace(/\\/g,"");
-                
-                // Get english variable from the original string
-                var variableName = originalString.slice((i == 0 && englishMessage[i] == "" ? 0 : originalString.indexOf(englishMessage[i]) + englishMessage[i].length),
-                                                              (englishMessage[i + 1] == "" ? originalString.length : originalString.indexOf(englishMessage[i + 1])));
-
-                console.log(variableName);
-
-                // Replace the template variable by the translated value
-                if (variablesToTranslate[i].includes("{POKEMON"))
-                {
-                    // Display the Pokémon name differently depending on if it's the opponent one, or its position in the word, 
-                    if (variableName.includes("he opposing ")) {
-                        if (isFirstWord(variablesToTranslate[i], translated[1])) {
-                            translated[1] = translated[1].replace(variablesToTranslate[i],
-								"Le " + translatePokemonName(variableName.replace("The opposing ", "").replace("the opposing ", "")) + " adverse");
-                        }
-                        else {
-                            translated[1] = translated[1].replace(variablesToTranslate[i],
-								translatePokemonName(variableName.replace("the opposing ", "").replace("The opposing ", "")) + " adverse");
-                        }
-                    }
-                    else {
-                        translated[1] = translated[1].replace(variablesToTranslate[i], translatePokemonName(variableName));
-                    }
-                }
-				else if (variablesToTranslate[i] == "{TEAM}")
-				{
-					if (variableName.includes("he opposing")) {
-						translated[1] = translated[1].replace(variablesToTranslate[i],
-							isFirstWord(variablesToTranslate[i], translated[1]) ? "L'équipe adverse" : "l'équipe adverse");
-						continue;
-					}
-					else if (variableName.includes("our")) {
-						translated[1] = translated[1].replace(variablesToTranslate[i],
-							isFirstWord(variablesToTranslate[i], translated[1]) ? "Votre équipe" : "votre équipe");
-						continue;
-					}
-				}
-				else if (variablesToTranslate[i] == "{STATS}") {
-					if (["Attack", "Sp. Atk", "evasiveness"].includes(variableName)) {
-						translated[1] = translated[1].replace("{STATS}", "L'" + translateStat(variableName));
-					}
-					else {
-						translated[1] = translated[1].replace("{STATS}", "La " + translateStat(variableName));
-					}
-				}
-                else if (variablesToTranslate[i] == "{ABILITY}") {
-                    translated[1] = translated[1].replace("{ABILITY}", translateAbility(variableName));
-                }
-                else if (variablesToTranslate[i] == "{MOVE}") {
-                    translated[1] = translated[1].replace("{MOVE}", translateMove(variableName));
-                }
-				else if (variablesToTranslate[i] == "{ITEM}") {
-                    translated[1] = translated[1].replace("{ITEM}", translateItem(variableName));
-                }
-				else if (variablesToTranslate[i] == "{TYPE}") {
-                    translated[1] = translated[1].replace("{TYPE}", translateType(variableName));
-                }
-				else if (variablesToTranslate[i] == "{EFFECT}") {
-					// Effects could be anything, so we try Abilities, Moves and Items
-					if (isValidEnglishAbility(variableName)) {
-						translated[1] = translated[1].replace("{EFFECT}", translateAbility(variableName));
-					}
-					else if (isValidEnglishMove(variableName)) {
-						translated[1] = translated[1].replace("{EFFECT}", translateMove(variableName));
-					}
-					else if (isValidEnglishItem(variableName)) {
-						translated[1] = translated[1].replace("{EFFECT}", translateItem(variableName));
-					}
-                }
-                else {
-					// Default,just replace the template variable
-                    translated[1] = translated[1].replace(variablesToTranslate[i], variableName);
-                }
-            }
-
-            return translated[1];
-        }
-        else {
-            // No translation found, return the original string
-            return originalString;
-        }
-    }
-}
-
-function translateRegexBattleMessage(messageString: string)
-{
-	for (let RegexTranslation of RegexBattleMessagesMap)
-	{
-		if (RegexTranslation[0].test(messageString)) {
-			return RegexTranslation;
-		}
-	}
-
-	return [];
-}
-
-function isFirstWord(word: string, sentence: string) {
-    var wordPosition = sentence.indexOf(word) - 1;
-
-    while (wordPosition >= 0)
-    {
-        // Check if the character is a letter
-        if (sentence[wordPosition].toLowerCase() == sentence[wordPosition].toUpperCase()) {
-            return false;
-        }
-
-        wordPosition--;
-    }
-
-    return true;
 }
