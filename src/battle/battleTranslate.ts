@@ -598,12 +598,14 @@ function updateShowdownMessage(messageElement: Element)
                 else if (isValidEnglishMove(messagePart.textContent)) {
                     messagePart.textContent = translateMove(messagePart.textContent);
                 }
+                // Could be a trainer name, we don't update it
                 else {
                     console.log("Unknown info in strong tag : " + messagePart.outerHTML);
                 }
             }
             // Small tags or text tags : various battle messages
             else if (messagePart.tagName == "SMALL" || messagePart.tagName != "BR") {
+                console.log("Child text : " + messagePart.textContent);
                 messagePart.textContent = translateMessage(messagePart.textContent);
             }
         }
