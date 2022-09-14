@@ -1,5 +1,5 @@
-import { isValidEnglishAbility, isValidEnglishBattleMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishResult, isValidEnglishType, translateBattleMessage, translateResult, translateWeather } from "../translator";
-import { translateAbility, translateCondition, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
+import { isValidEnglishAbility, isValidEnglishBattleMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateBattleMessage, translateWeather } from "../translator";
+import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 import { RegexBattleMessagesMap }  from "../translator"; 
 
 console.log("BattleTranslate successfully loaded !");
@@ -54,7 +54,7 @@ function onMutation(mutations: MutationRecord[])
 					// The whole room has been loaded
 					if (elementClasses.contains("innerbattle"))
 					{
-                        console.log("Whole room, rien d'intéressant");
+                        console.log("Whole room, rien d'intéressant : " + newElement.outerHTML);
                         // console.log(newElement.outerHTML);
 					}
 					// Tooltip has been opened
@@ -63,7 +63,9 @@ function onMutation(mutations: MutationRecord[])
                         var tooltip = newElement.firstChild as Element;
                         //console.log(tooltip.outerHTML);
 
+                        console.log("Raw PokemonTooltip :" + newElement.outerHTML);
                         updatePokemonTooltip(tooltip);
+                        console.log("Updated PokemonTooltip :" + newElement.outerHTML);
 
                         // if (tooltip.classList.contains("tooltip-pokemon"))
                         // {
@@ -77,12 +79,15 @@ function onMutation(mutations: MutationRecord[])
 					}
                     else if (elementClasses.contains("switch-controls"))
                     {
+                        console.log("Raw Switch controls :" + newElement.outerHTML);
                         updateSwitchControls(newElement);
+                        console.log("Updated Switch Controls :" + newElement.outerHTML);
+
                     }
                     // Main control interface : Moves, 
                     else if (elementClasses.contains("controls"))
                     {
-                        // console.log(newElement);
+                        console.log("Raw Controls :" + newElement.outerHTML);
 
                         // Waiting and Active control panel use different structures
                         if ((newElement.firstChild as Element).tagName == "P") {
@@ -91,21 +96,38 @@ function onMutation(mutations: MutationRecord[])
                         else {
                             updateControlPanel(newElement);
                         }
+
+                        console.log("Updated Controls:" + newElement.outerHTML);
                     }
                     // Timer button
                     else if (elementClasses.contains("timerbutton"))
                     {
+                        console.log("Raw Timer :" + newElement.outerHTML);
                         updateTimerButton(newElement);
+                        console.log("Updated Timer :" + newElement.outerHTML);
                     }
                     // Pokémon name and status
                     else if (elementClasses.contains("statbar"))
                     {
-                        updatePokemonStatus(newElement);
+                        console.log("Raw Healthbar :" + newElement.outerHTML);
+                        updatePokemonHealthBar(newElement);
+                        console.log("Raw Healthbar :" + newElement.outerHTML);
                     }
                     // Pokémon result (little toast on the Pokémon to display what happened)
                     else if (elementClasses.contains("result"))
                     {
+                        console.log("Raw Result :" + newElement.outerHTML);
                         updatePokemonResult(newElement);
+                        console.log("Updated Result :" + newElement.outerHTML);
+                    }
+                    // Pokémon condition (status under the health bar)
+                    else if (newElement.tagName == "SPAN")
+                    {
+                        console.log("Raw Condition :" + newElement.parentElement?.outerHTML);
+                        if ((newElement.parentElement as Element)?.classList?.contains("status")) {
+                            updatePokemonCondition(newElement);
+                        }
+                        console.log("Update Condition ? :" + newElement.parentElement?.outerHTML);
                     }
                     // Type sprite
                     else if (newElement.tagName == "IMG")
@@ -123,11 +145,15 @@ function onMutation(mutations: MutationRecord[])
                             console.log("Not my style : " + newElement.outerHTML);
                         }
                     }
+                    // Weather and side-conditions
                     else if (newElement.tagName == "EM")
                     {
-                        if ((newElement.parentElement as Element).classList.contains("weather")) {
+                        console.log("Raw weather : " + newElement.outerHTML);
+                        // No class-name, need to check the parent node
+                        if ((newElement.parentElement as Element)?.classList?.contains("weather")) {
                             updateWeather(newElement);
                         }
+                        console.log("Raw weather : " + newElement.outerHTML);
                     }
                     else if (elementClasses.contains("battle-history"))
                     {
@@ -580,7 +606,7 @@ function updateWeather(newElement: Element)
             {
                 // Ally or ennemy side
                 if (weatherElement.textContent.includes("Foe's ")){
-                    weatherElement.textContent = translateWeather(weatherElement.textContent.slice(6,-1)) + " ennemi ";
+                    weatherElement.textContent = translateWeather(weatherElement.textContent.slice(6,-1)) + " adverse ";
                 }
                 // If effect has a duration
                 else if (weatherElement.textContent.slice(-1) == " ") {
@@ -597,7 +623,7 @@ function updateWeather(newElement: Element)
     console.log("Updated weather element : " + newElement.outerHTML);
 }
 
-function updatePokemonStatus(pokemonMainElement: Element)
+function updatePokemonHealthBar(pokemonMainElement: Element)
 {
     pokemonMainElement.childNodes.forEach(function (pokemonNode) {
         var pokemonElement = pokemonNode as Element;
@@ -633,26 +659,29 @@ function updatePokemonStatus(pokemonMainElement: Element)
             pokemonElement.childNodes.forEach(function (statusNode) {
                 if ((statusNode as Element).className == "status") {
                     statusNode.childNodes.forEach(function (statusBuffsNode) {
-                        var statusBuffs = statusBuffsNode as Element;
-
-                        if (statusBuffs.textContent)
-                        {
-                            // Buffs and debuffs
-                            if (["bad", "good"].includes(statusBuffs.className)) {
-                                // Translate stat
-                                var buffStatSplit = statusBuffs.textContent.split(" ")
-                                statusBuffs.textContent = buffStatSplit[0] + " " + translateStat(buffStatSplit[1]);
-                            }
-                            // Status condition
-                            else {
-                                statusBuffs.textContent = translateCondition(statusBuffs.textContent);
-                            }
-                        }
+                        updatePokemonCondition(statusBuffsNode as Element);
                     })
                 }
             })
         }
     })
+}
+
+function updatePokemonCondition(newElement: Element)
+{
+    if (newElement.textContent)
+    {
+        // Buffs and debuffs
+        if (newElement.textContent.includes("× ")) {
+            // Translate stat
+            var buffStatSplit = newElement.textContent.split(" ")
+            newElement.textContent = buffStatSplit[0] + " " + translateStat(buffStatSplit[1]);
+        }
+        // Status condition
+        else {
+            newElement.textContent = translateEffect(newElement.textContent.replace(" ", " "));
+        }
+    }
 }
 
 function updatePokemonResult(newElement: Element)
@@ -666,9 +695,9 @@ function updatePokemonResult(newElement: Element)
         }
         else
         {
-            // Most likely in ResultDico
-            if (isValidEnglishResult(textInfoTag.textContent)) {
-                textInfoTag.textContent = translateResult(textInfoTag.textContent);
+            // Most likely in EffectDico
+            if (isValidEnglishEffect(textInfoTag.textContent)) {
+                textInfoTag.textContent = translateEffect(textInfoTag.textContent.replace(" ", " "));
             }
             // If not, the result could be a stolen/recycled item
             else if (isValidEnglishItem(textInfoTag.textContent)) {

@@ -5,13 +5,12 @@ const ITEM = 3;
 const TYPE = 4;
 const NATURE = 5;
 const STAT = 6;
-const CONDITION = 7;
+const EFFECT = 7;
 const WEATHER = 8
 const HEADER = 9;
 const MENU = 10;
 const BATTLEMESSAGE = 11
-const RESULT = 12;
-const FILTER = 13;
+const FILTER = 12;
 
 export const RegexBattleMessagesMap = new Map();
 RegexBattleMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le combat entre {TRAINER} et {TRAINER} a commencé !");
@@ -130,7 +129,7 @@ RegexBattleMessagesMap.set(/A veil of water restored (.*)'s HP!/, "{POKEMON}");
 RegexBattleMessagesMap.set(/(.*) fell in love!/, "{POKEMON} est amoureux !");
 RegexBattleMessagesMap.set(/(.*) fell in love because of the (.*)!/, "{SWAP_1_ITEM} rend {SWAP_0_POKEMON} amoureux !");
 RegexBattleMessagesMap.set(/(.*) got over its infatuation!/, "{POKEMON} n'est plus amoureux !");
-RegexBattleMessagesMap.set(/(.*) cured its infatuation using its [ITEM]!/, "La {SWAP_1_ITEM} du {SWAP_0_POKEMON} fait faner son amour !");
+RegexBattleMessagesMap.set(/(.*) cured its infatuation using its (.*)!/, "La {SWAP_1_ITEM} du {SWAP_0_POKEMON} fait faner son amour !");
 RegexBattleMessagesMap.set(/(.*) is in love with (.*)!/, "{POKEMON_1} est amoureux du {POKEMON_2}");
 RegexBattleMessagesMap.set(/(.*) is immobilized by love!/, "L'amour empêche {POKEMON} d'agir !");
 RegexBattleMessagesMap.set(/A sea of fire enveloped (.*)!/, "{TEAM} est cernée par une mer de feu !");
@@ -261,7 +260,7 @@ RegexBattleMessagesMap.set(/It reduced the PP of (.*)'s (.*) by (.*)!/, "Les PP 
 RegexBattleMessagesMap.set(/A sticky web has been laid out on the ground around (.*)!/, "Le terrain est couvert d'une Toile Gluante du côté de {TEAM} !");
 RegexBattleMessagesMap.set(/The sticky web has disappeared from the ground around (.*)!/, "La Toile Gluante du côté de {TEAM} a disparu !");
 RegexBattleMessagesMap.set(/(.*) was caught in a sticky web!/, "{POKEMON} est pris dans la Toile Gluante !");
-RegexBattleMessagesMap.set(/(.*) stockpiled [NUMBER]!/, "{POKEMON} utilise la capacité Stockage {NUMBER} fois !");
+RegexBattleMessagesMap.set(/(.*) stockpiled (.*)!/, "{POKEMON} utilise la capacité Stockage {NUMBER} fois !");
 RegexBattleMessagesMap.set(/(.*)'s stockpiled effect wore off!/, "Les effets accumulés par {POKEMON} se dissipent !");
 RegexBattleMessagesMap.set(/The Tailwind blew from behind (.*)!/, "Un Vent Arrière souffle sur {TEAM} !");
 RegexBattleMessagesMap.set(/(.*)'s Tailwind petered out!/, "Le Vent Arrière soufflant sur {TEAM} s'arrête !");
@@ -3495,15 +3494,179 @@ export const StatsDico: { [englishName: string]: string; } = {
 	"Spc": "Spé"
 }
 
-export const ConditionsDico: { [englishName: string]: string; } = {
+export const EffectsDico: { [englishName: string]: string; } = {
+
+	// STATUS
 	"PAR": "PAR",
-	"BRN": "BRU",
-	"PSN": "PSN",
-	"TOX": "TOX",
-	"SLP": "SOM",
+	"Paralyzed": "Paralysé",
+	"Already paralyzed": "Déjà paralysé",
+	"Paralysis cured": "Paralysie guérie",
 	"FRZ": "GEL",
+	"Frozen": "Gelé",
+	"Already frozen": "Déjà gelé",
+	"Thawed": "Dégelé",
+	"SLP": "SOM",
+	"Asleep": "Endormi",
+	"Already asleep": "Déjà endormi",
+	"Woke up": "Se réveille",
+	"BRN": "BRU",
+	"Burned": "Brûlé",
+	"Already burned": "Déjà brûlé",
+	"Burn cured": "Brûlure guérie",
+	"PSN": "PSN",
+	"Poisoned": "Empoisonné",
+	"Already poisoned": "Déjà empoisonné",
+	"Poison cured": "Poison guéri",
+	"TOX": "TOX",
+	"Toxic poison": "Toxik",
 	"Confused": "Confus",
-	"Must recharge": "Doit se recharger"
+	"Confusion ended": "Fin de confusion",
+	"Cured": "Guéri",
+	
+	// MISC
+	"Damage": "Dégâts",
+	"Heal": "Soin",
+	"Flinched": "Trouille",
+	"Immobilized": "Amoureux",
+	"Critical hit": "Coup critique",
+	"Super-effective": "Super efficace",
+	"Resisted": "Résisté",
+	"Immune": "Immunisé",
+	"Missed": "Raté",
+	"Failed": "Échoue",
+	"Faded": "Disparu",
+	"Transformed": "Transformé",
+	"Dynamaxed": "Dynamaxé",
+	"Attracted": "Amoureux",
+	"Infatuation": "Amoureux",
+	"Illusion ended": "Fin de l'Illusion",
+
+	// MOVES
+	"Must recharge": "Doit se recharger",
+	"Team Cured": "Équipe guérie",
+	"Focusing": "Concentré",
+	"Lost focus": "Déconcentré",
+	"Trap set": "Piège posé",
+	"Trap failed": "Échec du piège",
+	"Landed": "Atterri",
+	"Mat Block": "Tatamigaeshi",
+	"Enduring": "Encaisse le coup",
+	"Helping Hand": "Coup d'Main",
+	"Beak Blast": "Bec-Canon",
+	"Grudge": "Rancune",
+	"Destiny Bond": "Lien du Destin",
+	"Protection broken": "Protection détruite",
+	"Quick Guard": "Prévention",
+	"Wide Guard": "Garde Large",
+	"Crafty Shield": "Vigilance",
+	"Protect": "Abri",
+	"Protected": "Abri",
+	"Max Guard": "Gardomax",
+	"Item Stolen": "Objet volé",
+	"Item knocked off": "Objet saboté",
+	"Power Trick": "Astuce Force",
+	"Identified": "Identifié",
+	"Telekinesis": "Lévikinésie",
+	"Telekinesis ended": "Fin de Lévikinésie",
+	"Heal Block": "Anti-Soin",
+	"Heal Block ended": "Fin de Anti-Soin",
+	"Drowsy": "Somnolent",
+	"Taunt": "Provocation",
+	"Taunted": "Provoqué",
+	"Taunt ended": "Fin de Provocation",
+	"Imprisoning": "Possessif",
+	"Imprisoning foe": "Possessif",
+	"Disable": "Entrave",
+	"Disabled": "Entravé",
+	"Disable ended": "Fin d'Entrave",
+	"Embargo": "Embargo",
+	"Embargo ended": "Fin d'Embargo",
+	"Torment": "Tourmente",
+	"Tormented": "Tourmenté",
+	"Torment ended": "Fin de Tourmente",
+	"Ingrain": "Racines",
+	"Ingrained": "Enraciné",
+	"Aqua Ring": "Anneau Hydro",
+	"Stockpile": "Stockage",
+	"Stockpile×2": "Stockage×2",
+	"Stockpile×3": "Stockage×3",
+	"Perish now": "K.O. maintenant",
+	"Perish next turn": "K.O. prochain tour",
+	"Perish in 2": "K.O. dans 2 tours",
+	"Perish in 3": "K.O. dans 3 tours",
+	"Encored": "Encore",
+	"Encore ended": "Fin d'Encore",
+	"Bide": "Patience",
+	"Lightened": "Allégé",
+	"Curse": "Malédiction",
+	"Cursed": "Maudit",
+	"Nightmare": "Cauchemar",
+	"Magnet Rise": "Vol Magnétik",
+	"Smack Down": "Anti-Air",
+	"Smacked Down": "Anti-Air",
+	"Blocked": "Bloqué",
+	"Mist": "Brume",
+	"Light Screen": "Mur Lumière",
+	"Reflect": "Protection",
+	"Leech Seed": "Vampigraine",
+	"De-seeded": "Plus infecté",
+	"Attract ended": "Fin d'Attraction",
+	"Throat Chop": "Exécu-Son",
+	"Miracle Eye": "Oeil Miracle",
+	"Foresight": "Clairvoyance",
+	"No Retreat": "Ultime Bastion",
+	"Octolock": "Octoprise",
+	"Tar Shot": "Goudronnage",
+	"Mimic": "Copie",
+	"Water Sport": "Tourniquet",
+	"Mud Sport": "Lance-Boue",
+	"Uproar": "Brouhaha",
+	"Rage": "Frénésie",
+	"Magic Coat": "Reflet Magik",
+	"Snatch": "Saisie",
+	"Charge": "Chargeur",
+	"Endure": "Ténacité",
+	"Powder": "Nuée de Poudre",
+	"Rage Powder": "Poudre Fureur",
+	"Electrify": "Électrisation",
+	"Follow Me": "Par Ici",
+	"Instruct": "Sommation",
+	"Laser Focus": "Affilage",
+	"Spotlight": "Projecteur",
+	"Bind": "Étreinte",
+	"Clamp": "Claquoir",
+	"Fire Spin": "Danse Flammes",
+	"Infestation": "Harcèlement",
+	"Magma Storm": "Vortex Magma",
+	"Sand Tomb": "Tourbi-Sable",
+	"Snap Trap": "Troquenard",
+	"Thunder Cage": "Voltageôle",
+	"Whirlpool": "Siphon",
+	"Wrap": "Ligotage",
+	
+	// ABILITIES
+	"Loafing around": "Paresse",
+	"Slow Start": "Début Calme",
+	"Slow Start ended": "Début Calme plus actif",
+	"Flash Fire": "Torche",
+
+	// ITEMS
+	"Balloon": "Ballon",
+	"Balloon popped": "Ballon éclaté",
+	"Sash": "Ceinture Force",
+	"Focus Band": "Bandeau",
+
+	// STATS
+	"already": "déjà",
+	"+Crit rate": "+Taux critiques",
+	"Critical Hit Boost": "Boost Coup Critique",
+	"Stats swapped": "Stats échangées",
+	"Stats copied": "Stats copiées",
+	"Stats reset": "Stats réinitialisées",
+	"Stats inverted": "Stats inversées",
+	"Stat drop blocked": "Stats inchangées",
+	"Boosts lost": "Boosts perdus",
+	"Restored": "Restauré",
 }
 
 export const WeatherDicos: { [englishName: string]: string; } = {
@@ -3784,115 +3947,6 @@ export const BattleMessagesDico:  { [englishName: string]: string; } = {
 	"!": " !",
 }
 
-export const ResultsDico: { [englishName: string]: string; } = {
-	"Damage": "Dégâts",
-	"Heal": "Soin",
-	"Paralyzed": "Paralysé",
-	"Frozen": "Gelé",
-	"Asleep": "Endormi",
-	"Burned": "Brûlé",
-	"Poisoned": "Empoisonné",
-	"Toxic poison": "Toxik",
-	"Confused": "Confus",
-	"Burn cured": "Brûlure guérie",
-	"Paralysis cured": "Paralysie guérie",
-	"Poison cured": "Poison guéri",
-	"Woke up": "Se réveille",
-	"Thawed": "Dégelé",
-	"Cured": "Guéri",
-	"Team Cured": "Équipe guérie",
-	"Loafing around": "Paresse",
-	"Must recharge": "Ne peut pas bouger",
-	"Lost focus": "Déconcentré",
-	"Trap failed": "Échec du piège",
-	"Flinched": "Trouille",
-	"Immobilized": "Amoureux",
-	"already": "déjà",
-	"Stats swapped": "Stats échangées",
-	"Stats copied": "Stats copiées",
-	"Stats reset": "Stats réinitialisées",
-	"Stats inverted": "Stats inversées",
-	"Boosts lost": "Améliorations perdues",
-	"Restored": "Restauré",
-	"Critical hit": "Coup critique",
-	"Super-effective": "Super efficace",
-	"Resisted": "Résisté",
-	"Immune": "Immunisé",
-	"Missed": "Raté",
-	"Already burned": "Déjà brûlé",
-	"Already poisoned": "Déjà empoisonné",
-	"Already asleep": "Déjà endormi",
-	"Already paralyzed": "Déjà paralysé",
-	"Already frozen": "Déjà gelé",
-	"Stat drop blocked": "Pas de baisse de stats",
-	"Failed": "Échoue",
-	"Quick Guard": "Prévention",
-	"Wide Guard": "Garde Large",
-	"Crafty Shield": "Vigilance",
-	"Protected": "Abri",
-	"Item Stolen": "Objet volé",
-	"Item knocked off": "Objet saboté",
-	"Balloon": "Ballon",
-	"Balloon popped": "Ballon éclaté",
-	"Sash": "Ceinture Force",
-	"Focus Band": "Bandeau",
-	"Transformed": "Transformé",
-	"Power Trick": "Astuce Force",
-	"Identified": "Identifié",
-	"Telekinesis": "Lévikinésie",
-	"Heal Block": "Anti-Soin",
-	"Drowsy": "Somnolent",
-	"Taunted": "Provoqué",
-	"Imprisoning": "Possessif",
-	"Disabled": "Entravé",
-	"Embargo": "Embargo",
-	"Tormented": "Tourmenté",
-	"Ingrained": "Enraciné",
-	"Aqua Ring": "Anneau Hydro",
-	"Stockpile": "Stockage",
-	"Stockpile&times;2": "Stockage&times;2",
-	"Stockpile&times;3": "Stockage&times;3",
-	"Perish next turn": "K.O. prochain tour",
-	"Perish in 2": "K.O. dans 2 tours",
-	"Perish in 3": "K.O. dans 3 tours",
-	"Encored": "Encore",
-	"Bide": "Patience",
-	"Attracted": "Amoureux",
-	"Lightened": "Léger",
-	"+Crit rate": "+Taux critiques",
-	"Cursed": "Maudit",
-	"Nightmare": "Cauchemar",
-	"Magnet Rise": "Vol Magnétik",
-	"Smacked Down": "Anti-Air",
-	"Blocked": "Bloqué",
-	"Mist": "Brume",
-	"Light Screen": "Mur Lumière",
-	"Reflect": "Protection",
-	"Telekinesis&nbsp;ended": "Fin de Lévikinésie",
-	"Confusion&nbsp;ended": "Fin de confusion",
-	"De-seeded": "Plus infecté",
-	"Heal Block ended": "Fin de Anti-Soin",
-	"Attract&nbsp;ended": "Fin d'Attraction",
-	"Taunt&nbsp;ended": "Fin de Provocation",
-	"Disable&nbsp;ended": "Fin d'Entrave",
-	"Embargo ended": "Fin d'Embargo",
-	"Torment&nbsp;ended": "Fin de Tourmente",
-	"Encore&nbsp;ended": "Fin d'Encore",
-	"Illusion ended": "Fin de l'Illusion",
-	"Slow Start ended": "Début Calme plus actif",
-	"Faded": "Disparu",
-	"Landed": "Atterri",
-	"Mat Block": "Tatamigaeshi",
-	"Enduring": "Encaisse le coup",
-	"Helping Hand": "Coup d'Main",
-	"Focusing": "Concentré",
-	"Trap set": "Piège posé",
-	"Beak Blast": "Bec-Canon",
-	"Grudge": "Rancune",
-	"Destiny Bond": "Lien du Destin",
-	"Protection broken": "Protection détruite",
-}
-
 export const FiltersDico:  { [englishName: string]: string; } = {
     "HP": "PV",
     "Atk": "Atq",
@@ -4008,11 +4062,11 @@ export const CosmeticForms: Array<string> = [
 ]
 
 const MainDico: Array<{ [englishName: string]: string; }>  = [
-	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, ConditionsDico, WeatherDicos, HeadersDico, MenuDico, BattleMessagesDico, ResultsDico, FiltersDico
+	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, EffectsDico, WeatherDicos, HeadersDico, MenuDico, BattleMessagesDico, FiltersDico
 ]
 
 const LogTranslationType: Array<string> = [
-	"pokémon", "ability", "move", "item", "type", "nature", "stat", "condition", "weather", "header", "menu", "battlemessage", "result", "filter"
+	"pokémon", "ability", "move", "item", "type", "nature", "stat", "effect", "weather", "header", "menu", "battlemessage", "filter"
 ]
 
 function translateToFrench(englishWord: string, translationType: number)
@@ -4101,8 +4155,8 @@ export function translateStat(englishStat: string) {
 	return translateToFrench(englishStat, STAT);
 }
 
-export function translateCondition(englishCondition: string) {
-	return translateToFrench(englishCondition, CONDITION);
+export function translateEffect(englishEffect: string) {
+	return translateToFrench(englishEffect, EFFECT);
 }
 
 export function translateWeather(englishWeather: string) {
@@ -4119,10 +4173,6 @@ export function translateMenu(englishMenu: string) {
 
 export function translateBattleMessage(englishBattleMessage: string) {
 	return translateToFrench(englishBattleMessage, BATTLEMESSAGE);
-}
-
-export function translateResult(englishResult: string) {
-	return translateToFrench(englishResult, RESULT);
 }
 
 export function translateFilter(englishFilter: string) {
@@ -4159,8 +4209,8 @@ export function translateStatToEnglish(frenchStat: string) {
 	return translateToEnglish(frenchStat, STAT);
 }
 
-export function translateConditionToEnglish(frenchCondition: string) {
-	return translateToEnglish(frenchCondition, CONDITION);
+export function translateEffectToEnglish(frenchEffect: string) {
+	return translateToEnglish(frenchEffect, EFFECT);
 }
 
 export function translateWeatherToEnglish(frenchWeather: string) {
@@ -4177,10 +4227,6 @@ export function translateMenuToEnglish(frenchMenu: string) {
 
 export function translateBattleMessageToEnglish(frenchBattleMessage: string) {
 	return translateToEnglish(frenchBattleMessage, BATTLEMESSAGE);
-}
-
-export function translateResultToEnglish(frenchResult: string) {
-	return translateToEnglish(frenchResult, RESULT);
 }
 
 export function translateFilterToEnglish(frenchFilter: string) {
@@ -4217,8 +4263,8 @@ export function isValidFrenchStat(frenchStat: string) {
 	return translateToEnglish(frenchStat, STAT) != frenchStat;
 }
 
-export function isValidFrenchCondition(frenchCondition: string) {
-	return translateToEnglish(frenchCondition, CONDITION) != frenchCondition;
+export function isValidFrenchEffect(frenchEffect: string) {
+	return translateToEnglish(frenchEffect, EFFECT) != frenchEffect;
 }
 
 export function isValidFrenchWeather(frenchWeather: string) {
@@ -4235,10 +4281,6 @@ export function isValidFrenchMenu(frenchMenu: string) {
 
 export function isValidFrenchBattleMessage(frenchBattleMessage: string) {
 	return translateToEnglish(frenchBattleMessage, BATTLEMESSAGE) != frenchBattleMessage;
-}
-
-export function isValidFrenchResult(frenchResult: string) {
-	return translateToEnglish(frenchResult, RESULT) != frenchResult;
 }
 
 export function isValidFrenchFilter(frenchFilter: string) {
@@ -4275,8 +4317,8 @@ export function isValidEnglishStat(englishStat: string) {
 	return StatsDico[englishStat];
 }
 
-export function isValidEnglishCondition(englishCondition: string) {
-	return ConditionsDico[englishCondition];
+export function isValidEnglishEffect(englishEffect: string) {
+	return EffectsDico[englishEffect];
 }
 
 export function isValidEnglishWeather(englishWeather: string) {
@@ -4293,10 +4335,6 @@ export function isValidEnglishMenu(englishMenu: string) {
 
 export function isValidEnglishBattleMessage(englishBattleMessage: string) {
 	return BattleMessagesDico[englishBattleMessage];
-}
-
-export function isValidEnglishResult(englishResult: string) {
-	return ResultsDico[englishResult];
 }
 
 export function isValidEnglishFilter(englishFilter: string) {
