@@ -1,4 +1,4 @@
-import { isValidEnglishAbility, isValidEnglishBattleMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishResult, isValidEnglishType, translateBattleMessage, translateResult } from "../translator";
+import { isValidEnglishAbility, isValidEnglishBattleMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishResult, isValidEnglishType, translateBattleMessage, translateResult, translateWeather } from "../translator";
 import { translateAbility, translateCondition, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 import { RegexBattleMessagesMap }  from "../translator"; 
 
@@ -125,7 +125,9 @@ function onMutation(mutations: MutationRecord[])
                     }
                     else if (newElement.tagName == "EM")
                     {
-                        console.log("Weather ? " + newElement.parentElement?.outerHTML);
+                        if ((newElement.parentElement as Element).classList.contains("weather")) {
+                            updateWeather(newElement);
+                        }
                     }
                     else if (elementClasses.contains("battle-history"))
                     {
@@ -543,6 +545,56 @@ function updateOpponentWait(newElement: Element)
             }
         })
     })
+}
+
+function updateWeather(newElement: Element)
+{
+    console.log("Raw weather element : " + newElement.outerHTML);
+
+    newElement.childNodes.forEach(function (weatherNodes) {
+        var weatherElement = weatherNodes as Element;
+
+        if (weatherElement.textContent)
+        {
+            // Rayquaza cancels weather, in that case the whole sentence is in one tag
+            if (weatherElement.tagName == "S") {
+                var weatherSplit =  weatherElement.textContent.split(" (");
+
+                // Both the weather name and its duration
+                if (weatherSplit.length > 1) {
+                    weatherElement.textContent = translateWeather(weatherSplit[0]) + " ("
+                        + weatherSplit[1].replace(" or ", " ou ").replace("turn", "tour") + ")";
+                }
+
+                // Infinite effects - just the weather name
+                else {
+                    weatherElement.textContent = translateWeather(weatherElement.textContent);
+                }
+            }
+            // Remaining turns element, just translate the english bits
+            else if (weatherElement.tagName == "SMALL") {
+                weatherElement.textContent = weatherElement.textContent.replace(" or ", " ou ").replace("turn","tour");
+            }
+            // Every remaining non-line break element is a weather name
+            else if (weatherElement.tagName != "BR")
+            {
+                // Ally or ennemy side
+                if (weatherElement.textContent.includes("Foe's ")){
+                    weatherElement.textContent = translateWeather(weatherElement.textContent.slice(6,-1)) + " ennemi ";
+                }
+                // If effect has a duration
+                else if (weatherElement.textContent.slice(-1) == " ") {
+                    weatherElement.textContent = translateWeather(weatherElement.textContent.slice(0,-1)) + " ";
+                }
+                // Effet is infinite
+                else {
+                    weatherElement.textContent = translateWeather(weatherElement.textContent);
+                }
+            }
+        }
+    })
+
+    console.log("Updated weather element : " + newElement.outerHTML);
 }
 
 function updatePokemonStatus(pokemonMainElement: Element)

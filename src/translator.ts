@@ -6,11 +6,12 @@ const TYPE = 4;
 const NATURE = 5;
 const STAT = 6;
 const CONDITION = 7;
-const HEADER = 8;
-const MENU = 9;
-const BATTLEMESSAGE = 10
-const RESULT = 11
-const FILTER = 12;
+const WEATHER = 8
+const HEADER = 9;
+const MENU = 10;
+const BATTLEMESSAGE = 11
+const RESULT = 12;
+const FILTER = 13;
 
 export const RegexBattleMessagesMap = new Map();
 RegexBattleMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le combat entre {TRAINER} et {TRAINER} a commencé !");
@@ -418,7 +419,7 @@ RegexBattleMessagesMap.set(/\((.*) used its (.*)!\)/, "({POKEMON} a utilisé son
 RegexBattleMessagesMap.set(/The (.*) weakened the damage to (.*)!/, "L'objet {ITEM} réduit les dégâts infligés à {POKEMON} !");
 RegexBattleMessagesMap.set(/\((.*) was hurt!\)/, "({POKEMON} s'est blessé en attaquant !)");
 RegexBattleMessagesMap.set(/(.*) was hurt by (.*)'s (.*)!/, "{SWAP_0_POKEMON_1} est blessé par la {SWAP_2_ITEM} de {SWAP_1_POKEMON_2} !");
-RegexBattleMessagesMap.set(/(.*) was hurt by its (.*)!/, "{POKEMON} est blessé par ses {ITEM} !");
+RegexBattleMessagesMap.set(/(.*) was hurt by its (.*)!/, "{POKEMON} est blessé par son objet {ITEM} !");
 RegexBattleMessagesMap.set(/(.*) is hurt by (.*)!/, "{POKEMON} est blessé par {MOVE} !");
 RegexBattleMessagesMap.set(/(.*) had its HP restored\./, "{POKEMON} récupère des PV !");
 RegexBattleMessagesMap.set(/(.*) restored its HP using its Z-Power!/, "{POKEMON} utilise la Force Z pour se soigner !");
@@ -3507,38 +3508,39 @@ export const ConditionsDico: { [englishName: string]: string; } = {
 
 export const WeatherDicos: { [englishName: string]: string; } = {
 	// Weathers
-	"Sun": "",
-	"Rain": "",
-	"Sandstorm": "",
-	"Hail": "",
-	"Intense Sun": "",
-	"Heavy Rain": "",
-	"Strong Winds": "",
+	"Sun": "Soleil",
+	"Rain": "Pluie",
+	"Sandstorm": "Tempête de sable",
+	"Hail": "Grêle",
+	"Intense Sun": "Soleil intense",
+	"Heavy Rain": "Pluie battante",
+	"Strong Winds": "Vent mystérieux",
 
 	// Terrains
-	"mistyterrain": "",
-	"electricterrain": "",
-	"grassyterrain": "",
-	"psychicterrain": "",
+	"Misty Terrain": "Champ Brumeux",
+	"Electric Terrain": "Champ Électrifié",
+	"Grassy Terrain": "Champ Herbu",
+	"Psychic Terrain": "Champ Psychique",
 
 	// Side-conditions
-	"auroraveil": "",
-	"reflect": "",
-	"lightscreen": "",
-	"safeguard": "",
-	"mist": "",
+	"Aurora Veil": "Voile Aurore",
+	"Reflect": "Protection",
+	"Light Screen": "Mur Lumière",
+	"Safeguard": "Rune Protect",
+	"Mist": "Brume",
+	"Tailwind": "Vent Arrière",
+	"Lucky Chant": "Air Veinard",
+	"Swamp": "Marécage",
+	"Rainbow": "Arc-en-ciel",
+	"Sea of Fire": "Mer de feu",
 
 	// Pseudo weathers
-	"magicroom": "",
-	"gravity": "",
-	"trickroom": "",
-	"echoedvoice": "",
-	"echoedvoiceclone": "",
-	"fairylock": "",
-	"iondeluge": "",
-	"mudsport": "",
-	"watersport": "",
-	"wonderroom": "",
+	"Magic Room": "Zone Magique",
+	"Gravity": "Gravité",
+	"Trick Room": "Distorsion",
+	"Mud Sport": "Lance-Boue",
+	"Water Sport": "Tourniquet",
+	"Wonder Room": "Zone Étrange"
 }
 
 export const HeadersDico: { [englishName: string]: string; } = {
@@ -3823,7 +3825,7 @@ export const ResultsDico: { [englishName: string]: string; } = {
 	"Already paralyzed": "Déjà paralysé",
 	"Already frozen": "Déjà gelé",
 	"Stat drop blocked": "Pas de baisse de stats",
-	"Failed": "Échoué",
+	"Failed": "Échoue",
 	"Quick Guard": "Prévention",
 	"Wide Guard": "Garde Large",
 	"Crafty Shield": "Vigilance",
@@ -4006,11 +4008,11 @@ export const CosmeticForms: Array<string> = [
 ]
 
 const MainDico: Array<{ [englishName: string]: string; }>  = [
-	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, ConditionsDico, HeadersDico, MenuDico, BattleMessagesDico, ResultsDico, FiltersDico
+	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, ConditionsDico, WeatherDicos, HeadersDico, MenuDico, BattleMessagesDico, ResultsDico, FiltersDico
 ]
 
 const LogTranslationType: Array<string> = [
-	"pokémon", "ability", "move", "item", "type", "nature", "stat", "condition", "header", "menu", "battlemessage", "result", "filter"
+	"pokémon", "ability", "move", "item", "type", "nature", "stat", "condition", "weather", "header", "menu", "battlemessage", "result", "filter"
 ]
 
 function translateToFrench(englishWord: string, translationType: number)
@@ -4103,6 +4105,10 @@ export function translateCondition(englishCondition: string) {
 	return translateToFrench(englishCondition, CONDITION);
 }
 
+export function translateWeather(englishWeather: string) {
+	return translateToFrench(englishWeather, WEATHER);
+}
+
 export function translateHeader(englishHeader: string) {
 	return translateToFrench(englishHeader, HEADER);
 }
@@ -4155,6 +4161,10 @@ export function translateStatToEnglish(frenchStat: string) {
 
 export function translateConditionToEnglish(frenchCondition: string) {
 	return translateToEnglish(frenchCondition, CONDITION);
+}
+
+export function translateWeatherToEnglish(frenchWeather: string) {
+	return translateToEnglish(frenchWeather, WEATHER);
 }
 
 export function translateHeaderToEnglish(frenchHeader: string) {
@@ -4211,6 +4221,10 @@ export function isValidFrenchCondition(frenchCondition: string) {
 	return translateToEnglish(frenchCondition, CONDITION) != frenchCondition;
 }
 
+export function isValidFrenchWeather(frenchWeather: string) {
+	return translateToEnglish(frenchWeather, WEATHER) != frenchWeather;
+}
+
 export function isValidFrenchHeader(frenchHeader: string) {
 	return translateToEnglish(frenchHeader, HEADER) != frenchHeader;
 }
@@ -4263,6 +4277,10 @@ export function isValidEnglishStat(englishStat: string) {
 
 export function isValidEnglishCondition(englishCondition: string) {
 	return ConditionsDico[englishCondition];
+}
+
+export function isValidEnglishWeather(englishWeather: string) {
+	return WeatherDicos[englishWeather];
 }
 
 export function isValidEnglishHeader(englishHeader: string) {
