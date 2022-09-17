@@ -1,4 +1,4 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico } from '../translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, isValidEnglishAbility, isValidEnglishPokemonName } from '../translator';
 	
 import { isValidEnglishType, isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
 
@@ -30,6 +30,7 @@ declare var BattlePokedex: any;
 declare var BattleAbilities: any;
 declare var BattleItems: any;
 declare var BattleMovedex: any;
+declare var BattleTeambuilderTable: any;
 
 // Backup the BattlePokedex, BattleAbilities and BattleItems variables, we need them
 // to erase incorrect entries (see updatePokemonInfo method)
@@ -56,6 +57,7 @@ const FrenchNamesDico = populateFrenchDico();
 
 // When Teambuilder first loads, update the BattleSearchIndex
 updateBattleSearchIndex();
+reorderBattleTeambuilderTable();
 
 // Create a MutationObserver element in order to track every page change
 // So we can it dynamically translate new content
@@ -88,8 +90,6 @@ function onMutation(mutations: MutationRecord[])
 			{
 				var newElement = node as Element;
 				var elementClasses = newElement.classList;
-
-				console.log(newElement);
 
 				if (elementClasses)
 				{
@@ -134,6 +134,10 @@ function onMutation(mutations: MutationRecord[])
 					else if (elementClasses.contains("detailsform"))
 					{
 						updatePokemonDetailsForm(newElement);
+					}
+					else
+					{
+						console.log("Non-processed nodes : " + newElement.outerHTML);
 					}
 				}
 			}
@@ -1275,6 +1279,75 @@ function getDisplayedDataType(element: Element)
 	return displayedDataType;
 }
 
+function reorderBattleTeambuilderTable()
+{
+	var tierOrderArray = BattleTeambuilderTable["tiers"] as Array<string>;
+	var frenchOrderArray: any = {};
+
+	var header = "";
+
+	for (var i = 0 ; i < tierOrderArray.length ; i++)
+	{
+		var englishID = tierOrderArray[i];
+		
+		// Pokémon ID
+		if (typeof englishID === 'string')
+		{
+			var frenchWord = "";
+
+			for (var englishName in PokemonDico)
+			{
+				if (removeSpecialCharacters(englishName.toLowerCase()) === englishID) {
+					frenchWord = removeDiacritics(PokemonDico[englishName]);
+				}
+			}
+
+			if (frenchWord) {
+				frenchOrderArray[header].push({"englishID": englishID, "frenchWord": frenchWord})
+			}
+			else {
+				frenchOrderArray[header].push({"englishID": englishID, "frenchWord": englishID})
+			}
+		}
+		// Header
+		else
+		{
+			header = englishID[1];
+			frenchOrderArray[header] = [];
+		}
+	}
+
+	for (var tierID in frenchOrderArray)
+	{
+		var tierList = frenchOrderArray[tierID] as Array<{"englishID": string, "frenchWord": string}>;
+
+		tierList.sort(function(a, b) {
+			return ((a.frenchWord < b.frenchWord) ? -1 : ((a.frenchWord == b.frenchWord) ? 0 : 1));
+		})
+	}
+
+	var header = "";
+	var updatedID = 0;
+
+	for (var i = 0 ; i < tierOrderArray.length ; i++)
+	{
+		var englishID = tierOrderArray[i];
+		
+		// Pokémon ID
+		if (typeof englishID === 'string') {
+			tierOrderArray[i] = frenchOrderArray[header][updatedID]["englishID"];
+			updatedID++;
+		}
+		// Header
+		else {
+			header = englishID[1];
+			updatedID = 0;
+		}
+	}
+
+	console.log(BattleTeambuilderTable);
+}
+
 function updateBattleSearchIndex()
 {
 	var newBattleSearchIndex = [];
@@ -1325,9 +1398,6 @@ function updateBattleSearchIndex()
 
 	BattleSearchIndex = newBattleSearchIndex;
 	BattleSearchIndexOffset = newBattleSearchIndexOffset;
-
-	// Always log BattleSearchIndex to help debugging
-	console.log(BattleSearchIndex);
 }
 
 function populateFrenchDico()
