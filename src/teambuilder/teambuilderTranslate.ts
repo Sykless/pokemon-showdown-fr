@@ -1,4 +1,4 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, isValidEnglishAbility, isValidEnglishPokemonName } from '../translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, isValidEnglishAbility, isValidEnglishPokemonName, translatePokemonNameToEnglish } from '../translator';
 	
 import { isValidEnglishType, isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
 
@@ -31,6 +31,11 @@ declare var BattleAbilities: any;
 declare var BattleItems: any;
 declare var BattleMovedex: any;
 declare var BattleTeambuilderTable: any;
+declare var BattleFormats: any;
+declare var BattleSearch: any;
+
+console.log(BattleFormats);
+console.log(BattleTeambuilderTable);
 
 // Backup the BattlePokedex, BattleAbilities and BattleItems variables, we need them
 // to erase incorrect entries (see updatePokemonInfo method)
@@ -50,6 +55,8 @@ var SpriteURL = "";
 window.addEventListener('RecieveContent', function(evt: any) {
 	SpriteURL = evt.detail;
 });
+
+var currentFormat: string = "";
 
 // Create FrenchNamesDico dictionary, containing every french to english translation alphabetically sorted
 const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico];
@@ -82,6 +89,8 @@ function onMutation(mutations: MutationRecord[])
 
 	for (var i = 0, len = mutations.length; i < len ; i++)
 	{		
+		// console.log(mutations[i]);
+
 		if (mutations[i].type == "childList")
 		{
 			var newNodes = mutations[i].addedNodes;
@@ -105,6 +114,11 @@ function onMutation(mutations: MutationRecord[])
 						for (var k = 0, result; (result = node.childNodes[k]) ; k++) {
 							updateResultTag(result as Element);
 						}
+					}
+					// Format getter
+					else if (elementClasses.contains("formatselect"))
+					{
+						setCurrentFormat(newElement);
 					}
 					// New results after scrolling
 					else if (elementClasses.contains("result"))
@@ -150,6 +164,9 @@ function onMutation(mutations: MutationRecord[])
 			if (modifiedElement.tagName == "INPUT") {
 				removeInputIncompleteClass(modifiedElement as HTMLInputElement);
 			}
+			else if (modifiedElement.tagName == "BUTTON") {
+				setCurrentFormat(modifiedElement);
+			}
 		}
 	}
 }
@@ -164,6 +181,18 @@ function isTeambuilderOpen()
 	}
 
 	return false;
+}
+
+
+function setCurrentFormat(newElement: Element)
+{
+	var formatButton = newElement as HTMLButtonElement;
+
+	// Only way to know the team format is to directly take it from the selector
+	if (formatButton.classList.contains("formatselect")) {
+		currentFormat = formatButton.value;
+		console.log("currentFormat : " + currentFormat);
+	}
 }
 
 function updateResultTag(resultElement: Element)
@@ -201,7 +230,7 @@ function updateResultTag(resultElement: Element)
 	}
 }
 
-function removeCurElement()
+function updateCurElement()
 {
 	// Cur element is the search result entry of the current selected Pokémon 
 	// It is defined by the current Pokémon name, but since the current Pokémon name is in french, cur is bugged
@@ -225,8 +254,38 @@ function removeCurElement()
 			{
 				var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
 
-				// Remove cur parent node only if the provided Pokémon is french
-				if (isValidFrenchPokemonName(nameInputElement.value)) {
+				// If the input name is a valid english Pokémon name, cur element is fine, we don't do anything
+				if (isValidEnglishPokemonName(nameInputElement.value)) {
+					break;
+				}
+				// If the input name is a valid french Pokémon name, we need to recreate cur element
+				else if (isValidFrenchPokemonName(nameInputElement.value))
+				{
+					// Remove the current Pokémon info
+					curParent.removeChild(curParent.firstChild as Node);
+
+					// Get tne english Pokémon name
+					var englishName = translatePokemonNameToEnglish(nameInputElement.value);
+
+					// Generate the current Pokémon HTML code from its english name
+					var englishNameId = removeSpecialCharacters(englishName.toLowerCase());
+					var htmlCurElement = getPokemonCurHTMLElement(englishNameId);
+
+					console.log(htmlCurElement);
+
+					var curTemplate = document.createElement('template');
+					curTemplate.innerHTML = htmlCurElement;
+
+					var curNode = curTemplate.content.firstChild;
+
+					console.log(curNode);
+
+					if (curNode) {
+						curParent.appendChild(curNode);
+					}
+				}
+				// If input is not french nor english, remove the cur element
+				else {
 					curParent.remove();
 					break;
 				}
@@ -259,6 +318,12 @@ function removeCurElement()
 			}
 		}
 	}
+}
+
+function getPokemonCurHTMLElement(englishPokemonID: string)
+{
+	var battleSearchElement = new BattleSearch("","");
+	return battleSearchElement.renderRow(englishPokemonID, "pokemon", 0, 0, "", ' class="cur"');
 }
 
 function removeInputIncompleteClass(inputElement: HTMLInputElement)
@@ -313,7 +378,7 @@ function updatePokemonInfo()
 	BattleItems = structuredClone(originalBattleItems);
 	BattleMovedex = structuredClone(originalBattleMovedex);
 
-	removeCurElement();
+	updateCurElement();
 
 	// Since we don't always get the teamchart element from MutationObserver, we need to manually retrieve it
 	var teamchartElement = document.getElementsByClassName("teamchart").item(0);
@@ -1281,11 +1346,17 @@ function getDisplayedDataType(element: Element)
 
 function reorderBattleTeambuilderTable()
 {
+	console.log(BattleTeambuilderTable);
+
+	// "tiers" object is an array separated by tier names
+	// It is used to sort the Pokémon in each tier, sorted by english name when generated
+	// We need to sort each tier by french name
 	var tierOrderArray = BattleTeambuilderTable["tiers"] as Array<string>;
 	var frenchOrderArray: any = {};
 
 	var header = "";
 
+	// Iterate on every Pokémon
 	for (var i = 0 ; i < tierOrderArray.length ; i++)
 	{
 		var englishID = tierOrderArray[i];
@@ -1295,6 +1366,7 @@ function reorderBattleTeambuilderTable()
 		{
 			var frenchWord = "";
 
+			// Find the french translation from the english ID (only lowercase letters)
 			for (var englishName in PokemonDico)
 			{
 				if (removeSpecialCharacters(englishName.toLowerCase()) === englishID) {
@@ -1302,6 +1374,7 @@ function reorderBattleTeambuilderTable()
 				}
 			}
 
+			// If a translation is found, use it, else just insert the english name
 			if (frenchWord) {
 				frenchOrderArray[header].push({"englishID": englishID, "frenchWord": frenchWord})
 			}
@@ -1309,14 +1382,16 @@ function reorderBattleTeambuilderTable()
 				frenchOrderArray[header].push({"englishID": englishID, "frenchWord": englishID})
 			}
 		}
-		// Header
+		// If the objet is not a string (Pokémon ID), that mean the object is an array containing the header name
 		else
 		{
+			// Create a sub-array containing every Pokémon in this tier
 			header = englishID[1];
 			frenchOrderArray[header] = [];
 		}
 	}
 
+	// Iterate on each tier and sort by french name
 	for (var tierID in frenchOrderArray)
 	{
 		var tierList = frenchOrderArray[tierID] as Array<{"englishID": string, "frenchWord": string}>;
@@ -1329,6 +1404,7 @@ function reorderBattleTeambuilderTable()
 	var header = "";
 	var updatedID = 0;
 
+	// Iterate on BattleTeambuilderTable and replace each value with the sorted english ID
 	for (var i = 0 ; i < tierOrderArray.length ; i++)
 	{
 		var englishID = tierOrderArray[i];
@@ -1344,8 +1420,6 @@ function reorderBattleTeambuilderTable()
 			updatedID = 0;
 		}
 	}
-
-	console.log(BattleTeambuilderTable);
 }
 
 function updateBattleSearchIndex()
