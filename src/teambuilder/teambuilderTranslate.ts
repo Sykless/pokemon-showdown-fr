@@ -31,10 +31,8 @@ declare var BattleAbilities: any;
 declare var BattleItems: any;
 declare var BattleMovedex: any;
 declare var BattleTeambuilderTable: any;
-declare var BattleFormats: any;
 declare var BattleSearch: any;
 
-console.log(BattleFormats);
 console.log(BattleTeambuilderTable);
 
 // Backup the BattlePokedex, BattleAbilities and BattleItems variables, we need them
@@ -76,7 +74,7 @@ observer.observe(document, {
 
 	// Catch any class modification
 	attributes: true,
-	attributeFilter: ['class']
+	attributeFilter: ['class', 'value']
 });
 
 // Everytime a new element is added to the page, onMutation method is called
@@ -271,16 +269,14 @@ function updateCurElement()
 					var englishNameId = removeSpecialCharacters(englishName.toLowerCase());
 					var htmlCurElement = getPokemonCurHTMLElement(englishNameId);
 
-					console.log(htmlCurElement);
-
 					var curTemplate = document.createElement('template');
 					curTemplate.innerHTML = htmlCurElement;
 
 					var curNode = curTemplate.content.firstChild;
 
-					console.log(curNode);
-
-					if (curNode) {
+					if (curNode)
+					{
+						applyPokemonGenModifiers(curNode.firstChild as Element, englishNameId);
 						curParent.appendChild(curNode);
 					}
 				}
@@ -318,6 +314,97 @@ function updateCurElement()
 			}
 		}
 	}
+}
+
+function applyPokemonGenModifiers(pokemonElement: Element, pokemonEnglishID: string)
+{
+	// Apply gen-specific data (no abilities in gen 1-2, fairy type only in gen > 5, etc)
+	var genNumber = currentFormat.slice(0,4);
+
+	console.log("genNumber : " + genNumber);
+
+	if (/^gen\d+$/.test(genNumber))
+	{
+		// Provided data is already gen8
+		if (genNumber != "gen8")
+		{
+			var currentGenInfo = getGenSpeciesData(pokemonEnglishID, genNumber);
+			var currentAbilities: Array<string> = [];
+
+			console.log(pokemonElement);
+
+			// First iteration in order to collect generated info
+			pokemonElement.childNodes.forEach(function (pokemonInfoNode) {
+				var pokemonInfo = pokemonInfoNode as Element;
+
+				// Get types
+				if (pokemonInfo.classList?.contains("typecol"))
+				{
+					var typeImageList = Array.from(pokemonInfo.childNodes);
+					console.log(typeImageList);
+
+					if (currentGenInfo.types)
+					{
+						// If a type was not present in the old gen, remove it
+						if (currentGenInfo.types.length < typeImageList.length) {
+							pokemonInfo.removeChild(pokemonInfo.lastChild as Node);
+						}
+
+						// Check that every type is the correct one, else replace it
+						for (var i = 0 ; i < typeImageList.length ; i++)
+						{
+							var typeImage = typeImageList[i] as HTMLImageElement;
+							var supposedType = (currentGenInfo.types[i] as string);
+
+							if (typeImage.tagName == "IMG" && supposedType != typeImage.alt) {
+								typeImage.alt = supposedType;
+							}
+						}
+					}
+				}
+				// Get abilities
+				else if (pokemonInfo.classList?.contains("twoabilitycol"))
+				{
+					pokemonInfo.childNodes.forEach(function (twoAbilitiesNode) {
+						var twoAbilities = twoAbilitiesNode as Element;
+
+						if (twoAbilities.textContent) {
+							currentAbilities.push(twoAbilities.textContent);
+						}
+					})
+				}
+				else if (pokemonInfo.classList?.contains("abilitycol"))
+				{
+					if (pokemonInfo.textContent) {
+						currentAbilities.push(pokemonInfo.textContent);
+					}
+				}
+			})
+		}
+	}
+}
+
+function getGenSpeciesData(pokemonID: string, currentGen: string)
+{
+	var overrideSpeciesData: any = {};
+	var currentGenNumber = Number(currentGen.slice(3));
+
+	// Iterate over each gen until the current one to get all gen-specific changes
+	for (var i = 7 ; i >= currentGenNumber ; i--)
+	{
+		var pokemonInfo = BattleTeambuilderTable["gen" + i].overrideSpeciesData[pokemonID];
+
+		if (pokemonInfo) {
+			// Gen-specific info has been found for this Pokémon, retrieve it
+			for (var genSpecificInfo in pokemonInfo)
+			{
+				// Potentially erase newer gen-specific info, it's okay as we want the most updated info
+				overrideSpeciesData[genSpecificInfo] = pokemonInfo[genSpecificInfo];
+			}
+		}
+	}
+
+	return overrideSpeciesData;
 }
 
 function getPokemonCurHTMLElement(englishPokemonID: string)
