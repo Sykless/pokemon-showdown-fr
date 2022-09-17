@@ -329,54 +329,127 @@ function applyPokemonGenModifiers(pokemonElement: Element, pokemonEnglishID: str
 		if (genNumber != "gen8")
 		{
 			var currentGenInfo = getGenSpeciesData(pokemonEnglishID, genNumber);
-			var currentAbilities: Array<string> = [];
 
-			console.log(pokemonElement);
+			console.log(currentGenInfo);
+			console.log(pokemonElement);	
 
 			// First iteration in order to collect generated info
 			pokemonElement.childNodes.forEach(function (pokemonInfoNode) {
 				var pokemonInfo = pokemonInfoNode as Element;
 
 				// Get types
-				if (pokemonInfo.classList?.contains("typecol"))
+				if (pokemonInfo.classList?.contains("typecol") && currentGenInfo.types)
 				{
+					// Retrieve every current type
 					var typeImageList = Array.from(pokemonInfo.childNodes);
-					console.log(typeImageList);
 
-					if (currentGenInfo.types)
+					// If a type was not present in the old gen, remove it
+					if (currentGenInfo.types.length < typeImageList.length) {
+						pokemonInfo.removeChild(pokemonInfo.lastChild as Node);
+					}
+
+					// Check that every type is the correct one, else replace it
+					for (var i = 0 ; i < typeImageList.length ; i++)
 					{
-						// If a type was not present in the old gen, remove it
-						if (currentGenInfo.types.length < typeImageList.length) {
-							pokemonInfo.removeChild(pokemonInfo.lastChild as Node);
-						}
+						var typeImage = typeImageList[i] as HTMLImageElement;
+						var supposedType = (currentGenInfo.types[i] as string);
 
-						// Check that every type is the correct one, else replace it
-						for (var i = 0 ; i < typeImageList.length ; i++)
-						{
-							var typeImage = typeImageList[i] as HTMLImageElement;
-							var supposedType = (currentGenInfo.types[i] as string);
-
-							if (typeImage.tagName == "IMG" && supposedType != typeImage.alt) {
-								typeImage.alt = supposedType;
-							}
+						if (typeImage.tagName == "IMG" && supposedType != typeImage.alt) {
+							typeImage.alt = supposedType;
 						}
 					}
 				}
 				// Get abilities
-				else if (pokemonInfo.classList?.contains("twoabilitycol"))
+				else if (pokemonInfo.classList?.contains("twoabilitycol")
+					|| pokemonInfo.classList?.contains("abilitycol"))
 				{
-					pokemonInfo.childNodes.forEach(function (twoAbilitiesNode) {
-						var twoAbilities = twoAbilitiesNode as Element;
+					// Gen1 or Gen2, remove every ability
+					if (["gen1", "gen2"].includes(genNumber))
+					{
+						pokemonInfo.textContent = "";
+					}
+					else if (currentGenInfo.abilities)
+					{
+						// Check first ability column
+						if (pokemonInfo.previousElementSibling?.classList
+							&& pokemonInfo.previousElementSibling.classList.contains("typecol"))
+						{
+							// Only retrieve text abilities, not line breaks
+							var abilitiesList = Array.from(pokemonInfo.childNodes).filter(element => element.textContent);
 
-						if (twoAbilities.textContent) {
-							currentAbilities.push(twoAbilities.textContent);
+							// No Hidden ability, the second ability is in the second column
+							if (["gen3", "gen4"].includes(genNumber))
+							{
+								pokemonInfo.textContent = currentGenInfo.abilities[0];
+								pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
+							}
+							// Hidden ability, the second ability is in the first column
+							else
+							{
+								// Replace first ability with supposed first ability
+								abilitiesList[0].textContent = currentGenInfo.abilities[0];
+
+								// If supposed second ability but no current second ability, insert a line break
+								if (abilitiesList.length == 1 && currentGenInfo.abilities[1])
+								{
+									pokemonInfo.appendChild(document.createElement("br"));
+									pokemonInfo.appendChild(document.createTextNode(currentGenInfo.abilities[1]));
+									pokemonInfo.className = pokemonInfo.className.replace("abilitycol","twoabilitycol");
+								}
+								// If no supposed second ability but current second ability, remove it
+								else if (abilitiesList.length == 2 && !currentGenInfo.abilities[1])
+								{
+									// If there's a supposed second ability, the action will depend on the current ability
+									abilitiesList[1].textContent = "";
+									pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
+								}
+								// If supposed second ability and current second ability, replace it
+								else if (abilitiesList.length == 2 && currentGenInfo.abilities[1])
+								{
+									abilitiesList[1].textContent = currentGenInfo.abilities[1]
+								}
+							}
 						}
-					})
-				}
-				else if (pokemonInfo.classList?.contains("abilitycol"))
-				{
-					if (pokemonInfo.textContent) {
-						currentAbilities.push(pokemonInfo.textContent);
+						// Check second ability column
+						else if (pokemonInfo.nextElementSibling?.classList
+							&& pokemonInfo.nextElementSibling.classList.contains("statcol"))
+						{
+							// Only retrieve text abilities, not line breaks
+							var hiddenAbilitiesList = Array.from(pokemonInfo.childNodes).filter(element => element.textContent);
+
+							// No Hidden ability, the second ability is in the second column
+							if (["gen3", "gen4"].includes(genNumber))
+							{
+								pokemonInfo.textContent = currentGenInfo.abilities[1];
+								pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
+							}
+							// Hidden ability, the second ability is in the first column
+							else
+							{
+								// Replace hidden ability with supposed hidden ability
+								hiddenAbilitiesList[0].textContent = currentGenInfo.abilities["H"];
+
+								// If supposed second ability but no current second ability, insert a line break
+								if (hiddenAbilitiesList.length == 1 && currentGenInfo.abilities["S"])
+								{
+									pokemonInfo.appendChild(document.createElement("br"));
+									pokemonInfo.appendChild(document.createTextNode("(" + currentGenInfo.abilities["S"] + ")"));
+									pokemonInfo.className = pokemonInfo.className.replace("abilitycol","twoabilitycol");
+								}
+								// If no supposed second ability but current second ability, remove it
+								else if (hiddenAbilitiesList.length == 2 && !currentGenInfo.abilities["S"])
+								{
+									// If there's a supposed second ability, the action will depend on the current ability
+									hiddenAbilitiesList[1].textContent = "";
+									pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
+								}
+								// If supposed second ability and current second ability, replace it
+								else if (hiddenAbilitiesList.length == 2 && currentGenInfo.abilities["S"])
+								{
+									hiddenAbilitiesList[1].textContent = "(" + currentGenInfo.abilities["S"] + ")";
+								}
+							}
+						}
 					}
 				}
 			})
