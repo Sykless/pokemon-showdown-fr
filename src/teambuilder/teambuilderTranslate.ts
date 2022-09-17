@@ -33,8 +33,6 @@ declare var BattleMovedex: any;
 declare var BattleTeambuilderTable: any;
 declare var BattleSearch: any;
 
-console.log(BattleTeambuilderTable);
-
 // Backup the BattlePokedex, BattleAbilities and BattleItems variables, we need them
 // to erase incorrect entries (see updatePokemonInfo method)
 const originalBattlePokedex = structuredClone(BattlePokedex);
@@ -329,6 +327,7 @@ function applyPokemonGenModifiers(pokemonElement: Element, pokemonEnglishID: str
 		if (genNumber != "gen8")
 		{
 			var currentGenInfo = getGenSpeciesData(pokemonEnglishID, genNumber);
+			var illegalPokemon = false;
 
 			console.log(currentGenInfo);
 			console.log(pokemonElement);	
@@ -338,7 +337,35 @@ function applyPokemonGenModifiers(pokemonElement: Element, pokemonEnglishID: str
 				var pokemonInfo = pokemonInfoNode as Element;
 
 				// Get types
-				if (pokemonInfo.classList?.contains("typecol") && currentGenInfo.types)
+				if (pokemonInfo.classList?.contains("numcol"))
+				{
+					// Get the Pokémon Tier in the current gen
+					if (BattleTeambuilderTable[genNumber].overrideTier[pokemonEnglishID]) {
+						pokemonInfo.textContent = BattleTeambuilderTable[genNumber].overrideTier[pokemonEnglishID];
+					}
+					else {
+						pokemonInfo.textContent = "Illégal";
+						illegalPokemon = true;
+					}					
+				}
+				// Pokémon name, only useful to remove illegal info
+				else if (pokemonInfo.classList?.contains("pokemonnamecol") && illegalPokemon)
+				{
+					// Illegal result, remove very other element
+					while (pokemonInfo.nextSibling) {
+						pokemonElement.removeChild(pokemonInfo.nextSibling);
+					}
+
+					var illegalCol = document.createElement("span");
+					var illegalText = document.createElement("em");
+
+					illegalCol.className = "col illegalcol"
+					illegalCol.append(illegalText);
+					illegalText.append(document.createTextNode("Illégal"));
+
+					pokemonElement.append(illegalCol);
+				}
+				else if (pokemonInfo.classList?.contains("typecol") && currentGenInfo.types)
 				{
 					// Retrieve every current type
 					var typeImageList = Array.from(pokemonInfo.childNodes);
@@ -358,6 +385,48 @@ function applyPokemonGenModifiers(pokemonElement: Element, pokemonEnglishID: str
 							typeImage.alt = supposedType;
 						}
 					}
+				}
+				// Get stats
+				else if (pokemonInfo.classList?.contains("statcol") && currentGenInfo.baseStats) {
+					var currentStat = "";
+
+					pokemonInfo.childNodes.forEach(function (statNode) {
+						var statElement = statNode as Element;
+
+						if (statElement.textContent)
+						{
+							// <em> tags are stats names
+							if (statElement.tagName == "EM") {
+								currentStat = statElement.textContent;
+
+								if (genNumber == "gen1" && currentStat == "SpA") {
+									statElement.textContent = "Spc"
+								}
+							}
+							// Non-line break elements are stats values
+							else if (statElement.tagName != "BR")
+							{
+								// Gen 1 : Special Defense doesn't exist
+								if (genNumber == "gen1" && currentStat == "SpD") {
+									pokemonInfo.parentElement?.removeChild(pokemonInfo);
+								}
+								// Replace the stats values
+								else {
+									statElement.textContent = currentGenInfo.baseStats[currentStat.toLowerCase()];
+								}
+							}
+						}
+					})
+				}
+				// Base stats
+				else if (pokemonInfo.classList?.contains("bstcol") && currentGenInfo.baseStats) {
+					pokemonInfo.firstChild?.childNodes.forEach(function (baseStatNode) {
+						if (baseStatNode.textContent && baseStatNode.textContent != "BST")
+						{
+							// Sum every supposed stat
+							baseStatNode.textContent = Object.values(currentGenInfo.baseStats).reduce((a, b) => Number(a) + Number(b), 0) as string;
+						}
+					})
 				}
 				// Get abilities
 				else if (pokemonInfo.classList?.contains("twoabilitycol")
