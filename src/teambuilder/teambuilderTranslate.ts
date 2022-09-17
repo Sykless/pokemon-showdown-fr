@@ -874,37 +874,32 @@ function updatePokemonName(element: Element)
 	}
 }
 
-function updatePokemonAbility(element: Element)
+function updatePokemonAbility(resultElement: Element)
 {
-	var abilityNodeList = element.querySelectorAll('.abilitycol');
-	var twoAbilitiesNode = element.querySelector('.twoabilitycol');
-
-	for (var i = 0, node; (node = abilityNodeList[i]) ; i++)
-	{
-		// The Pokemon might only have one ability, so we check if null before using it
-		if (node.textContent) {
-			node.textContent = translateAbility(node.textContent);
-		}
-	}
-
-	// There could be a node with two abilities
-	if (twoAbilitiesNode)
-	{
-		var twoAbilities = twoAbilitiesNode.innerHTML.split("<br>");
-		twoAbilitiesNode.textContent = '';
+	resultElement.firstChild?.childNodes.forEach(function (resultNode) {
+		var result = resultNode as Element;
 		
-		for (var i = 0 ; i < twoAbilities.length ; i++)
+		if (result.classList)
 		{
-			// If two abilities are present, add a br tag to separate them
-			if (i == 1) {
-				twoAbilitiesNode.appendChild(document.createElement("br"));
+			if (result.classList.contains("abilitycol")
+				|| result.classList.contains("twoabilitycol"))
+			{
+				result.childNodes.forEach(function (abilityNode) {
+					if (abilityNode.textContent)
+					{
+						// A Special Event Ability will be put in parenthesis
+						if (abilityNode.textContent.slice(0,1) == "(") {
+							abilityNode.textContent = "(" + translateAbility(abilityNode.textContent.slice(1,-1)) + ")";
+						}
+						else {
+							abilityNode.textContent = translateAbility(abilityNode.textContent);
+						}
+						
+					}
+				})
 			}
-
-			// Use the untranslated ability if no translation is found
-			var abilityTextNode = document.createTextNode(translateAbility(twoAbilities[i]))
-			twoAbilitiesNode.appendChild(abilityTextNode)
 		}
-	}
+	})
 }
 
 function updateAbility(element: Element)
@@ -1071,17 +1066,19 @@ function updateHeader(headerElement: Element)
 
 function updatePokemonStats(resultElement: Element)
 {
-	var statsNodes = resultElement.getElementsByClassName("statcol");
-
-	for (var i = 0 ; i < statsNodes.length ; i++)
-	{
-		statsNodes[i].childNodes.forEach(function(statNode) {
-			var statElement = statNode as Element;
-			if (statElement.tagName == "EM" && statElement.textContent) {
-				statElement.textContent = translateFilter(statElement.textContent);
-			}
-		});
-	}
+	resultElement.firstChild?.childNodes.forEach(function (resultNode) {
+		var result = resultNode as Element;
+		
+		if (result.classList?.contains("statcol")) {
+			result.childNodes.forEach(function (statsNode)
+			{
+				var statElement = statsNode as Element;
+				if (statElement.tagName == "EM" && statElement.textContent) {
+					statElement.textContent = translateStat(statElement.textContent);
+				}
+			})
+		}
+	})
 }
 
 function updateSortFilters(resultElement: Element)
