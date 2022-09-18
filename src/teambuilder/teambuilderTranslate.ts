@@ -52,7 +52,10 @@ window.addEventListener('RecieveContent', function(evt: any) {
 	SpriteURL = evt.detail;
 });
 
+// Tier global variables, set them on format selection and never touch them again
 var currentFormat: string = "";
+var currentTier: any;
+var legalPokemonList: Array<any>;
 
 // Create FrenchNamesDico dictionary, containing every french to english translation alphabetically sorted
 const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico];
@@ -183,11 +186,18 @@ function isTeambuilderOpen()
 function setCurrentFormat(newElement: Element)
 {
 	var formatButton = newElement as HTMLButtonElement;
+	console.log(BattleTeambuilderTable);
 
-	// Only way to know the team format is to directly take it from the selector
+	// Only way to know the team formatName is to directly take it from the selector
 	if (formatButton.classList.contains("formatselect")) {
 		currentFormat = formatButton.value;
-		console.log("currentFormat : " + currentFormat);
+
+		console.log(currentFormat);
+
+		generateLegalPokemonList();
+
+		console.log(currentTier);
+		console.log(legalPokemonList);
 	}
 }
 
@@ -324,206 +334,384 @@ function applyPokemonGenModifiers(pokemonElement: Element, pokemonEnglishID: str
 	if (/^gen\d+$/.test(genNumber))
 	{
 		// Provided data is already gen8
-		if (genNumber != "gen8")
-		{
-			var currentGenInfo = getGenSpeciesData(pokemonEnglishID, genNumber);
-			var illegalPokemon = false;
+		var currentGenInfo = getGenSpeciesData(pokemonEnglishID, genNumber);
+		var illegalPokemon = false;
 
-			console.log(currentGenInfo);
-			console.log(pokemonElement);	
+		console.log(currentGenInfo);
+		console.log(pokemonElement);
 
-			// First iteration in order to collect generated info
-			pokemonElement.childNodes.forEach(function (pokemonInfoNode) {
-				var pokemonInfo = pokemonInfoNode as Element;
+		pokemonElement.childNodes.forEach(function (pokemonInfoNode) {
+			var pokemonInfo = pokemonInfoNode as Element;
 
-				// Get types
-				if (pokemonInfo.classList?.contains("numcol"))
-				{
-					// Get the Pokémon Tier in the current gen
-					if (BattleTeambuilderTable[genNumber].overrideTier[pokemonEnglishID]) {
-						pokemonInfo.textContent = BattleTeambuilderTable[genNumber].overrideTier[pokemonEnglishID];
-					}
-					else {
-						pokemonInfo.textContent = "Illégal";
+			// Get Tier
+			if (pokemonInfo.classList?.contains("numcol"))
+			{
+				var tierName = currentTier.overrideTier[pokemonEnglishID];
+
+				// Check if the Pokémon is legal
+				if (tierName && tierName != "Illegal") {
+					pokemonInfo.textContent = tierName;
+
+					// The Pokémon could be in a higher tier, thus be illegal
+					if (!legalPokemonList.includes(pokemonEnglishID)) {
 						illegalPokemon = true;
-					}					
-				}
-				// Pokémon name, only useful to remove illegal info
-				else if (pokemonInfo.classList?.contains("pokemonnamecol") && illegalPokemon)
-				{
-					// Illegal result, remove very other element
-					while (pokemonInfo.nextSibling) {
-						pokemonElement.removeChild(pokemonInfo.nextSibling);
 					}
-
-					var illegalCol = document.createElement("span");
-					var illegalText = document.createElement("em");
-
-					illegalCol.className = "col illegalcol"
-					illegalCol.append(illegalText);
-					illegalText.append(document.createTextNode("Illégal"));
-
-					pokemonElement.append(illegalCol);
 				}
-				else if (pokemonInfo.classList?.contains("typecol") && currentGenInfo.types)
+				// Illegal Pokémon in the tier
+				else {
+					pokemonInfo.textContent = "Illégal";
+					illegalPokemon = true;
+				}				
+			}
+			// Pokémon name, only useful to remove illegal info
+			else if (pokemonInfo.classList?.contains("pokemonnamecol") && illegalPokemon)
+			{
+				// Illegal result, remove very other element
+				while (pokemonInfo.nextSibling) {
+					pokemonElement.removeChild(pokemonInfo.nextSibling);
+				}
+
+				var illegalCol = document.createElement("span");
+				var illegalText = document.createElement("em");
+
+				illegalCol.className = "col illegalcol"
+				illegalCol.append(illegalText);
+				illegalText.append(document.createTextNode("Illégal"));
+
+				pokemonElement.append(illegalCol);
+			}
+			// Type 
+			else if (pokemonInfo.classList?.contains("typecol") && currentGenInfo.types)
+			{
+				// Retrieve every current type
+				var typeImageList = Array.from(pokemonInfo.childNodes);
+
+				// If a type was not present in the old gen, remove it
+				if (currentGenInfo.types.length < typeImageList.length) {
+					pokemonInfo.removeChild(pokemonInfo.lastChild as Node);
+				}
+
+				// Check that every type is the correct one, else replace it
+				for (var i = 0 ; i < typeImageList.length ; i++)
 				{
-					// Retrieve every current type
-					var typeImageList = Array.from(pokemonInfo.childNodes);
+					var typeImage = typeImageList[i] as HTMLImageElement;
+					var supposedType = (currentGenInfo.types[i] as string);
 
-					// If a type was not present in the old gen, remove it
-					if (currentGenInfo.types.length < typeImageList.length) {
-						pokemonInfo.removeChild(pokemonInfo.lastChild as Node);
+					if (typeImage.tagName == "IMG" && supposedType != typeImage.alt) {
+						typeImage.alt = supposedType;
 					}
+				}
+			}
+			// Get stats
+			else if (pokemonInfo.classList?.contains("statcol") && currentGenInfo.baseStats) {
+				var currentStat = "";
 
-					// Check that every type is the correct one, else replace it
-					for (var i = 0 ; i < typeImageList.length ; i++)
+				pokemonInfo.childNodes.forEach(function (statNode) {
+					var statElement = statNode as Element;
+
+					if (statElement.textContent)
 					{
-						var typeImage = typeImageList[i] as HTMLImageElement;
-						var supposedType = (currentGenInfo.types[i] as string);
+						// <em> tags are stats names
+						if (statElement.tagName == "EM") {
+							currentStat = statElement.textContent;
 
-						if (typeImage.tagName == "IMG" && supposedType != typeImage.alt) {
-							typeImage.alt = supposedType;
-						}
-					}
-				}
-				// Get stats
-				else if (pokemonInfo.classList?.contains("statcol") && currentGenInfo.baseStats) {
-					var currentStat = "";
-
-					pokemonInfo.childNodes.forEach(function (statNode) {
-						var statElement = statNode as Element;
-
-						if (statElement.textContent)
-						{
-							// <em> tags are stats names
-							if (statElement.tagName == "EM") {
-								currentStat = statElement.textContent;
-
-								if (genNumber == "gen1" && currentStat == "SpA") {
-									statElement.textContent = "Spc"
-								}
-							}
-							// Non-line break elements are stats values
-							else if (statElement.tagName != "BR")
-							{
-								// Gen 1 : Special Defense doesn't exist
-								if (genNumber == "gen1" && currentStat == "SpD") {
-									pokemonInfo.parentElement?.removeChild(pokemonInfo);
-								}
-								// Replace the stats values
-								else {
-									statElement.textContent = currentGenInfo.baseStats[currentStat.toLowerCase()];
-								}
+							if (genNumber == "gen1" && currentStat == "SpA") {
+								statElement.textContent = "Spc"
 							}
 						}
-					})
-				}
-				// Base stats
-				else if (pokemonInfo.classList?.contains("bstcol") && currentGenInfo.baseStats) {
-					pokemonInfo.firstChild?.childNodes.forEach(function (baseStatNode) {
-						if (baseStatNode.textContent && baseStatNode.textContent != "BST")
+						// Non-line break elements are stats values
+						else if (statElement.tagName != "BR")
 						{
-							// Sum every supposed stat
-							baseStatNode.textContent = Object.values(currentGenInfo.baseStats).reduce((a, b) => Number(a) + Number(b), 0) as string;
+							// Gen 1 : Special Defense doesn't exist
+							if (genNumber == "gen1" && currentStat == "SpD") {
+								pokemonInfo.parentElement?.removeChild(pokemonInfo);
+							}
+							// Replace the stats values
+							else {
+								statElement.textContent = currentGenInfo.baseStats[currentStat.toLowerCase()];
+							}
 						}
-					})
-				}
-				// Get abilities
-				else if (pokemonInfo.classList?.contains("twoabilitycol")
-					|| pokemonInfo.classList?.contains("abilitycol"))
-				{
-					// Gen1 or Gen2, remove every ability
-					if (["gen1", "gen2"].includes(genNumber))
-					{
-						pokemonInfo.textContent = "";
 					}
-					else if (currentGenInfo.abilities)
+				})
+			}
+			// Base stats
+			else if (pokemonInfo.classList?.contains("bstcol") && currentGenInfo.baseStats) {
+				pokemonInfo.firstChild?.childNodes.forEach(function (baseStatNode) {
+					if (baseStatNode.textContent && baseStatNode.textContent != "BST")
 					{
-						// Check first ability column
-						if (pokemonInfo.previousElementSibling?.classList
-							&& pokemonInfo.previousElementSibling.classList.contains("typecol"))
-						{
-							// Only retrieve text abilities, not line breaks
-							var abilitiesList = Array.from(pokemonInfo.childNodes).filter(element => element.textContent);
+						// Sum every supposed stat
+						baseStatNode.textContent = Object.values(currentGenInfo.baseStats).reduce((a, b) => Number(a) + Number(b), 0) as string;
+					}
+				})
+			}
+			// Get abilities
+			else if (pokemonInfo.classList?.contains("twoabilitycol")
+				|| pokemonInfo.classList?.contains("abilitycol"))
+			{
+				// Gen1 or Gen2, remove every ability
+				if (["gen1", "gen2"].includes(genNumber))
+				{
+					pokemonInfo.textContent = "";
+				}
+				else if (currentGenInfo.abilities)
+				{
+					// Check first ability column
+					if (pokemonInfo.previousElementSibling?.classList
+						&& pokemonInfo.previousElementSibling.classList.contains("typecol"))
+					{
+						// Only retrieve text abilities, not line breaks
+						var abilitiesList = Array.from(pokemonInfo.childNodes).filter(element => element.textContent);
 
-							// No Hidden ability, the second ability is in the second column
-							if (["gen3", "gen4"].includes(genNumber))
+						// No Hidden ability, the second ability is in the second column
+						if (["gen3", "gen4"].includes(genNumber))
+						{
+							pokemonInfo.textContent = currentGenInfo.abilities[0];
+							pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
+						}
+						// Hidden ability, the second ability is in the first column
+						else
+						{
+							// Replace first ability with supposed first ability
+							abilitiesList[0].textContent = currentGenInfo.abilities[0];
+
+							// If supposed second ability but no current second ability, insert a line break
+							if (abilitiesList.length == 1 && currentGenInfo.abilities[1])
 							{
-								pokemonInfo.textContent = currentGenInfo.abilities[0];
+								pokemonInfo.appendChild(document.createElement("br"));
+								pokemonInfo.appendChild(document.createTextNode(currentGenInfo.abilities[1]));
+								pokemonInfo.className = pokemonInfo.className.replace("abilitycol","twoabilitycol");
+							}
+							// If no supposed second ability but current second ability, remove it
+							else if (abilitiesList.length == 2 && !currentGenInfo.abilities[1])
+							{
+								// If there's a supposed second ability, the action will depend on the current ability
+								abilitiesList[1].textContent = "";
 								pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
 							}
-							// Hidden ability, the second ability is in the first column
-							else
+							// If supposed second ability and current second ability, replace it
+							else if (abilitiesList.length == 2 && currentGenInfo.abilities[1])
 							{
-								// Replace first ability with supposed first ability
-								abilitiesList[0].textContent = currentGenInfo.abilities[0];
-
-								// If supposed second ability but no current second ability, insert a line break
-								if (abilitiesList.length == 1 && currentGenInfo.abilities[1])
-								{
-									pokemonInfo.appendChild(document.createElement("br"));
-									pokemonInfo.appendChild(document.createTextNode(currentGenInfo.abilities[1]));
-									pokemonInfo.className = pokemonInfo.className.replace("abilitycol","twoabilitycol");
-								}
-								// If no supposed second ability but current second ability, remove it
-								else if (abilitiesList.length == 2 && !currentGenInfo.abilities[1])
-								{
-									// If there's a supposed second ability, the action will depend on the current ability
-									abilitiesList[1].textContent = "";
-									pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
-								}
-								// If supposed second ability and current second ability, replace it
-								else if (abilitiesList.length == 2 && currentGenInfo.abilities[1])
-								{
-									abilitiesList[1].textContent = currentGenInfo.abilities[1]
-								}
+								abilitiesList[1].textContent = currentGenInfo.abilities[1]
 							}
 						}
-						// Check second ability column
-						else if (pokemonInfo.nextElementSibling?.classList
-							&& pokemonInfo.nextElementSibling.classList.contains("statcol"))
-						{
-							// Only retrieve text abilities, not line breaks
-							var hiddenAbilitiesList = Array.from(pokemonInfo.childNodes).filter(element => element.textContent);
+					}
+					// Check second ability column
+					else if (pokemonInfo.nextElementSibling?.classList
+						&& pokemonInfo.nextElementSibling.classList.contains("statcol"))
+					{
+						// Only retrieve text abilities, not line breaks
+						var hiddenAbilitiesList = Array.from(pokemonInfo.childNodes).filter(element => element.textContent);
 
-							// No Hidden ability, the second ability is in the second column
-							if (["gen3", "gen4"].includes(genNumber))
+						// No Hidden ability, the second ability is in the second column
+						if (["gen3", "gen4"].includes(genNumber))
+						{
+							pokemonInfo.textContent = currentGenInfo.abilities[1];
+							pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
+						}
+						// Hidden ability, the second ability is in the first column
+						else
+						{
+							// Replace hidden ability with supposed hidden ability
+							hiddenAbilitiesList[0].textContent = currentGenInfo.abilities["H"];
+
+							// If supposed second ability but no current second ability, insert a line break
+							if (hiddenAbilitiesList.length == 1 && currentGenInfo.abilities["S"])
 							{
-								pokemonInfo.textContent = currentGenInfo.abilities[1];
+								pokemonInfo.appendChild(document.createElement("br"));
+								pokemonInfo.appendChild(document.createTextNode("(" + currentGenInfo.abilities["S"] + ")"));
+								pokemonInfo.className = pokemonInfo.className.replace("abilitycol","twoabilitycol");
+							}
+							// If no supposed second ability but current second ability, remove it
+							else if (hiddenAbilitiesList.length == 2 && !currentGenInfo.abilities["S"])
+							{
+								// If there's a supposed second ability, the action will depend on the current ability
+								hiddenAbilitiesList[1].textContent = "";
 								pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
 							}
-							// Hidden ability, the second ability is in the first column
-							else
+							// If supposed second ability and current second ability, replace it
+							else if (hiddenAbilitiesList.length == 2 && currentGenInfo.abilities["S"])
 							{
-								// Replace hidden ability with supposed hidden ability
-								hiddenAbilitiesList[0].textContent = currentGenInfo.abilities["H"];
-
-								// If supposed second ability but no current second ability, insert a line break
-								if (hiddenAbilitiesList.length == 1 && currentGenInfo.abilities["S"])
-								{
-									pokemonInfo.appendChild(document.createElement("br"));
-									pokemonInfo.appendChild(document.createTextNode("(" + currentGenInfo.abilities["S"] + ")"));
-									pokemonInfo.className = pokemonInfo.className.replace("abilitycol","twoabilitycol");
-								}
-								// If no supposed second ability but current second ability, remove it
-								else if (hiddenAbilitiesList.length == 2 && !currentGenInfo.abilities["S"])
-								{
-									// If there's a supposed second ability, the action will depend on the current ability
-									hiddenAbilitiesList[1].textContent = "";
-									pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
-								}
-								// If supposed second ability and current second ability, replace it
-								else if (hiddenAbilitiesList.length == 2 && currentGenInfo.abilities["S"])
-								{
-									hiddenAbilitiesList[1].textContent = "(" + currentGenInfo.abilities["S"] + ")";
-								}
+								hiddenAbilitiesList[1].textContent = "(" + currentGenInfo.abilities["S"] + ")";
 							}
 						}
 					}
 				}
-			})
+			}
+		})
+	}
+}
+
+function generateLegalPokemonList()
+{
+	// Reset global variables
+	currentTier = null;
+	legalPokemonList = [];
+
+	// Gen name and formatName name
+	var genName: string = currentFormat.slice(0,4);
+	var genNumber: number = Number(genName.slice(-1));
+	var formatName: string = currentFormat.replace(genName, "");
+
+	// Boolean variables to check if the formatName is double or single
+	var isVGCOrBS = formatName.startsWith("battlespot") || formatName.startsWith("battlestadium") || formatName.startsWith("vgc");
+	var isDoubleOrBS = isVGCOrBS || formatName.includes("doubles");
+
+	// CAP : use the default gen tierlist
+	if ((formatName.endsWith("cap") || formatName.endsWith("caplc")) && genNumber < 8) {
+		currentTier = BattleTeambuilderTable[genName];
+	}
+	// VGC or Battle Stadium : use the gen VGC tierlist
+	else if (isVGCOrBS) {
+		currentTier = BattleTeambuilderTable[genName + "vgc"];
+	}
+	// Obscure doubles tier : use the gen doubles tierlist
+	else if (BattleTeambuilderTable[genName + "doubles"] && genNumber > 4
+		&& !formatName.includes("letsgo") && !formatName.includes("bdspdoubles")
+		&& (formatName.includes("doubles") || formatName.includes("triples") || formatName.startsWith("ffa") || formatName == "freeforall"))
+	{
+		currentTier = BattleTeambuilderTable[genName + "doubles"];
+		isDoubleOrBS = true;
+	}
+	// BDSP : use BDSP singles or doubles tierlist
+	else if (formatName.startsWith("bdsp")) {
+		currentTier = BattleTeambuilderTable["gen8bdsp" + (formatName.includes("doubles") ? "doubles" : "")];
+	}
+	// Let's go : use Let's go tierlist
+	else if (formatName.startsWith("letsgo")) {
+		currentTier = BattleTeambuilderTable["gen7letsgo"];
+	}
+	// National dex : use National Dex tierlist
+	else if (formatName.startsWith("nationaldex")) {
+		currentTier = BattleTeambuilderTable["natdex"];
+	}
+	// Metronome : use Metronome tierlist
+	else if (formatName.startsWith("metronome")) {
+		currentTier = BattleTeambuilderTable["metronome"];
+	}
+	// NFE : use the gen NFE tierlist
+	else if (formatName.startsWith("nfe")) {
+		currentTier = BattleTeambuilderTable[genName + "nfe"];
+	}
+	// DLC1 : use the DLC1 singles or doubles tierlist
+	else if (formatName.startsWith("dlc1")) {
+		currentTier = BattleTeambuilderTable["gen8dlc1" + (formatName.includes("doubles") ? "doubles" : "")];
+	}
+	// Stadium 
+	else if (formatName.startsWith("stadium")) {
+		currentTier = BattleTeambuilderTable[genName + "stadium" + (genNumber > 1 ? genNumber : "")];
+	}
+	// Default non-gen 8 tier : use the default gen tierlist
+	else if (genNumber < 8) {
+		currentTier = BattleTeambuilderTable[genName];
+	}
+	// Default gen 8 tier : use the default gen 8 tierlist
+	else {
+		currentTier = BattleTeambuilderTable;
+	}
+
+	// Retrieve tierlist from currentTier.tiers or currentTier.tierSet
+	legalPokemonList = getFormattedTierlist(currentTier);
+
+	// To make tier separation easier, the slices have been stored in a variable
+	var slices = currentTier.formatSlices;
+
+	// Slice the tierlist depending on the format
+	if (formatName === "ubers" || formatName === "uber") legalPokemonList = legalPokemonList.slice(slices.Uber);
+	else if (isVGCOrBS)
+	{
+		if (formatName.endsWith("series13")) {
+			// Format not added in Showdown yet
+		} else if ( formatName === "vgc2010" || formatName === "vgc2016" || formatName.startsWith("vgc2019")
+			|| formatName === "vgc2022" || formatName.endsWith("series10") || formatName.endsWith("series11"))
+		{
+			legalPokemonList = legalPokemonList.slice(slices["Restricted Legendary"]);
+		}
+		else {
+			legalPokemonList = legalPokemonList.slice(slices.Regular);
 		}
 	}
+	else if (formatName === "ou") legalPokemonList = legalPokemonList.slice(slices.OU);
+	else if (formatName === "uu") legalPokemonList = legalPokemonList.slice(slices.UU);
+	else if (formatName === "ru") legalPokemonList = legalPokemonList.slice(slices.RU || slices.UU);
+	else if (formatName === "nu") legalPokemonList = legalPokemonList.slice(slices.NU || slices.RU || slices.UU);
+	else if (formatName === "pu") legalPokemonList = legalPokemonList.slice(slices.PU || slices.NU);
+	else if (formatName === "zu") legalPokemonList = legalPokemonList.slice(slices.ZU || slices.PU || slices.NU);
+	else if (formatName === "lc" || formatName === "lcuu" || formatName.startsWith("lc") || (formatName !== "caplc" && formatName.endsWith("lc"))) legalPokemonList = legalPokemonList.slice(slices.LC);
+	else if (formatName === "cap") legalPokemonList = legalPokemonList.slice(0, slices.AG || slices.Uber).concat(legalPokemonList.slice(slices.OU));
+	else if (formatName === "caplc") legalPokemonList = legalPokemonList.slice(slices["CAP LC"], slices.AG || slices.Uber).concat(legalPokemonList.slice(slices.LC));
+	else if (formatName === "anythinggoes" || formatName.endsWith("ag") || formatName.startsWith("ag")) legalPokemonList = legalPokemonList.slice(slices.AG);
+	else if (formatName.includes("hackmons") || formatName.endsWith("bh")) legalPokemonList = legalPokemonList.slice(slices.AG || slices.Uber);
+	else if (formatName === "monotype") legalPokemonList = legalPokemonList.slice(slices.Uber);
+	else if (formatName === "doublesubers") legalPokemonList = legalPokemonList.slice(slices.DUber);
+	else if (formatName === "doublesou" && genNumber > 4) legalPokemonList = legalPokemonList.slice(slices.DOU);
+	else if (formatName === "doublesuu") legalPokemonList = legalPokemonList.slice(slices.DUU);
+	else if (formatName === "doublesnu") legalPokemonList = legalPokemonList.slice(slices.DNU || slices.DUU);
+	else if (formatName.startsWith("bdsp") || formatName.startsWith("letsgo") || formatName.startsWith("stadium")) legalPokemonList = legalPokemonList.slice(slices.Uber);
+	else if (!isDoubleOrBS) { // Default singles
+		legalPokemonList = [
+			...legalPokemonList.slice(slices.OU, slices.UU),
+			...legalPokemonList.slice(slices.AG, slices.Uber),
+			...legalPokemonList.slice(slices.Uber, slices.OU),
+			...legalPokemonList.slice(slices.UU),
+		];
+	} else { // Default doubles
+		legalPokemonList = [
+			...legalPokemonList.slice(slices.DOU, slices.DUU),
+			...legalPokemonList.slice(slices.DUber, slices.DOU),
+			...legalPokemonList.slice(slices.DUU),
+		];
+	}
+
+	// Apply banlists
+	if (genNumber >= 5) {
+		if (formatName == "zu" && currentTier.zuBans) {
+			legalPokemonList = legalPokemonList.filter((pokemonName) => {
+				if (pokemonName in currentTier.zuBans) return false;
+				return true;
+			});
+		}
+		if (formatName == "monotype" && currentTier.monotypeBans) {
+			legalPokemonList = legalPokemonList.filter((pokemonName) => {
+				if (pokemonName in currentTier.monotypeBans) return false;
+				return true;
+			});
+		}
+	}
+
+	// Filter out Gmax Pokemon from standard tier selection
+	if (!/^(battlestadium|vgc|doublesubers)/g.test(formatName)) {
+		legalPokemonList = legalPokemonList.filter((pokemonName) => {
+			if (typeof pokemonName == 'string') return !pokemonName.endsWith('gmax');
+			else if (pokemonName[1] == "DUber by technicality") return false;
+			return true;
+		});
+	}
+}
+
+function getFormattedTierlist(pokemonTier: any)
+{
+	var pokemonList: Array<any> = [];
+
+	console.log(pokemonTier);
+
+	if (pokemonTier.tiers) {
+		pokemonList = structuredClone(pokemonTier.tiers);
+	}
+	else if (pokemonTier.tierSet)
+	{
+		for (var i = 0 ; i < pokemonTier.tierSet.length ; i++)
+		{
+			// Keep the headers in an array, convert the pokemon to string
+			if (pokemonTier.tierSet[i][0] == "pokemon") {
+				pokemonList.push(pokemonTier.tierSet[i][1])
+			}
+			else {
+				pokemonList.push(pokemonTier.tierSet[i])
+			}
+		}
+	}
+
+	return pokemonList;
 }
 
 function getGenSpeciesData(pokemonID: string, currentGen: string)
