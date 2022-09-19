@@ -1,4 +1,4 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, isValidEnglishAbility, isValidEnglishPokemonName, translatePokemonNameToEnglish } from '../translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, isValidEnglishAbility, isValidEnglishPokemonName, translatePokemonNameToEnglish, isValidEnglishMove } from '../translator';
 	
 import { isValidEnglishType, isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
 
@@ -316,9 +316,50 @@ function updateCurElement()
 			}
 			else if (dataType == "move")
 			{
-				// Always remove cur element for moves since we can't know which input is currently selected
-				curParent.remove();
-				break;
+				var currentMoveName = "";
+
+				cur.childNodes.forEach(function (moveNode) {
+					var moveElement = moveNode as Element;
+
+					if (moveElement.classList && moveElement.classList.contains("movenamecol")) {
+						currentMoveName = moveElement.textContent || "";
+					}
+				})
+
+				// If the input name is a valid english Pokémon name, cur element is fine, we don't do anything
+				if (isValidEnglishMove(currentMoveName)) {
+					break;
+				}
+
+				var potentialEnglishMove = Object.keys(MovesDico).find(
+					key => removeSpecialCharacters(MovesDico[key].toLowerCase()) === currentMoveName)
+
+				// If the bugged cur element is a valid french Pokémon name, we need to recreate cur element
+				if (potentialEnglishMove)
+				{
+					// Remove the current Pokémon info
+					curParent.removeChild(curParent.firstChild as Node);
+
+					// Generate the current Pokémon HTML code from its english name
+					var englishMoveId = removeSpecialCharacters(potentialEnglishMove.toLowerCase());
+					var htmlCurElement = getMoveCurHTMLElement(englishMoveId);
+
+					var curTemplate = document.createElement('template');
+					curTemplate.innerHTML = htmlCurElement;
+
+					var curNode = curTemplate.content.firstChild;
+
+					if (curNode)
+					{
+						// applyMovzGenModifiers(curNode.firstChild as Element, englishMoveId);
+						curParent.appendChild(curNode);
+					}
+				}
+				// If cur element is not french nor english, remove the cur element
+				else {
+					curParent.remove();
+					break;
+				}
 			}
 		}
 	}
@@ -328,6 +369,7 @@ function applyPokemonGenModifiers(pokemonElement: Element, pokemonEnglishID: str
 {
 	// Apply gen-specific data (no abilities in gen 1-2, fairy type only in gen > 5, etc)
 	var genNumber = currentFormat.slice(0,4);
+	var formatName = currentFormat.replace(genNumber, "");
 
 	console.log("genNumber : " + genNumber);
 
@@ -346,8 +388,16 @@ function applyPokemonGenModifiers(pokemonElement: Element, pokemonEnglishID: str
 			// Get Tier
 			if (pokemonInfo.classList?.contains("numcol"))
 			{
-				var tierName = currentTier.overrideTier[pokemonEnglishID];
-
+				if (formatName.startsWith("vgc")) {
+					var tierName = BattleTeambuilderTable[genNumber + "doubles"].overrideTier[pokemonEnglishID];
+				}
+				else if (formatName.includes("metronome")) {
+					var tierName = BattlePokedex[pokemonEnglishID].num;
+				}
+				else {
+					var tierName = currentTier.overrideTier[pokemonEnglishID];
+				}
+				
 				// Check if the Pokémon is legal
 				if (tierName && tierName != "Illegal") {
 					pokemonInfo.textContent = tierName;
@@ -735,6 +785,12 @@ function getGenSpeciesData(pokemonID: string, currentGen: string)
 	}
 
 	return overrideSpeciesData;
+}
+
+function getMoveCurHTMLElement(englishMoveID: string)
+{
+	var battleSearchElement = new BattleSearch("","");
+	return battleSearchElement.renderRow(englishMoveID, "move", 0, 0, "", ' class="cur"');
 }
 
 function getPokemonCurHTMLElement(englishPokemonID: string)
