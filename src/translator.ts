@@ -3536,7 +3536,8 @@ export const TypesDico: { [englishName: string]: string; } = {
 	"Psychic": "Psy",
 	"Rock": "Roche",
 	"Steel": "Acier",
-	"Water": "Eau"
+	"Water": "Eau",
+	"Unknown": "Unknown"
 }
 
 export const NaturesDico: { [englishName: string]: string; } = {
