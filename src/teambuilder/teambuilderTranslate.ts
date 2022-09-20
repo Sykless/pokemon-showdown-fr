@@ -1,6 +1,8 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, isValidEnglishAbility, isValidEnglishPokemonName, translatePokemonNameToEnglish, isValidEnglishMove } from '../translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico } from '../translator';
 	
-import { isValidEnglishType, isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
+import {isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
+
+import { isValidEnglishPokemonName, isValidEnglishAbility, isValidEnglishMove, isValidEnglishItem, isValidEnglishType} from '../translator';
 
 import { CosmeticForms  } from '../translator';
 
@@ -31,7 +33,7 @@ declare var BattleAbilities: any;
 declare var BattleItems: any;
 declare var BattleMovedex: any;
 declare var BattleTeambuilderTable: any;
-declare var BattleSearch: any;
+declare var app: any;
 
 // Backup the BattlePokedex, BattleAbilities and BattleItems variables, we need them
 // to erase incorrect entries (see updatePokemonInfo method)
@@ -51,11 +53,6 @@ var SpriteURL = "";
 window.addEventListener('RecieveContent', function(evt: any) {
 	SpriteURL = evt.detail;
 });
-
-// Tier global variables, set them on format selection and never touch them again
-var currentFormat: string = "";
-var currentTier: any;
-var legalPokemonList: Array<any>;
 
 // Create FrenchNamesDico dictionary, containing every french to english translation alphabetically sorted
 const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico];
@@ -114,11 +111,6 @@ function onMutation(mutations: MutationRecord[])
 							updateResultTag(result as Element);
 						}
 					}
-					// Format getter
-					else if (elementClasses.contains("formatselect"))
-					{
-						setCurrentFormat(newElement);
-					}
 					// New results after scrolling
 					else if (elementClasses.contains("result"))
 					{
@@ -163,9 +155,6 @@ function onMutation(mutations: MutationRecord[])
 			if (modifiedElement.tagName == "INPUT") {
 				removeInputIncompleteClass(modifiedElement as HTMLInputElement);
 			}
-			else if (modifiedElement.tagName == "BUTTON") {
-				setCurrentFormat(modifiedElement);
-			}
 		}
 	}
 }
@@ -180,25 +169,6 @@ function isTeambuilderOpen()
 	}
 
 	return false;
-}
-
-
-function setCurrentFormat(newElement: Element)
-{
-	var formatButton = newElement as HTMLButtonElement;
-	console.log(BattleTeambuilderTable);
-
-	// Only way to know the team formatName is to directly take it from the selector
-	if (formatButton.classList.contains("formatselect")) {
-		currentFormat = formatButton.value;
-
-		console.log(currentFormat);
-
-		generateLegalPokemonList();
-
-		console.log(currentTier);
-		console.log(legalPokemonList);
-	}
 }
 
 function updateResultTag(resultElement: Element)
@@ -253,30 +223,83 @@ function updateCurElement()
 		// Only remove the specific Pokemon search cur
 		if (cur?.tagName == "A" && cur.parentElement?.tagName == "LI" && !cur.nextSibling)
 		{
-			var curParent = cur.parentElement;
-			var dataType = getDisplayedDataType(curParent);
-			
-			if (dataType == "pokemon")
-			{
-				var nameInputElement = document.getElementsByName("pokemon")[0] as HTMLInputElement;
+			var attribute = cur.getAttribute('data-entry');
 
-				// If the input name is a valid english Pokémon name, cur element is fine, we don't do anything
-				if (isValidEnglishPokemonName(nameInputElement.value)) {
-					break;
-				}
-				// If the input name is a valid french Pokémon name, we need to recreate cur element
-				else if (isValidFrenchPokemonName(nameInputElement.value))
+			if (attribute) {
+				var displayedDataType = attribute.split("|")[0];
+				var displayedValue = attribute.split("|")[1];
+				var regularEnglishName = "";
+
+				var curParent = cur.parentElement;
+
+				// If the input name is a valid english name, cur element is fine, we don't do anything
+				if (displayedDataType == "pokemon")
 				{
-					// Remove the current Pokémon info
-					curParent.removeChild(curParent.firstChild as Node);
+					if (isValidEnglishPokemonName(displayedValue)) {
+						return;
+					}
+					
+					for (var englishName in PokemonDico)
+					{
+						// Check if the displayed Pokémon is a bugged frenchID
+						if (removeSpecialCharacters(PokemonDico[englishName].toLowerCase()) === displayedValue) {
+							regularEnglishName = removeSpecialCharacters(englishName.toLowerCase());
+						}
+					}
+				}
+				else if (displayedDataType == "item")
+				{
+					if (isValidEnglishItem(displayedValue)) {
+						return;
+					}
+					
+					for (var englishName in ItemsDico)
+					{
+						// Check if the displayed Item is a bugged frenchID
+						if (removeSpecialCharacters(ItemsDico[englishName].toLowerCase()) === displayedValue) {
+							regularEnglishName = removeSpecialCharacters(englishName.toLowerCase());
+						}
+					}
+				}
+				else if (displayedDataType == "ability")
+				{
+					if (isValidEnglishAbility(displayedValue)) {
+						return;
+					}
+					
+					for (var englishName in AbilitiesDico)
+					{
+						// Check if the displayed Ability is a bugged frenchID
+						if (removeSpecialCharacters(AbilitiesDico[englishName].toLowerCase()) === displayedValue) {
+							regularEnglishName = removeSpecialCharacters(englishName.toLowerCase());
+						}
+					}
+				}
+				else if (displayedDataType == "move")
+				{
+					if (isValidEnglishMove(displayedValue)) {
+						return;
+					}
+					
+					for (var englishName in MovesDico)
+					{
+						// Check if the displayed Move is a bugged frenchID
+						if (removeSpecialCharacters(MovesDico[englishName].toLowerCase()) === displayedValue) {
+							regularEnglishName = removeSpecialCharacters(englishName.toLowerCase());
+						}
+					}
+				}
 
-					// Get tne english Pokémon name
-					var englishName = translatePokemonNameToEnglish(nameInputElement.value);
+				// The cur element is bugged, so we remove it
+				curParent.removeChild(curParent.firstChild as Node);
 
+				// Only replace cur element if we find a valid value
+				if (regularEnglishName)
+				{
 					// Generate the current Pokémon HTML code from its english name
-					var englishNameId = removeSpecialCharacters(englishName.toLowerCase());
-					var htmlCurElement = getPokemonCurHTMLElement(englishNameId);
+					var htmlCurElement = app.curRoom.search.renderRow(regularEnglishName, displayedDataType, 0, 0, "", ' class="cur"');
 
+					// Convert generated HTML code to Node
 					var curTemplate = document.createElement('template');
 					curTemplate.innerHTML = htmlCurElement;
 
@@ -284,141 +307,31 @@ function updateCurElement()
 
 					if (curNode)
 					{
-						applyPokemonGenModifiers(curNode.firstChild as Element, englishNameId);
+						updateIllegalElement(curNode.firstChild as Element, regularEnglishName);
 						curParent.appendChild(curNode);
 					}
-				}
-				// If input is not french nor english, remove the cur element
-				else {
-					curParent.remove();
-					break;
-				}
-			}
-			else if (dataType == "item")
-			{
-				var itemInputElement = document.getElementsByName("item")[0] as HTMLInputElement;
-
-				// Remove cur parent node only if the provided Item is french
-				if (isValidFrenchItem(itemInputElement.value)) {
-					curParent.remove();
-					break;
-				}
-			}
-			else if (dataType == "ability")
-			{
-				var abilityInputElement = document.getElementsByName("ability")[0] as HTMLInputElement;
-
-				// Remove cur parent node only if the provided Ability is french
-				if (isValidFrenchAbility(abilityInputElement.value)) {
-					curParent.remove();
-					break;
-				}
-			}
-			else if (dataType == "move")
-			{
-				var currentMoveName = "";
-
-				cur.childNodes.forEach(function (moveNode) {
-					var moveElement = moveNode as Element;
-
-					if (moveElement.classList && moveElement.classList.contains("movenamecol")) {
-						currentMoveName = moveElement.textContent || "";
-					}
-				})
-
-				// If the input name is a valid english Pokémon name, cur element is fine, we don't do anything
-				if (isValidEnglishMove(currentMoveName)) {
-					break;
-				}
-
-				var potentialEnglishMove = Object.keys(MovesDico).find(
-					key => removeSpecialCharacters(MovesDico[key].toLowerCase()) === currentMoveName)
-
-				// If the bugged cur element is a valid french Pokémon name, we need to recreate cur element
-				if (potentialEnglishMove)
-				{
-					// Remove the current Pokémon info
-					curParent.removeChild(curParent.firstChild as Node);
-
-					// Generate the current Pokémon HTML code from its english name
-					var englishMoveId = removeSpecialCharacters(potentialEnglishMove.toLowerCase());
-					var htmlCurElement = getMoveCurHTMLElement(englishMoveId);
-
-					var curTemplate = document.createElement('template');
-					curTemplate.innerHTML = htmlCurElement;
-
-					var curNode = curTemplate.content.firstChild;
-
-					if (curNode)
-					{
-						// applyMovzGenModifiers(curNode.firstChild as Element, englishMoveId);
-						curParent.appendChild(curNode);
-					}
-				}
-				// If cur element is not french nor english, remove the cur element
-				else {
-					curParent.remove();
-					break;
 				}
 			}
 		}
 	}
 }
 
-function applyPokemonGenModifiers(pokemonElement: Element, pokemonEnglishID: string)
+function updateIllegalElement(curElement: Element, englishID: string)
 {
-	// Apply gen-specific data (no abilities in gen 1-2, fairy type only in gen > 5, etc)
-	var genNumber = currentFormat.slice(0,4);
-	var formatName = currentFormat.replace(genNumber, "");
+	curElement.childNodes.forEach(function (infoNode) {
+		var infoElement = infoNode as Element;
 
-	console.log("genNumber : " + genNumber);
+		// Check if cur element is legal, add illegal class if not
+		if (infoElement.classList?.contains("pokemonnamecol")
+			|| infoElement.classList?.contains("movenamecol")
+			|| infoElement.classList?.contains("namecol"))
+		{
+			var tierLegalPokemon = app.curRoom.search.engine.typedSearch.illegalReasons;
 
-	if (/^gen\d+$/.test(genNumber))
-	{
-		// Provided data is already gen8
-		var currentGenInfo = getGenSpeciesData(pokemonEnglishID, genNumber);
-		var illegalPokemon = false;
-
-		console.log(currentGenInfo);
-		console.log(pokemonElement);
-
-		pokemonElement.childNodes.forEach(function (pokemonInfoNode) {
-			var pokemonInfo = pokemonInfoNode as Element;
-
-			// Get Tier
-			if (pokemonInfo.classList?.contains("numcol"))
-			{
-				if (formatName.startsWith("vgc")) {
-					var tierName = BattleTeambuilderTable[genNumber + "doubles"].overrideTier[pokemonEnglishID];
-				}
-				else if (formatName.includes("metronome")) {
-					var tierName = BattlePokedex[pokemonEnglishID].num;
-				}
-				else {
-					var tierName = currentTier.overrideTier[pokemonEnglishID];
-				}
-				
-				// Check if the Pokémon is legal
-				if (tierName && tierName != "Illegal") {
-					pokemonInfo.textContent = tierName;
-
-					// The Pokémon could be in a higher tier, thus be illegal
-					if (!legalPokemonList.includes(pokemonEnglishID)) {
-						illegalPokemon = true;
-					}
-				}
-				// Illegal Pokémon in the tier
-				else {
-					pokemonInfo.textContent = "Illégal";
-					illegalPokemon = true;
-				}				
-			}
-			// Pokémon name, only useful to remove illegal info
-			else if (pokemonInfo.classList?.contains("pokemonnamecol") && illegalPokemon)
-			{
+			if (tierLegalPokemon && tierLegalPokemon[englishID]) {
 				// Illegal result, remove very other element
-				while (pokemonInfo.nextSibling) {
-					pokemonElement.removeChild(pokemonInfo.nextSibling);
+				while (infoElement.nextSibling) {
+					curElement.removeChild(infoElement.nextSibling);
 				}
 
 				var illegalCol = document.createElement("span");
@@ -428,375 +341,10 @@ function applyPokemonGenModifiers(pokemonElement: Element, pokemonEnglishID: str
 				illegalCol.append(illegalText);
 				illegalText.append(document.createTextNode("Illégal"));
 
-				pokemonElement.append(illegalCol);
-			}
-			// Type 
-			else if (pokemonInfo.classList?.contains("typecol") && currentGenInfo.types)
-			{
-				// Retrieve every current type
-				var typeImageList = Array.from(pokemonInfo.childNodes);
-
-				// If a type was not present in the old gen, remove it
-				if (currentGenInfo.types.length < typeImageList.length) {
-					pokemonInfo.removeChild(pokemonInfo.lastChild as Node);
-				}
-
-				// Check that every type is the correct one, else replace it
-				for (var i = 0 ; i < typeImageList.length ; i++)
-				{
-					var typeImage = typeImageList[i] as HTMLImageElement;
-					var supposedType = (currentGenInfo.types[i] as string);
-
-					if (typeImage.tagName == "IMG" && supposedType != typeImage.alt) {
-						typeImage.alt = supposedType;
-					}
-				}
-			}
-			// Get stats
-			else if (pokemonInfo.classList?.contains("statcol") && currentGenInfo.baseStats) {
-				var currentStat = "";
-
-				pokemonInfo.childNodes.forEach(function (statNode) {
-					var statElement = statNode as Element;
-
-					if (statElement.textContent)
-					{
-						// <em> tags are stats names
-						if (statElement.tagName == "EM") {
-							currentStat = statElement.textContent;
-
-							if (genNumber == "gen1" && currentStat == "SpA") {
-								statElement.textContent = "Spc"
-							}
-						}
-						// Non-line break elements are stats values
-						else if (statElement.tagName != "BR")
-						{
-							// Gen 1 : Special Defense doesn't exist
-							if (genNumber == "gen1" && currentStat == "SpD") {
-								pokemonInfo.parentElement?.removeChild(pokemonInfo);
-							}
-							// Replace the stats values
-							else {
-								statElement.textContent = currentGenInfo.baseStats[currentStat.toLowerCase()];
-							}
-						}
-					}
-				})
-			}
-			// Base stats
-			else if (pokemonInfo.classList?.contains("bstcol") && currentGenInfo.baseStats) {
-				pokemonInfo.firstChild?.childNodes.forEach(function (baseStatNode) {
-					if (baseStatNode.textContent && baseStatNode.textContent != "BST")
-					{
-						// Sum every supposed stat
-						baseStatNode.textContent = Object.values(currentGenInfo.baseStats).reduce((a, b) => Number(a) + Number(b), 0) as string;
-					}
-				})
-			}
-			// Get abilities
-			else if (pokemonInfo.classList?.contains("twoabilitycol")
-				|| pokemonInfo.classList?.contains("abilitycol"))
-			{
-				// Gen1 or Gen2, remove every ability
-				if (["gen1", "gen2"].includes(genNumber))
-				{
-					pokemonInfo.textContent = "";
-				}
-				else if (currentGenInfo.abilities)
-				{
-					// Check first ability column
-					if (pokemonInfo.previousElementSibling?.classList
-						&& pokemonInfo.previousElementSibling.classList.contains("typecol"))
-					{
-						// Only retrieve text abilities, not line breaks
-						var abilitiesList = Array.from(pokemonInfo.childNodes).filter(element => element.textContent);
-
-						// No Hidden ability, the second ability is in the second column
-						if (["gen3", "gen4"].includes(genNumber))
-						{
-							pokemonInfo.textContent = currentGenInfo.abilities[0];
-							pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
-						}
-						// Hidden ability, the second ability is in the first column
-						else
-						{
-							// Replace first ability with supposed first ability
-							abilitiesList[0].textContent = currentGenInfo.abilities[0];
-
-							// If supposed second ability but no current second ability, insert a line break
-							if (abilitiesList.length == 1 && currentGenInfo.abilities[1])
-							{
-								pokemonInfo.appendChild(document.createElement("br"));
-								pokemonInfo.appendChild(document.createTextNode(currentGenInfo.abilities[1]));
-								pokemonInfo.className = pokemonInfo.className.replace("abilitycol","twoabilitycol");
-							}
-							// If no supposed second ability but current second ability, remove it
-							else if (abilitiesList.length == 2 && !currentGenInfo.abilities[1])
-							{
-								// If there's a supposed second ability, the action will depend on the current ability
-								abilitiesList[1].textContent = "";
-								pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
-							}
-							// If supposed second ability and current second ability, replace it
-							else if (abilitiesList.length == 2 && currentGenInfo.abilities[1])
-							{
-								abilitiesList[1].textContent = currentGenInfo.abilities[1]
-							}
-						}
-					}
-					// Check second ability column
-					else if (pokemonInfo.nextElementSibling?.classList
-						&& pokemonInfo.nextElementSibling.classList.contains("statcol"))
-					{
-						// Only retrieve text abilities, not line breaks
-						var hiddenAbilitiesList = Array.from(pokemonInfo.childNodes).filter(element => element.textContent);
-
-						// No Hidden ability, the second ability is in the second column
-						if (["gen3", "gen4"].includes(genNumber))
-						{
-							pokemonInfo.textContent = currentGenInfo.abilities[1];
-							pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
-						}
-						// Hidden ability, the second ability is in the first column
-						else
-						{
-							// Replace hidden ability with supposed hidden ability
-							hiddenAbilitiesList[0].textContent = currentGenInfo.abilities["H"];
-
-							// If supposed second ability but no current second ability, insert a line break
-							if (hiddenAbilitiesList.length == 1 && currentGenInfo.abilities["S"])
-							{
-								pokemonInfo.appendChild(document.createElement("br"));
-								pokemonInfo.appendChild(document.createTextNode("(" + currentGenInfo.abilities["S"] + ")"));
-								pokemonInfo.className = pokemonInfo.className.replace("abilitycol","twoabilitycol");
-							}
-							// If no supposed second ability but current second ability, remove it
-							else if (hiddenAbilitiesList.length == 2 && !currentGenInfo.abilities["S"])
-							{
-								// If there's a supposed second ability, the action will depend on the current ability
-								hiddenAbilitiesList[1].textContent = "";
-								pokemonInfo.className = pokemonInfo.className.replace("twoabilitycol","abilitycol");
-							}
-							// If supposed second ability and current second ability, replace it
-							else if (hiddenAbilitiesList.length == 2 && currentGenInfo.abilities["S"])
-							{
-								hiddenAbilitiesList[1].textContent = "(" + currentGenInfo.abilities["S"] + ")";
-							}
-						}
-					}
-				}
-			}
-		})
-	}
-}
-
-function generateLegalPokemonList()
-{
-	// Reset global variables
-	currentTier = null;
-	legalPokemonList = [];
-
-	// Gen name and formatName name
-	var genName: string = currentFormat.slice(0,4);
-	var genNumber: number = Number(genName.slice(-1));
-	var formatName: string = currentFormat.replace(genName, "");
-
-	// Boolean variables to check if the formatName is double or single
-	var isVGCOrBS = formatName.startsWith("battlespot") || formatName.startsWith("battlestadium") || formatName.startsWith("vgc");
-	var isDoubleOrBS = isVGCOrBS || formatName.includes("doubles");
-
-	// CAP : use the default gen tierlist
-	if ((formatName.endsWith("cap") || formatName.endsWith("caplc")) && genNumber < 8) {
-		currentTier = BattleTeambuilderTable[genName];
-	}
-	// VGC or Battle Stadium : use the gen VGC tierlist
-	else if (isVGCOrBS) {
-		currentTier = BattleTeambuilderTable[genName + "vgc"];
-	}
-	// Obscure doubles tier : use the gen doubles tierlist
-	else if (BattleTeambuilderTable[genName + "doubles"] && genNumber > 4
-		&& !formatName.includes("letsgo") && !formatName.includes("bdspdoubles")
-		&& (formatName.includes("doubles") || formatName.includes("triples") || formatName.startsWith("ffa") || formatName == "freeforall"))
-	{
-		currentTier = BattleTeambuilderTable[genName + "doubles"];
-		isDoubleOrBS = true;
-	}
-	// BDSP : use BDSP singles or doubles tierlist
-	else if (formatName.startsWith("bdsp")) {
-		currentTier = BattleTeambuilderTable["gen8bdsp" + (formatName.includes("doubles") ? "doubles" : "")];
-	}
-	// Let's go : use Let's go tierlist
-	else if (formatName.startsWith("letsgo")) {
-		currentTier = BattleTeambuilderTable["gen7letsgo"];
-	}
-	// National dex : use National Dex tierlist
-	else if (formatName.startsWith("nationaldex")) {
-		currentTier = BattleTeambuilderTable["natdex"];
-	}
-	// Metronome : use Metronome tierlist
-	else if (formatName.startsWith("metronome")) {
-		currentTier = BattleTeambuilderTable["metronome"];
-	}
-	// NFE : use the gen NFE tierlist
-	else if (formatName.startsWith("nfe")) {
-		currentTier = BattleTeambuilderTable[genName + "nfe"];
-	}
-	// DLC1 : use the DLC1 singles or doubles tierlist
-	else if (formatName.startsWith("dlc1")) {
-		currentTier = BattleTeambuilderTable["gen8dlc1" + (formatName.includes("doubles") ? "doubles" : "")];
-	}
-	// Stadium 
-	else if (formatName.startsWith("stadium")) {
-		currentTier = BattleTeambuilderTable[genName + "stadium" + (genNumber > 1 ? genNumber : "")];
-	}
-	// Default non-gen 8 tier : use the default gen tierlist
-	else if (genNumber < 8) {
-		currentTier = BattleTeambuilderTable[genName];
-	}
-	// Default gen 8 tier : use the default gen 8 tierlist
-	else {
-		currentTier = BattleTeambuilderTable;
-	}
-
-	// Retrieve tierlist from currentTier.tiers or currentTier.tierSet
-	legalPokemonList = getFormattedTierlist(currentTier);
-
-	// To make tier separation easier, the slices have been stored in a variable
-	var slices = currentTier.formatSlices;
-
-	// Slice the tierlist depending on the format
-	if (formatName === "ubers" || formatName === "uber") legalPokemonList = legalPokemonList.slice(slices.Uber);
-	else if (isVGCOrBS)
-	{
-		if (formatName.endsWith("series13")) {
-			// Format not added in Showdown yet
-		} else if ( formatName === "vgc2010" || formatName === "vgc2016" || formatName.startsWith("vgc2019")
-			|| formatName === "vgc2022" || formatName.endsWith("series10") || formatName.endsWith("series11"))
-		{
-			legalPokemonList = legalPokemonList.slice(slices["Restricted Legendary"]);
-		}
-		else {
-			legalPokemonList = legalPokemonList.slice(slices.Regular);
-		}
-	}
-	else if (formatName === "ou") legalPokemonList = legalPokemonList.slice(slices.OU);
-	else if (formatName === "uu") legalPokemonList = legalPokemonList.slice(slices.UU);
-	else if (formatName === "ru") legalPokemonList = legalPokemonList.slice(slices.RU || slices.UU);
-	else if (formatName === "nu") legalPokemonList = legalPokemonList.slice(slices.NU || slices.RU || slices.UU);
-	else if (formatName === "pu") legalPokemonList = legalPokemonList.slice(slices.PU || slices.NU);
-	else if (formatName === "zu") legalPokemonList = legalPokemonList.slice(slices.ZU || slices.PU || slices.NU);
-	else if (formatName === "lc" || formatName === "lcuu" || formatName.startsWith("lc") || (formatName !== "caplc" && formatName.endsWith("lc"))) legalPokemonList = legalPokemonList.slice(slices.LC);
-	else if (formatName === "cap") legalPokemonList = legalPokemonList.slice(0, slices.AG || slices.Uber).concat(legalPokemonList.slice(slices.OU));
-	else if (formatName === "caplc") legalPokemonList = legalPokemonList.slice(slices["CAP LC"], slices.AG || slices.Uber).concat(legalPokemonList.slice(slices.LC));
-	else if (formatName === "anythinggoes" || formatName.endsWith("ag") || formatName.startsWith("ag")) legalPokemonList = legalPokemonList.slice(slices.AG);
-	else if (formatName.includes("hackmons") || formatName.endsWith("bh")) legalPokemonList = legalPokemonList.slice(slices.AG || slices.Uber);
-	else if (formatName === "monotype") legalPokemonList = legalPokemonList.slice(slices.Uber);
-	else if (formatName === "doublesubers") legalPokemonList = legalPokemonList.slice(slices.DUber);
-	else if (formatName === "doublesou" && genNumber > 4) legalPokemonList = legalPokemonList.slice(slices.DOU);
-	else if (formatName === "doublesuu") legalPokemonList = legalPokemonList.slice(slices.DUU);
-	else if (formatName === "doublesnu") legalPokemonList = legalPokemonList.slice(slices.DNU || slices.DUU);
-	else if (formatName.startsWith("bdsp") || formatName.startsWith("letsgo") || formatName.startsWith("stadium")) legalPokemonList = legalPokemonList.slice(slices.Uber);
-	else if (!isDoubleOrBS) { // Default singles
-		legalPokemonList = [
-			...legalPokemonList.slice(slices.OU, slices.UU),
-			...legalPokemonList.slice(slices.AG, slices.Uber),
-			...legalPokemonList.slice(slices.Uber, slices.OU),
-			...legalPokemonList.slice(slices.UU),
-		];
-	} else { // Default doubles
-		legalPokemonList = [
-			...legalPokemonList.slice(slices.DOU, slices.DUU),
-			...legalPokemonList.slice(slices.DUber, slices.DOU),
-			...legalPokemonList.slice(slices.DUU),
-		];
-	}
-
-	// Apply banlists
-	if (genNumber >= 5) {
-		if (formatName == "zu" && currentTier.zuBans) {
-			legalPokemonList = legalPokemonList.filter((pokemonName) => {
-				if (pokemonName in currentTier.zuBans) return false;
-				return true;
-			});
-		}
-		if (formatName == "monotype" && currentTier.monotypeBans) {
-			legalPokemonList = legalPokemonList.filter((pokemonName) => {
-				if (pokemonName in currentTier.monotypeBans) return false;
-				return true;
-			});
-		}
-	}
-
-	// Filter out Gmax Pokemon from standard tier selection
-	if (!/^(battlestadium|vgc|doublesubers)/g.test(formatName)) {
-		legalPokemonList = legalPokemonList.filter((pokemonName) => {
-			if (typeof pokemonName == 'string') return !pokemonName.endsWith('gmax');
-			else if (pokemonName[1] == "DUber by technicality") return false;
-			return true;
-		});
-	}
-}
-
-function getFormattedTierlist(pokemonTier: any)
-{
-	var pokemonList: Array<any> = [];
-
-	console.log(pokemonTier);
-
-	if (pokemonTier.tiers) {
-		pokemonList = structuredClone(pokemonTier.tiers);
-	}
-	else if (pokemonTier.tierSet)
-	{
-		for (var i = 0 ; i < pokemonTier.tierSet.length ; i++)
-		{
-			// Keep the headers in an array, convert the pokemon to string
-			if (pokemonTier.tierSet[i][0] == "pokemon") {
-				pokemonList.push(pokemonTier.tierSet[i][1])
-			}
-			else {
-				pokemonList.push(pokemonTier.tierSet[i])
+				curElement.append(illegalCol);
 			}
 		}
-	}
-
-	return pokemonList;
-}
-
-function getGenSpeciesData(pokemonID: string, currentGen: string)
-{
-	var overrideSpeciesData: any = {};
-	var currentGenNumber = Number(currentGen.slice(3));
-
-	// Iterate over each gen until the current one to get all gen-specific changes
-	for (var i = 7 ; i >= currentGenNumber ; i--)
-	{
-		var pokemonInfo = BattleTeambuilderTable["gen" + i].overrideSpeciesData[pokemonID];
-
-		if (pokemonInfo) {
-			// Gen-specific info has been found for this Pokémon, retrieve it
-			for (var genSpecificInfo in pokemonInfo)
-			{
-				// Potentially erase newer gen-specific info, it's okay as we want the most updated info
-				overrideSpeciesData[genSpecificInfo] = pokemonInfo[genSpecificInfo];
-			}
-		}
-	}
-
-	return overrideSpeciesData;
-}
-
-function getMoveCurHTMLElement(englishMoveID: string)
-{
-	var battleSearchElement = new BattleSearch("","");
-	return battleSearchElement.renderRow(englishMoveID, "move", 0, 0, "", ' class="cur"');
-}
-
-function getPokemonCurHTMLElement(englishPokemonID: string)
-{
-	var battleSearchElement = new BattleSearch("","");
-	return battleSearchElement.renderRow(englishPokemonID, "pokemon", 0, 0, "", ' class="cur"');
+	})
 }
 
 function removeInputIncompleteClass(inputElement: HTMLInputElement)
@@ -1309,6 +857,8 @@ function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
 {
 	if (spriteImage.tagName == "IMG")
 	{
+		spriteImage.alt = spriteImage.alt.replace("???", "Unknown");
+
 		// Check that the alt attribute is a valid type
 		if (isValidEnglishType(spriteImage.alt)) {
 			// Use the french type sprite
