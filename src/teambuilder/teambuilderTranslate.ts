@@ -1,10 +1,10 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico } from '../translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, MovesShortDescDico, ItemsShortDescDico, AbilitiesShortDescDico, ItemsLongDescDico } from '../translator';
 	
-import {isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
+import { isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
 
-import { isValidEnglishPokemonName, isValidEnglishAbility, isValidEnglishMove, isValidEnglishItem, isValidEnglishType} from '../translator';
+import { isValidEnglishPokemonName, isValidEnglishItem, isValidEnglishAbility, isValidEnglishMove, isValidEnglishType} from '../translator';
 
-import { CosmeticForms  } from '../translator';
+import { CosmeticForms } from '../translator';
 
 import {translatePokemonName, translateAbility, translateMove, translateItem, translateType, 
 	translateHeader, translateFilter, translateMenu,  translateStat, translateNature } from '../translator';
@@ -763,85 +763,144 @@ function updatePokemonAbility(resultElement: Element)
 	})
 }
 
-function updateAbility(element: Element)
+function updateAbility(resultElement: Element)
 {
-	var abilityNode = element.querySelector('.namecol');
-	var filterNode = element.querySelector('.filtercol');
+	var dataEntry = resultElement.firstChild as Element;
+	var attribute = dataEntry.getAttribute('data-entry');
 
-	if (abilityNode?.textContent) {
-		abilityNode.textContent = translateAbility(abilityNode.textContent);
-	}
+	if (dataEntry && attribute)
+	{
+		var abilityName = attribute.split("|")[1];
 
-	// Translate Filter button
-	if (filterNode) {
-		updateFilterElement(filterNode);
+		dataEntry.childNodes.forEach(function (abilityNode) {
+			var abilityElement = abilityNode as Element;
+			var abilityClasses = abilityElement.classList;
+	
+			if (abilityClasses)
+			{
+				if (abilityClasses.contains("namecol")) {
+					if (abilityElement.textContent) {
+						abilityElement.textContent = translateAbility(abilityElement.textContent);
+					}
+				}
+				else if (abilityClasses.contains("abilitydesccol")) {
+					if (abilityElement.textContent) {
+						var frenchDesc = AbilitiesShortDescDico[abilityName];
+	
+						if (frenchDesc) {
+							abilityElement.textContent = frenchDesc;
+						}
+					}
+				}
+				if (abilityClasses.contains("filtercol")) {
+					updateFilterElement(dataEntry);
+				}
+			}
+		})
 	}
 }
 
 function updateMove(resultElement: Element)
 {
-	resultElement.firstChild?.childNodes.forEach(function (moveNode) {
-		var moveElement = moveNode as Element;
-		var moveClasses = moveElement.classList;
+	var dataEntry = resultElement.firstChild as Element;
+	var attribute = dataEntry.getAttribute('data-entry');
 
-		if (moveClasses)
-		{
-			if (moveClasses.contains("movenamecol"))
+	if (dataEntry && attribute)
+	{
+		var moveName = attribute.split("|")[1];
+
+		dataEntry.childNodes.forEach(function (moveNode) {
+			var moveElement = moveNode as Element;
+			var moveClasses = moveElement.classList;
+	
+			if (moveClasses)
 			{
-				if (moveElement.textContent) {
-					moveNode.textContent = translateMove(moveElement.textContent);
+				if (moveClasses.contains("movenamecol"))
+				{
+					if (moveElement.textContent) {
+						moveNode.textContent = translateMove(moveElement.textContent);
+					}
+				}
+				else if (moveClasses.contains("typecol"))
+				{
+					moveNode.childNodes.forEach(function (typeSprite) {
+						updatePokemonTypeSprite(typeSprite as HTMLImageElement);
+					})
+				}
+				else if (moveClasses.contains("labelcol") || moveClasses.contains("widelabelcol"))
+				{
+					// Power and Accuracy translation
+					moveElement.childNodes.forEach(function (child) {
+						var moveAttribute = child as Element;
+	
+						if (moveAttribute.tagName == "EM" && moveAttribute.textContent) {
+							moveAttribute.textContent = translateFilter(moveAttribute.textContent);
+						}
+					})
+					
+				}
+				else if (moveClasses.contains("movedesccol"))
+				{
+					// Retrieve french description from move name and replace it
+					if (moveElement.textContent) {
+						var frenchDesc = MovesShortDescDico[moveName];
+	
+						if (frenchDesc) {
+							moveElement.textContent = frenchDesc;
+						}
+					}
+				}
+				else if (moveClasses.contains("filtercol"))
+				{
+					updateFilterElement(moveElement);
 				}
 			}
-			else if (moveClasses.contains("typecol"))
-			{
-				moveNode.childNodes.forEach(function (typeSprite) {
-					updatePokemonTypeSprite(typeSprite as HTMLImageElement);
-				})
-			}
-			else if (moveClasses.contains("labelcol") || moveClasses.contains("widelabelcol"))
-			{
-				// Power and Accuracy translation
-				moveElement.childNodes.forEach(function (child) {
-					var moveAttribute = child as Element;
-
-					if (moveAttribute.tagName == "EM" && moveAttribute.textContent) {
-						moveAttribute.textContent = translateFilter(moveAttribute.textContent);
-					}
-				})
-				
-			}
-			else if (moveClasses.contains("movedesccol"))
-			{
-				// Move description
-			}
-			else if (moveClasses.contains("filtercol"))
-			{
-				updateFilterElement(moveElement);
-			}
-		}
-	})
+		})
+	}
 }
 
 function updateItem(resultElement: Element)
 {
-	resultElement.firstChild?.childNodes.forEach(function (itemNode) {
-		var itemElement = itemNode as Element;
-		var itemClasses = itemElement.classList;
+	var dataEntry = resultElement.firstChild as Element;
+	var attribute = dataEntry.getAttribute('data-entry');
 
-		if (itemClasses)
-		{
-			if (itemClasses.contains("namecol"))
+	if (dataEntry && attribute)
+	{
+		var itemName = attribute.split("|")[1];
+
+		dataEntry.childNodes.forEach(function (itemNode) {
+			var itemElement = itemNode as Element;
+			var itemClasses = itemElement.classList;
+	
+			if (itemClasses)
 			{
-				if (itemElement.textContent) {
-					itemNode.textContent = translateItem(itemElement.textContent);
+				if (itemClasses.contains("namecol"))
+				{
+					if (itemElement.textContent) {
+						itemNode.textContent = translateItem(itemElement.textContent);
+					}
+				}
+				else if (itemClasses.contains("itemdesccol"))
+				{
+					if (itemElement.textContent) {
+						var frenchDesc = ItemsShortDescDico[itemName];
+	
+						if (frenchDesc) {
+							itemElement.textContent = frenchDesc;
+						}
+						else {
+							// Item description could be in short or long descDico
+							frenchDesc = ItemsLongDescDico[itemName];
+
+							if (frenchDesc) {
+								itemElement.textContent = frenchDesc;
+							}
+						}
+					}
 				}
 			}
-			else if (itemClasses.contains("itemdesccol"))
-			{
-				// Item description
-			}
-		}
-	})
+		})
+	}
 }
 
 function updatePokemonType(typesElement: Element)
