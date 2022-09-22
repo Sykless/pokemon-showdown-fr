@@ -1,4 +1,4 @@
-import { isValidEnglishAbility, isValidEnglishBattleMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateBattleMessage, translateWeather } from "../translator";
+import { isValidEnglishAbility, isValidEnglishBattleMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateBattleMessage, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 import { RegexBattleMessagesMap }  from "../translator"; 
 
@@ -15,6 +15,8 @@ window.addEventListener('RecieveContent', function(evt: any) {
 	SpriteURL = evt.detail;
 });
 
+declare var app: any;
+
 // Create a MutationObserver element in order to track every page change
 // So we can it dynamically translate new content
 var observer = new MutationObserver(onMutation);
@@ -22,10 +24,6 @@ var observer = new MutationObserver(onMutation);
 observer.observe(document, {
 	childList: true, // report added/removed nodes
 	subtree: true,   // observe any descendant elements
-
-	// Catch any class modification
-	attributes: true,
-	attributeFilter: ['class']
 });
 
 // Everytime a new element is added to the page, onMutation method is called
@@ -38,7 +36,9 @@ function onMutation(mutations: MutationRecord[])
 
 	for (var i = 0, len = mutations.length; i < len ; i++)
 	{		
-		if (mutations[i].type == "childList")
+        // Iterate on every added node that isn't on the preempt message target
+		if (mutations[i].type == "childList"
+            && !(mutations[i].target as Element).className?.includes("inner-preempt message-log"))
 		{
 			var newNodes = mutations[i].addedNodes;
 
@@ -160,7 +160,7 @@ function onMutation(mutations: MutationRecord[])
                         updateShowdownMessage(newElement);
                         console.log("Updated history message : " + newElement.outerHTML);
                     }
-                    // Various chat messages
+                    // Various battle chat messages
                     else if (elementClasses.contains("battle-log-add"))
                     {
                         console.log("battle-log-add : " + newElement.outerHTML)
@@ -168,16 +168,17 @@ function onMutation(mutations: MutationRecord[])
                         // Connecting...
                         // <form><button name="login">Join chat</button></form>
                     }
+                    // Chat message
+                    else if (elementClasses.contains("chat"))
+                    {
+                        updateCommand(newElement);
+                    }
                     else 
                     {
-                        //console.log("Non-processed nodes : " + newElement.outerHTML);
+                        console.log("Non-processed nodes : " + newElement.outerHTML);
                     }
 				}
 			}
-		}
-		else if (mutations[i].type == "attributes")
-		{
-			var modifiedElement = mutations[i].target as Element;
 		}
 	}
 }
@@ -759,6 +760,131 @@ function updateShowdownMessage(messageElement: Element)
     })
 }
 
+function updateCommand(messageElement: Element)
+{
+    console.log("updateCommand : " + messageElement.outerHTML);
+
+    var playerMessage: boolean = false;
+
+    for (var className of messageElement.classList)
+    {
+        // If the message comes from a player
+        if (/chatmessage-.*/.test(className)) {
+            playerMessage = true;
+            break;
+        }
+    }
+
+    // Chat message
+    if (playerMessage)
+    {
+        messageElement.childNodes.forEach(function (chatNode) {
+            var chatElement = chatNode as Element;+
+
+            console.log(chatElement.outerHTML);
+
+            if (chatElement.tagName == "EM" && chatElement.textContent && /!.* <".*">/.test(chatElement.textContent)) {
+                // '"<>"' is a tag indicating that we can remove the message
+                messageElement.parentElement?.removeChild(messageElement);
+            }
+        })
+    }
+    // Command
+    else if (app.curRoom.chatHistory.lines?.length > 0)
+    {
+        // Commands are processed on the back-end, so we can't modify the data in order to add french names
+        // We could intercept the webSocket message but it seems a bit too hacky
+        // Instead we check if an error message is sent in a command result
+        // and if the searched content was in french, we launch the command again with the translated name
+        // We just need to remove the error message and the potentially wrong info
+
+        // Get last message sent
+        var message = app.curRoom.chatHistory.lines[app.curRoom.chatHistory.lines.length - 1];
+
+        // If message was a command
+        if (message.startsWith("!") || message.startsWith("/"))
+        {
+            var commandContent = message.split(" ");
+
+            messageElement.childNodes.forEach(function (chatNode) {
+                var chatElement = chatNode as Element;
+
+                if (chatElement.textContent) 
+                {
+                    // Command "/data" didn't find anything, the provided data could be in french
+                    if (commandContent[0].slice(1) == "data" && !chatElement.tagName && chatElement.textContent.includes("No Pokémon, item, move, ability or nature named"))
+                    {
+                        
+                        var closestMatch: boolean = chatElement.textContent.includes("Showing the data of ");
+                        var englishValue = "";
+
+                        const Dicos = [PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico];
+
+                        for (var i = 0 ; i < Dicos.length ; i++) {
+                            const currentDico = Dicos[i];
+                            englishValue = Object.keys(currentDico).find(key => 
+                                removeSpecialCharacters(currentDico[key].toLowerCase()) == removeSpecialCharacters(commandContent[1]).toLowerCase()) || "";
+
+                            if (englishValue) {
+                                // Remove error message and send the message to backend with english value
+                                if (closestMatch && messageElement.nextSibling) {
+                                    messageElement.parentElement?.removeChild(messageElement.nextSibling)
+                                }
+                                messageElement.parentElement?.removeChild(messageElement);
+
+                                // We add a "<>" symbol that will be removed by the HTML sanitizer just to indicate that we generated this message
+                                app.send(commandContent[0] + ' <"' + englishValue + '">', app.curRoom.id);
+
+                                // Stop the process
+                                break;
+                            }
+                        }
+                    }
+                    // Command "/weakness" didn't find anything, the provided type/Pokémon could be in french
+                    else if (commandContent[0].slice(1) == "weakness" && chatElement.className == "infobox" && chatElement.textContent.includes("isn't a recognized type or Pokemon."))
+                    {
+                        var multipleValues = commandContent[1].split(",");
+                        var englishValue = "";
+
+                        const Dicos = [TypesDico, PokemonDico];
+
+                        for (var i = 0 ; i < multipleValues.length ; i++)
+                        {
+                            var currentEnglishValue = "";
+
+                            for (var j = 0 ; j < Dicos.length && currentEnglishValue == "" ; j++)
+                            {
+                                const currentDico = Dicos[j];
+                                currentEnglishValue = Object.keys(currentDico).find(key => 
+                                    removeSpecialCharacters(currentDico[key].toLowerCase()) == removeSpecialCharacters(multipleValues[i]).toLowerCase()) || "";
+
+                                if (currentEnglishValue)
+                                {
+                                    // Add the translated value to the final string
+                                    englishValue += currentEnglishValue + ",";
+
+                                    // Last value to translate, we send the command
+                                    if (i == multipleValues.length - 1) {
+                                        // Remove error message and send the message to backend with english value
+                                        messageElement.parentElement?.removeChild(messageElement);
+
+                                        // We add a <""> symbol that will be removed by the HTML sanitizer just to indicate that we generated this message
+                                        app.send(commandContent[0]  + ' <"' + englishValue + '">', app.curRoom.id);
+                                    }
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+    console.log("Envoyé : fin");
+}
+
 function updateTimerButton(timerElement: Element)
 {
     // Translate Timer button
@@ -947,4 +1073,14 @@ function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
         // Use the french type sprite
         spriteImage.src = SpriteURL + "French_Type_" + spriteImage.alt + ".png"
     }
+}
+
+function removeSpecialCharacters(text: string) {
+	return text.replace(/[^a-z0-9]+/g, "");
+}
+
+function removeDiacritics(text: string) {
+	return text
+	  .normalize('NFD')
+	  .replace(/[\u0300-\u036f]/g, '');
 }
