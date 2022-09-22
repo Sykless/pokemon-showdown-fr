@@ -814,7 +814,7 @@ function updateCommand(messageElement: Element)
                     // Command "/data" didn't find anything, the provided data could be in french
                     if (commandContent[0].slice(1) == "data" && !chatElement.tagName && chatElement.textContent.includes("No Pokémon, item, move, ability or nature named"))
                     {
-                        
+                        var commandValue = removeSpecialCharacters(message.replace(commandContent[0], "").toLowerCase()).replace(/ /g, "");
                         var closestMatch: boolean = chatElement.textContent.includes("Showing the data of ");
                         var englishValue = "";
 
@@ -823,7 +823,7 @@ function updateCommand(messageElement: Element)
                         for (var i = 0 ; i < Dicos.length ; i++) {
                             const currentDico = Dicos[i];
                             englishValue = Object.keys(currentDico).find(key => 
-                                removeSpecialCharacters(currentDico[key].toLowerCase()) == removeSpecialCharacters(commandContent[1]).toLowerCase()) || "";
+                                removeSpecialCharacters(currentDico[key].toLowerCase()) == commandValue) || "";
 
                             if (englishValue) {
                                 // Remove error message and send the message to backend with english value
@@ -843,7 +843,7 @@ function updateCommand(messageElement: Element)
                     // Command "/weakness" didn't find anything, the provided type/Pokémon could be in french
                     else if (commandContent[0].slice(1) == "weakness" && chatElement.className == "infobox" && chatElement.textContent.includes("isn't a recognized type or Pokemon."))
                     {
-                        var multipleValues = commandContent[1].split(",");
+                        var multipleValues = message.replace(commandContent[0] + " ", "").split(",");
                         var englishValue = "";
 
                         const Dicos = [TypesDico, PokemonDico];
@@ -851,12 +851,13 @@ function updateCommand(messageElement: Element)
                         for (var i = 0 ; i < multipleValues.length ; i++)
                         {
                             var currentEnglishValue = "";
+                            var commandValue = removeSpecialCharacters(multipleValues[i]).toLowerCase().replace(/ /g, "");
 
                             for (var j = 0 ; j < Dicos.length && currentEnglishValue == "" ; j++)
                             {
                                 const currentDico = Dicos[j];
                                 currentEnglishValue = Object.keys(currentDico).find(key => 
-                                    removeSpecialCharacters(currentDico[key].toLowerCase()) == removeSpecialCharacters(multipleValues[i]).toLowerCase()) || "";
+                                    removeSpecialCharacters(currentDico[key].toLowerCase()) == commandValue) || "";
 
                                 if (currentEnglishValue)
                                 {
