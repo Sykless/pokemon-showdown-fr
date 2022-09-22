@@ -17,6 +17,8 @@ window.addEventListener('RecieveContent', function(evt: any) {
 
 declare var app: any;
 
+const DEBUG: boolean = false;
+
 // Create a MutationObserver element in order to track every page change
 // So we can it dynamically translate new content
 var observer = new MutationObserver(onMutation);
@@ -61,7 +63,7 @@ function onMutation(mutations: MutationRecord[])
 					else if (elementClasses.contains("tooltipinner"))
 					{
                         var tooltip = newElement.firstChild as Element;
-                        console.log("Raw Tooltip :" + newElement.outerHTML);
+                        if (DEBUG) console.log("Raw Tooltip :" + newElement.outerHTML);
 
                         if (tooltip.classList.contains("tooltip-pokemon") || tooltip.classList.contains("tooltip-activepokemon")
                             || tooltip.classList.contains("tooltip-switchpokemon")  || tooltip.classList.contains("tooltip-allypokemon"))
@@ -74,13 +76,13 @@ function onMutation(mutations: MutationRecord[])
                             updateMoveTooltip(tooltip);
                         }
 
-                        console.log("Updated Tooltip :" + newElement.outerHTML);
+                        if (DEBUG) console.log("Updated Tooltip :" + newElement.outerHTML);
 					}
                     else if (elementClasses.contains("switch-controls"))
                     {
-                        console.log("Raw Switch controls :" + newElement.outerHTML);
+                        if (DEBUG) console.log("Raw Switch controls :" + newElement.outerHTML);
                         updateSwitchControls(newElement);
-                        console.log("Updated Switch Controls :" + newElement.outerHTML);
+                        if (DEBUG) console.log("Updated Switch Controls :" + newElement.outerHTML);
 
                     }
                     // Main control interface : Moves, 
@@ -101,32 +103,32 @@ function onMutation(mutations: MutationRecord[])
                     // Timer button
                     else if (elementClasses.contains("timerbutton"))
                     {
-                        console.log("Raw Timer :" + newElement.outerHTML);
+                        if (DEBUG) console.log("Raw Timer :" + newElement.outerHTML);
                         updateTimerButton(newElement);
-                        console.log("Updated Timer :" + newElement.outerHTML);
+                        if (DEBUG) console.log("Updated Timer :" + newElement.outerHTML);
                     }
                     // Pokémon name and status
                     else if (elementClasses.contains("statbar"))
                     {
-                        console.log("Raw Healthbar :" + newElement.outerHTML);
+                        if (DEBUG) console.log("Raw Healthbar :" + newElement.outerHTML);
                         updatePokemonHealthBar(newElement);
-                        console.log("Raw Healthbar :" + newElement.outerHTML);
+                        if (DEBUG) console.log("Raw Healthbar :" + newElement.outerHTML);
                     }
                     // Pokémon result (little toast on the Pokémon to display what happened)
                     else if (elementClasses.contains("result"))
                     {
-                        console.log("Raw Result :" + newElement.outerHTML);
+                        if (DEBUG) console.log("Raw Result :" + newElement.outerHTML);
                         updatePokemonResult(newElement);
-                        console.log("Updated Result :" + newElement.outerHTML);
+                        if (DEBUG) console.log("Updated Result :" + newElement.outerHTML);
                     }
                     // Pokémon condition (status under the health bar)
                     else if (newElement.tagName == "SPAN")
                     {
-                        console.log("Raw Condition :" + newElement.parentElement?.outerHTML);
+                        if (DEBUG) console.log("Raw Condition :" + newElement.parentElement?.outerHTML);
                         if ((newElement.parentElement as Element)?.classList?.contains("status")) {
                             updatePokemonCondition(newElement);
                         }
-                        console.log("Update Condition ? :" + newElement.parentElement?.outerHTML);
+                        if (DEBUG) console.log("Update Condition ? :" + newElement.parentElement?.outerHTML);
                     }
                     // Type sprite
                     else if (newElement.tagName == "IMG")
@@ -136,9 +138,9 @@ function onMutation(mutations: MutationRecord[])
                     else if (newElement.tagName == "P")
                     {
                         if (newElement.getAttribute("style")?.includes("display: block; opacity: 0") ) {
-                            console.log("Raw message : " + newElement.outerHTML);
+                            if (DEBUG) console.log("Raw message : " + newElement.outerHTML);
                             updateShowdownMessage(newElement);
-                            console.log("Updated message : " + newElement.outerHTML);
+                            if (DEBUG) console.log("Updated message : " + newElement.outerHTML);
                         }
                         else {
                             console.log("Not my style : " + newElement.outerHTML);
@@ -147,18 +149,18 @@ function onMutation(mutations: MutationRecord[])
                     // Weather and side-conditions
                     else if (newElement.tagName == "EM")
                     {
-                        console.log("Raw weather : " + newElement.outerHTML);
+                        if (DEBUG) console.log("Raw weather : " + newElement.outerHTML);
                         // No class-name, need to check the parent node
                         if ((newElement.parentElement as Element)?.classList?.contains("weather")) {
                             updateWeather(newElement);
                         }
-                        console.log("Raw weather : " + newElement.outerHTML);
+                        if (DEBUG) console.log("Raw weather : " + newElement.outerHTML);
                     }
                     else if (elementClasses.contains("battle-history"))
                     {
-                        console.log("Raw history message : " + newElement.outerHTML);
+                        if (DEBUG) console.log("Raw history message : " + newElement.outerHTML);
                         updateShowdownMessage(newElement);
-                        console.log("Updated history message : " + newElement.outerHTML);
+                        if (DEBUG) console.log("Updated history message : " + newElement.outerHTML);
                     }
                     // Various battle chat messages
                     else if (elementClasses.contains("battle-log-add"))
@@ -455,25 +457,22 @@ function updateControlPanel(newElement: Element)
                 }
                 else if (moveOption.className == "movemenu")
                 {
-                    moveOption.childNodes.forEach(function (moveMainNode) {
-                        moveMainNode.childNodes.forEach(function (moveButtonNode) {
-                            var moveButton = moveButtonNode as Element;
+                    moveOption.childNodes.forEach(function (moveMainNode) 
+                    {
+                        var moveButtonElement = moveMainNode as Element;
 
-                            if (moveButton.textContent)
-                            {
-                                // Type
-                                if (moveButton.tagName == "SMALL")
-                                {
-                                    if (moveButton.className == "type") {
-                                        moveButton.textContent = translateType(moveButton.textContent);
-                                    }
-                                }
-                                // Move
-                                else if (moveButton.tagName != "BR") {
-                                    moveButton.textContent = translateMove(moveButton.textContent);
-                                }
-                            }
-                        })
+                        // Moves are under a submenu
+                        if (moveButtonElement.tagName == "DIV") {
+                            moveButtonElement.childNodes.forEach(function (subMoveNode) {
+                                updateMove(subMoveNode)
+                            })
+                        }
+                        // Moves are directly under movemenu element
+                        else if (moveButtonElement.tagName == "BUTTON") {
+                            updateMove(moveButtonElement)
+                        }
+                        
+                        
                     })
                 }
             })
@@ -504,6 +503,28 @@ function updateControlPanel(newElement: Element)
                     })
                 }
             })
+        }
+    })
+}
+
+function updateMove(moveMainNode: Node)
+{
+    moveMainNode.childNodes.forEach(function (moveButtonNode) {
+        var moveButton = moveButtonNode as Element;
+
+        if (moveButton.textContent)
+        {
+            // Type
+            if (moveButton.tagName == "SMALL")
+            {
+                if (moveButton.className == "type") {
+                    moveButton.textContent = translateType(moveButton.textContent);
+                }
+            }
+            // Move
+            else if (moveButton.tagName != "BR") {
+                moveButton.textContent = translateMove(moveButton.textContent);
+            }
         }
     })
 }
@@ -882,8 +903,6 @@ function updateCommand(messageElement: Element)
             })
         }
     }
-
-    console.log("Envoyé : fin");
 }
 
 function updateTimerButton(timerElement: Element)
