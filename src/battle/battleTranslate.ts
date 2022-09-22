@@ -61,21 +61,20 @@ function onMutation(mutations: MutationRecord[])
 					else if (elementClasses.contains("tooltipinner"))
 					{
                         var tooltip = newElement.firstChild as Element;
-                        //console.log(tooltip.outerHTML);
+                        console.log("Raw Tooltip :" + newElement.outerHTML);
 
-                        console.log("Raw PokemonTooltip :" + newElement.outerHTML);
-                        updatePokemonTooltip(tooltip);
-                        console.log("Updated PokemonTooltip :" + newElement.outerHTML);
+                        if (tooltip.classList.contains("tooltip-pokemon") || tooltip.classList.contains("tooltip-activepokemon")
+                            || tooltip.classList.contains("tooltip-switchpokemon")  || tooltip.classList.contains("tooltip-allypokemon"))
+                        {
+                            updatePokemonTooltip(tooltip);
+                        }
+                        else if (tooltip.classList.contains("tooltip-move") || tooltip.classList.contains("tooltip-zmove")
+                            || tooltip.classList.contains("tooltip-maxmove"))
+                        {
+                            updateMoveTooltip(tooltip);
+                        }
 
-                        // if (tooltip.classList.contains("tooltip-pokemon"))
-                        // {
-                            
-                        // }
-                        // else if (tooltip.classList.contains("tooltip-move"))
-                        // {
-                        //     console.log("Move");
-                        //     console.log(tooltip.innerHTML);
-                        // }
+                        console.log("Updated Tooltip :" + newElement.outerHTML);
 					}
                     else if (elementClasses.contains("switch-controls"))
                     {
@@ -171,7 +170,7 @@ function onMutation(mutations: MutationRecord[])
                     }
                     else 
                     {
-                        console.log("Non-processed nodes : " + newElement.outerHTML);
+                        //console.log("Non-processed nodes : " + newElement.outerHTML);
                     }
 				}
 			}
@@ -343,6 +342,17 @@ function updatePokemonTooltip(tooltip: Element)
                     }
                 }
             })
+        }
+    })
+}
+
+function updateMoveTooltip(tooltip: Element)
+{
+    tooltip.childNodes.forEach(function (tooltipNode) {
+        var tooltipElement = tooltipNode as Element;
+
+        if (tooltipElement.tagName == "P" && tooltipElement.className == "section" && tooltipElement.textContent) {
+            // tooltipElement.textContent = ""
         }
     })
 }
