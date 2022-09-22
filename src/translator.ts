@@ -2113,6 +2113,7 @@ export const AbilitiesDico: { [englishName: string]: string; } = {
 }
 
 export const MovesDico: { [englishName: string]: string; } = {
+	"No move": "Pas de capacité",
 	"Pound": "Écras'Face",
 	"Karate Chop": "Poing Karaté",
 	"Double Slap": "Torgnoles",
@@ -3000,6 +3001,7 @@ export const MovesDico: { [englishName: string]: string; } = {
 }
 
 export const ItemsDico: { [englishName: string] : string; } = {
+	"No item": "Pas d'objet",
 	"Abomasite": "Blizzarite",
 	"Absolite": "Absolite",
 	"Absorb Bulb": "Bulbe",
@@ -3849,6 +3851,10 @@ export const MenuDico: { [englishName: string]: string; } = {
     "Move": "Déplacement",
     "Delete": "Suppression",
 	" Undo Delete": " Annuler Suppression",
+	" Validate": " Valider",
+	" Clear clipboard": " Vider presse-papiers",
+	"Clipboard": "Presse-papiers",
+	"Format": "Format",
 	"Filter": "Filtrer",
 	"Filters: ": "Filtres : ",
 	"Details": "Détails",

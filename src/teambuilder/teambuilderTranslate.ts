@@ -98,8 +98,13 @@ function onMutation(mutations: MutationRecord[])
 
 				if (elementClasses)
 				{
+					// Whole page has been loaded
+					if (elementClasses.contains("teamwrapper"))
+					{
+						updatePokemonInfo();
+					}
 					// A search field has been updated
-					if (elementClasses.contains("utilichart"))
+					else if (elementClasses.contains("utilichart"))
 					{
 						// We can't catch input search modification with MutationObserver, however everytime an input
 						// is modified in some way, the utilichart component is updated,
@@ -111,11 +116,19 @@ function onMutation(mutations: MutationRecord[])
 							updateResultTag(result as Element);
 						}
 					}
-					// New results after scrolling
+					// New results after scrolling or copied element from clipboard
 					else if (elementClasses.contains("result"))
 					{
-						// Update every new result
-						updateResultTag(newElement);
+						// Clipboard result
+						if (newElement.getAttribute("data-id")) {
+							updateClipboardResult(newElement);
+						}
+						// Regular teambuilder result
+						else {
+							// Update every new result
+							updateResultTag(newElement);
+						}
+						
 					}
 					// Pokémon info has been updated
 					else if (elementClasses.contains("statrow-head"))
@@ -142,7 +155,7 @@ function onMutation(mutations: MutationRecord[])
 					}
 					else
 					{
-						console.log("Non-processed nodes : " + newElement.outerHTML);
+						// console.log("Non-processed nodes : " + newElement.outerHTML);
 					}
 				}
 			}
@@ -204,6 +217,48 @@ function updateResultTag(resultElement: Element)
 		updateSortFilters(resultElement);
 		updateMoveAbilityFilter(resultElement);
 	}
+}
+
+function updateClipboardResult(resultElement: Element)
+{
+	resultElement.childNodes.forEach(function (sectionNode) {
+		sectionNode.childNodes.forEach(function (sectionContentNode) {
+			var sectionContent = sectionContentNode as Element;
+
+			// Pokémon name
+			if (sectionContent.className == "species" && sectionContent.textContent) {
+				sectionContent.textContent = translatePokemonName(sectionContent.textContent);
+			}
+			// Pokémon ability/item
+			else if (sectionContent.className == "ability-item") {
+				sectionContent.childNodes.forEach(function (moveAbilityNode) {
+					var moveAbility = moveAbilityNode as Element;
+
+					if (moveAbility.textContent)
+					{
+						// No previous sibling element is ability section
+						if (!moveAbility.previousSibling) {
+							moveAbility.textContent = translateAbility(moveAbility.textContent);
+						}
+						// No next sibling element is item section
+						else if (!moveAbility.nextSibling) {
+							moveAbility.textContent = translateItem(moveAbility.textContent);
+						}
+					}
+				})
+			}
+			// Pokémon moves
+			else if (sectionContent.className == "moves") {
+				sectionContent.childNodes.forEach(function (moveAbilityNode)
+				{
+					// Translate move
+					if (moveAbilityNode.textContent) {
+						moveAbilityNode.textContent = translateMove(moveAbilityNode.textContent);
+					}
+				})
+			}
+		})
+	})
 }
 
 function updateCurElement()
@@ -403,196 +458,254 @@ function updatePokemonInfo()
 
 	// Since we don't always get the teamchart element from MutationObserver, we need to manually retrieve it
 	var teamchartElement = document.getElementsByClassName("teamchart").item(0);
-	var liComponent = teamchartElement?.firstChild;
 
-	liComponent?.childNodes.forEach(function(node)
+	teamchartElement?.childNodes.forEach(function (liNode)
 	{
-		var teamchartClasses = (node as Element).classList;
+		var liComponent = liNode as HTMLLIElement;
 
-		if (teamchartClasses) {
-			if (teamchartClasses.contains("setmenu"))
-			{
-				// Translate team builder menu
-				node.childNodes.forEach(function(menuButton) {
-					if (menuButton.lastChild?.textContent) {
-						menuButton.lastChild.textContent = translateMenu(menuButton.lastChild.textContent);
-					}
-				})
-			}
-			else if (teamchartClasses.contains("setchart-nickname"))
-			{
-				// Translate the nickname
-				node.childNodes.forEach(function(nicknameNode) {
-					var nicknameElement = nicknameNode as HTMLInputElement;
+		console.log(liComponent.previousSibling);
 
-					if (nicknameElement.tagName == "LABEL") {
-						nicknameElement.textContent = "Surnom";
-					}
-					else if (nicknameElement.tagName == "INPUT")
+		// Clipboard (No way to differenciate with the teams element, so we check the first child)
+		if ((liComponent.firstChild as Element).className == "teambuilder-clipboard-container")
+		{
+			liComponent.firstChild?.childNodes.forEach(function (clipboardNode) {
+				var clipboardElement = clipboardNode as Element;
+
+				// Clipboard title
+				if (clipboardElement.className == "teambuilder-clipboard-title" && clipboardElement.textContent) {
+					clipboardElement.textContent = translateMenu(clipboardElement.textContent.slice(0,-1)) + " :";
+				}
+				// Clipboard clear button
+				else if (clipboardElement.className == "teambuilder-clipboard-buttons") {
+					clipboardElement.childNodes.forEach(function (clipboardButtonNode){
+						var clipboardButtonElement = clipboardButtonNode;
+
+						if (clipboardButtonElement.lastChild?.textContent) {
+							clipboardButtonElement.lastChild.textContent = translateMenu(clipboardButtonElement.lastChild.textContent);
+						}
+					})
+				}
+				// Clipboard copied content
+				else if (clipboardElement.className == "teambuilder-clipboard-data") {
+					clipboardElement.childNodes.forEach(function(clipboardResult) {
+						updateClipboardResult(clipboardResult as Element);
+					})
+				}
+			})
+		}
+		// Format selection
+		else if (liComponent.className == "format-select")
+		{
+			liComponent.childNodes.forEach(function (formatNode) {
+				var formatElement = formatNode as Element;
+
+				if (formatElement.tagName == "BUTTON" && formatElement.className == "button"
+					&& formatElement.lastChild?.textContent)
+				{
+					// Replace button label
+					formatElement.lastChild.textContent = translateMenu(formatElement.lastChild.textContent);
+				}
+				// Format label
+				else if (formatElement.tagName == "LABEL" && formatElement.textContent) {
+					formatElement.textContent = translateMenu(formatElement.textContent.slice(0,-1)) + " :";
+				}
+			})
+		}
+		// Teams
+		else if (Number(liComponent.value) >= 0 && Number(liComponent.value) < 6)
+		{
+			// Team element, iterate over every attribute
+			liComponent?.childNodes.forEach(function(node)
+			{
+				var teamchartClasses = (node as Element).classList;
+		
+				if (teamchartClasses) {
+					if (teamchartClasses.contains("setmenu"))
 					{
-						nicknameElement.placeholder = translatePokemonName(nicknameElement.placeholder);
-						nicknameElement.value = translatePokemonName(nicknameElement.value);
+						// Translate team builder menu
+						node.childNodes.forEach(function(menuButton) {
+							if (menuButton.lastChild?.textContent) {
+								menuButton.lastChild.textContent = translateMenu(menuButton.lastChild.textContent);
+							}
+						})
 					}
-				});
-			}
-			else if (teamchartClasses.contains("setchart"))
-			{
-				node.childNodes.forEach(function(pokemonInfoNode) {
-					var pokemonInfoElement = pokemonInfoNode as Element
-					var classList = pokemonInfoElement.classList;
-	
-					// Pokémon name
-					if (classList.contains("setcol-icon"))
+					else if (teamchartClasses.contains("setchart-nickname"))
 					{
-						// Translate the name
-						pokemonInfoNode.childNodes.forEach(function(spriteNameNode) {
-							spriteNameNode.childNodes.forEach(function(nameNode) {
-								var nameInput = nameNode as HTMLInputElement;
-
-								if (nameInput.tagName == "INPUT" && nameInput.value)
-								{
-									// Update the Pokémon search input with the french translation
-									// (If no translation is found, the original string stays untouched)
-									nameInput.value = translatePokemonName(nameInput.value);
-								}
-							})
+						// Translate the nickname
+						node.childNodes.forEach(function(nicknameNode) {
+							var nicknameElement = nicknameNode as HTMLInputElement;
+		
+							if (nicknameElement.tagName == "LABEL") {
+								nicknameElement.textContent = "Surnom";
+							}
+							else if (nicknameElement.tagName == "INPUT")
+							{
+								nicknameElement.placeholder = translatePokemonName(nicknameElement.placeholder);
+								nicknameElement.value = translatePokemonName(nicknameElement.value);
+							}
 						});
 					}
-					// Item, Ability, Level, Gender, Shiny
-					else if (classList.contains("setcol-details"))
+					else if (teamchartClasses.contains("setchart"))
 					{
-						// Using querySelector instead of childNodes because there are a lot of nested nodes with classnames in common
-						var detailsElement = pokemonInfoElement.querySelector('.setcell-details');
-						var typeSpritesElement = pokemonInfoElement.querySelector('.setcell-typeicons');
-						var itemElement = pokemonInfoElement.querySelector('.setcell-item');
-						var abilityElement = pokemonInfoElement.querySelector('.setcell-ability');
-
-						// Level, Gender, Shiny, Dmax Level
-						if (detailsElement)
-						{
-							detailsElement.childNodes.forEach(function (detailsNode) {
-								var detailsTag = (detailsNode as Element).tagName;
-
-								// Menu element
-								if (detailsTag == "LABEL" && detailsNode.textContent) {
-									detailsNode.textContent = translateMenu(detailsNode.textContent);
-								}
-
-								// Details buttons
-								if (detailsTag == "BUTTON")
+						node.childNodes.forEach(function(pokemonInfoNode) {
+							var pokemonInfoElement = pokemonInfoNode as Element
+							var classList = pokemonInfoElement.classList;
+			
+							// Pokémon name
+							if (classList.contains("setcol-icon"))
+							{
+								// Translate the name
+								pokemonInfoNode.childNodes.forEach(function(spriteNameNode) {
+									spriteNameNode.childNodes.forEach(function(nameNode) {
+										var nameInput = nameNode as HTMLInputElement;
+		
+										if (nameInput.tagName == "INPUT" && nameInput.value)
+										{
+											// Update the Pokémon search input with the french translation
+											// (If no translation is found, the original string stays untouched)
+											nameInput.value = translatePokemonName(nameInput.value);
+										}
+									})
+								});
+							}
+							// Item, Ability, Level, Gender, Shiny
+							else if (classList.contains("setcol-details"))
+							{
+								// Using querySelector instead of childNodes because there are a lot of nested nodes with classnames in common
+								var detailsElement = pokemonInfoElement.querySelector('.setcell-details');
+								var typeSpritesElement = pokemonInfoElement.querySelector('.setcell-typeicons');
+								var itemElement = pokemonInfoElement.querySelector('.setcell-item');
+								var abilityElement = pokemonInfoElement.querySelector('.setcell-ability');
+		
+								// Level, Gender, Shiny, Dmax Level
+								if (detailsElement)
 								{
-									// Update every detail element
-									detailsNode.childNodes.forEach(function (spanNode) {
-										updatePokemonDetails(spanNode as Element);
+									detailsElement.childNodes.forEach(function (detailsNode) {
+										var detailsTag = (detailsNode as Element).tagName;
+		
+										// Menu element
+										if (detailsTag == "LABEL" && detailsNode.textContent) {
+											detailsNode.textContent = translateMenu(detailsNode.textContent);
+										}
+		
+										// Details buttons
+										if (detailsTag == "BUTTON")
+										{
+											// Update every detail element
+											detailsNode.childNodes.forEach(function (spanNode) {
+												updatePokemonDetails(spanNode as Element);
+											});
+										}
 									});
 								}
-							});
-						}
-
-						// Types
-						if (typeSpritesElement)
-						{
-							// Update every type sprite
-							typeSpritesElement.childNodes.forEach(function (typeSprite) {
-								updatePokemonTypeSprite(typeSprite as HTMLImageElement);
-							})
-						}
-
-						// Item
-						if (itemElement)
-						{
-							itemElement.childNodes.forEach(function (itemNode) {
-								var itemTag = (itemNode as Element).tagName;
-
-								// Menu element
-								if (itemTag == "LABEL" && itemNode.textContent) {
-									itemNode.textContent = translateMenu(itemNode.textContent);
-								}
-
-								// Item name
-								if (itemTag == "INPUT")
+		
+								// Types
+								if (typeSpritesElement)
 								{
-									var inputItemElement = itemNode as HTMLInputElement;
-
-									if (inputItemElement.value) {
-										inputItemElement.value = translateItem(inputItemElement.value);
-									}
+									// Update every type sprite
+									typeSpritesElement.childNodes.forEach(function (typeSprite) {
+										updatePokemonTypeSprite(typeSprite as HTMLImageElement);
+									})
 								}
-							})
-						}
-
-						// Ability
-						if (abilityElement)
-						{
-							abilityElement.childNodes.forEach(function (abilityNode) {
-								var abilityTag = (abilityNode as Element).tagName;
-
-								// Menu element
-								if (abilityTag == "LABEL" && abilityNode.textContent) {
-									abilityNode.textContent = translateMenu(abilityNode.textContent);
-								}
-
-								// Ability name
-								if (abilityTag == "INPUT")
+		
+								// Item
+								if (itemElement)
 								{
-									var inputAbilityElement = abilityNode as HTMLInputElement;
-
-									if (inputAbilityElement.value) {
-										inputAbilityElement.value = translateAbility(inputAbilityElement.value);
-									}
-								}
-							})
-						}
-					}
-					// Moves
-					else if (classList.contains("setcol-moves"))
-					{
-						pokemonInfoNode.childNodes.forEach(function (moveDivNode) {
-							moveDivNode.childNodes.forEach(function (moveNode) {
-								var moveTag = (moveNode as Element).tagName;
-
-								// Menu element
-								if (moveTag == "LABEL" && moveNode.textContent) {
-									moveNode.textContent = translateMenu(moveNode.textContent);
-								}
-
-								// Ability name
-								if (moveTag == "INPUT")
-								{
-									var inputMoveElement = moveNode as HTMLInputElement;
-
-									if (inputMoveElement.value) {
-										inputMoveElement.value = translateMove(inputMoveElement.value);
-									}
-								}
-							})
-						})
-					}
-					// Stats
-					else if (classList.contains("setcol-stats"))
-					{
-						pokemonInfoNode.childNodes.forEach(function (statsDivNode) {
-							statsDivNode.childNodes.forEach(function (statsNode) {
-								var moveTag = (statsNode as Element).tagName;
-
-								// Details buttons
-								if (moveTag == "BUTTON")
-								{
-									// Update every detail element
-									statsNode.childNodes.forEach(function (spanNode) {
-										spanNode.childNodes.forEach(function (statsContentNode) {
-											if ((statsContentNode as Element).tagName == "LABEL" && statsContentNode.textContent) {
-												statsContentNode.textContent = translateFilter(statsContentNode.textContent);
+									itemElement.childNodes.forEach(function (itemNode) {
+										var itemTag = (itemNode as Element).tagName;
+		
+										// Menu element
+										if (itemTag == "LABEL" && itemNode.textContent) {
+											itemNode.textContent = translateMenu(itemNode.textContent);
+										}
+		
+										// Item name
+										if (itemTag == "INPUT")
+										{
+											var inputItemElement = itemNode as HTMLInputElement;
+		
+											if (inputItemElement.value) {
+												inputItemElement.value = translateItem(inputItemElement.value);
 											}
-										})
-									});
+										}
+									})
 								}
-							})
+		
+								// Ability
+								if (abilityElement)
+								{
+									abilityElement.childNodes.forEach(function (abilityNode) {
+										var abilityTag = (abilityNode as Element).tagName;
+		
+										// Menu element
+										if (abilityTag == "LABEL" && abilityNode.textContent) {
+											abilityNode.textContent = translateMenu(abilityNode.textContent);
+										}
+		
+										// Ability name
+										if (abilityTag == "INPUT")
+										{
+											var inputAbilityElement = abilityNode as HTMLInputElement;
+		
+											if (inputAbilityElement.value) {
+												inputAbilityElement.value = translateAbility(inputAbilityElement.value);
+											}
+										}
+									})
+								}
+							}
+							// Moves
+							else if (classList.contains("setcol-moves"))
+							{
+								pokemonInfoNode.childNodes.forEach(function (moveDivNode) {
+									moveDivNode.childNodes.forEach(function (moveNode) {
+										var moveTag = (moveNode as Element).tagName;
+		
+										// Menu element
+										if (moveTag == "LABEL" && moveNode.textContent) {
+											moveNode.textContent = translateMenu(moveNode.textContent);
+										}
+		
+										// Ability name
+										if (moveTag == "INPUT")
+										{
+											var inputMoveElement = moveNode as HTMLInputElement;
+		
+											if (inputMoveElement.value) {
+												inputMoveElement.value = translateMove(inputMoveElement.value);
+											}
+										}
+									})
+								})
+							}
+							// Stats
+							else if (classList.contains("setcol-stats"))
+							{
+								pokemonInfoNode.childNodes.forEach(function (statsDivNode) {
+									statsDivNode.childNodes.forEach(function (statsNode) {
+										var moveTag = (statsNode as Element).tagName;
+		
+										// Details buttons
+										if (moveTag == "BUTTON")
+										{
+											// Update every detail element
+											statsNode.childNodes.forEach(function (spanNode) {
+												spanNode.childNodes.forEach(function (statsContentNode) {
+													if ((statsContentNode as Element).tagName == "LABEL" && statsContentNode.textContent) {
+														statsContentNode.textContent = translateFilter(statsContentNode.textContent);
+													}
+												})
+											});
+										}
+									})
+								})
+							}
 						})
 					}
-				})
-			}
-		}	
+				}	
+			})
+		}
+
 	})
 }
 
