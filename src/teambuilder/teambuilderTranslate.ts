@@ -101,7 +101,7 @@ function onMutation(mutations: MutationRecord[])
 					// Whole page has been loaded
 					if (elementClasses.contains("teamwrapper"))
 					{
-						updatePokemonInfo();
+						updateTeamWrapper(newElement);
 					}
 					// A search field has been updated
 					else if (elementClasses.contains("utilichart"))
@@ -109,7 +109,7 @@ function onMutation(mutations: MutationRecord[])
 						// We can't catch input search modification with MutationObserver, however everytime an input
 						// is modified in some way, the utilichart component is updated,
 						// so we still get a way to catch input modification
-						updatePokemonInfo();
+						updatePokemonInfo(null);
 
 						// Update every search result
 						for (var k = 0, result; (result = node.childNodes[k]) ; k++) {
@@ -140,7 +140,7 @@ function onMutation(mutations: MutationRecord[])
 					// Pokémon stats/nature interface has been loaded
 					else if (elementClasses.contains("statform"))
 					{
-						updatePokemonInfo();
+						updatePokemonInfo(null);
 						updateStatForm(newElement);
 					}
 					else if (elementClasses.contains("detailcell"))
@@ -155,7 +155,7 @@ function onMutation(mutations: MutationRecord[])
 					}
 					else
 					{
-						// console.log("Non-processed nodes : " + newElement.outerHTML);
+						console.log("Non-processed nodes : " + newElement.outerHTML);
 					}
 				}
 			}
@@ -438,7 +438,81 @@ function removeInputIncompleteClass(inputElement: HTMLInputElement)
 	}
 }
 
-function updatePokemonInfo()
+function updateTeamWrapper(mainElement: Element)
+{
+	mainElement.childNodes.forEach(function (teamwrapperNode)
+	{
+		var teamwrapperElement = teamwrapperNode as Element;
+		var classList = teamwrapperElement.classList;
+
+		if (classList)
+		{
+			// Misc elements
+			if (classList.contains("pad"))
+			{
+				teamwrapperElement.childNodes.forEach(function (padNode) {
+					var padElement = padNode as Element;
+
+					// Team name
+					if (padElement.tagName == "INPUT")
+					{
+						var inputElement = padElement as HTMLInputElement;
+
+						// Only translate the default team name
+						if (inputElement.value?.startsWith("Untitled ")) {
+							inputElement.value = translateMenu("Untitled ") + inputElement.value.replace("Untitled ","");
+						}
+					}
+					// Multiple menu buttons
+					else if (padElement.tagName == "BUTTON" && padElement.lastChild?.textContent)
+					{
+						// Translate button label
+						padElement.lastChild.textContent = translateMenu(padElement.lastChild?.textContent);
+					}
+					// Teamchart element
+					if (padElement.className == "teamchartbox")
+					{
+						padElement.childNodes.forEach(function (teamchartNode) {
+							var teamchartElement = teamchartNode as Element;
+
+							// Pokémon team element
+							if (teamchartElement.tagName == "OL")
+							{
+								updatePokemonInfo(teamchartElement)
+							}
+							// Pokepaste upload
+							else if (teamchartElement.tagName == "FORM")
+							{
+								teamchartElement.childNodes.forEach(function (pasteFormNode) {
+									var pasteFormElement = pasteFormNode as Element;
+
+									// Translate button label
+									if (pasteFormElement.tagName == "BUTTON" && pasteFormElement.lastChild?.textContent) {
+										pasteFormElement.lastChild.textContent = translateMenu(pasteFormElement.lastChild?.textContent);
+									}
+								})
+							}
+						})
+					}
+				})
+			}
+			// Top teambar with Pokémon names
+			else if (classList.contains("teambar"))
+			{
+				teamwrapperElement.childNodes.forEach(function (teambarNode) {
+					var teambarElement = teambarNode as Element;
+
+					// Translate Pokémon name button
+					if (teambarElement.tagName == "BUTTON" && teambarElement.lastChild?.textContent) {
+						teambarElement.lastChild.textContent = translatePokemonName(teambarElement.lastChild.textContent);
+					}
+				})
+			}
+		}
+	})
+}
+
+function updatePokemonInfo(teamchartElement: Element | null)
 {
 	// For some reason, when an unknown Pokémon/Item/Ability/Move is present in a search input
 	// and the user click on another search input, the unknown name is added to the BattlePokedex, BattleAbilities, BattleItems or BattleMovedex variable,
@@ -457,8 +531,10 @@ function updatePokemonInfo()
 	updateCurElement();
 
 	// Since we don't always get the teamchart element from MutationObserver, we need to manually retrieve it
-	var teamchartElement = document.getElementsByClassName("teamchart").item(0);
-
+	if (teamchartElement == null) {
+		teamchartElement = document.getElementsByClassName("teamchart").item(0);
+	}
+	
 	teamchartElement?.childNodes.forEach(function (liNode)
 	{
 		var liComponent = liNode as HTMLLIElement;
