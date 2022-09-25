@@ -6,6 +6,8 @@ module.exports = {
    entry: {
       background: path.resolve(__dirname, "..", "src", "background.ts"),
       translator: path.resolve(__dirname, "..", "src", "translator.ts"),
+      homeContentScript: path.resolve(__dirname, "..", "src/home", "homeContentScript.ts"),
+      homeTranslate: path.resolve(__dirname, "..", "src/home", "homeTranslate.ts"),
       teambuilderContentScript: path.resolve(__dirname, "..", "src/teambuilder", "teambuilderContentScript.ts"),
       teambuilderTranslate: path.resolve(__dirname, "..", "src/teambuilder", "teambuilderTranslate.ts"),
       battleContentScript: path.resolve(__dirname, "..", "src/battle", "battleContentScript.ts"),

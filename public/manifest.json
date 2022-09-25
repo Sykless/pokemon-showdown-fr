@@ -1,6 +1,6 @@
 {
   "name": "Showdown Traduction",
-  "version": "0.2",
+  "version": "0.3",
   "description": "Translate Pokémon Showdown in french",
   "permissions": [
     "tabs",
@@ -17,6 +17,7 @@
   },
   "web_accessible_resources": [{
     "resources": [
+      "homeTranslate.js",
       "teambuilderTranslate.js",
       "battleTranslate.js",
       "sprites/*"],
