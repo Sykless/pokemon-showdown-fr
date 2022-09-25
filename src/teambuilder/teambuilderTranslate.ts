@@ -46,6 +46,10 @@ const FRENCH = 0;
 const ENGLISH = 1;
 const SEARCH_TYPE = 2;
 
+// If Teambuilder is loaded, the original code is not counted as a page change
+// So we need to translate it if needed
+translateTeambuilderHomePage();
+
 // The injected script cannot access chrome.runtime.getURL
 // So we need to catch an event from the content script that sends it
 var SpriteURL = "";
@@ -61,10 +65,6 @@ const FrenchNamesDico = populateFrenchDico();
 // When Teambuilder first loads, update the BattleSearchIndex
 updateBattleSearchIndex();
 reorderBattleTeambuilderTable();
-
-// If Teambuilder is reloaded, the original code is not counted as a page change
-// So we need to translate it if needed
-translateTeambuilderHomePage();
 
 // Create a MutationObserver element in order to track every page change
 // So we can it dynamically translate new content
@@ -101,7 +101,7 @@ function onMutation(mutations: MutationRecord[])
 				var parentElement = mutations[i].target as Element;
 				var elementClasses = newElement.classList;
 
-				console.log(newElement);
+				// console.log(newElement);
 
 				// Teambuilder home : teams list
 				// Teampane element is only updated on page init, so we need to check the children mutations
@@ -1804,13 +1804,27 @@ function translateTeambuilderHomePage()
 {
 	var teamSearchBar = document.getElementById("teamSearchBar") as HTMLInputElement;
 
+	// If teamSearchBar is not present, the MutationObserver will handle the page creation
 	if (!teamSearchBar) {
 		return;
 	}
 
-	// If teamSearchBar has already been translated, don't translate the page
+	// If for some reason the teamSearchBar has already been translated, don't translate the page
 	if (translateMenu(teamSearchBar.placeholder) != teamSearchBar.placeholder) {
-		// Use the Teampanel/Folderpanel methods
+		var teambuilderRoom = document.getElementById("room-teambuilder") as Element;
+
+		teambuilderRoom.childNodes.forEach(function(teambuilderNode) {
+			var teambuilderElement = teambuilderNode as Element;
+
+			if (teambuilderElement.className == "folderpane") {
+				updateFolderList(teambuilderElement.firstChild as Element);
+			}
+			else if (teambuilderElement.className == "teampane") {
+				teambuilderElement.childNodes.forEach(function (teampaneNode) {
+					updateTeampaneElement(teampaneNode as Element);
+				})
+			}
+		})
 	}
 }
 
