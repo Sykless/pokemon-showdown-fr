@@ -3953,6 +3953,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" Upload to PokePaste": " Uploader sur PokePaste",
 	"Clipboard": "Presse-papiers",
 	"Format": "Format",
+	"Select a format": "Choix du format",
 	"Filter": "Filtrer",
 	"Filters: ": "Filtres : ",
 	"Details": "Détails",

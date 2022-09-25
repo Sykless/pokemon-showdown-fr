@@ -129,6 +129,7 @@ function onMutation(mutations: MutationRecord[])
 						// is modified in some way, the utilichart component is updated,
 						// so we still get a way to catch input modification
 						updatePokemonInfo(null);
+						updatePokemonTabList(null);
 
 						// Update every search result
 						for (var k = 0, result; (result = node.childNodes[k]) ; k++) {
@@ -650,17 +651,25 @@ function updateTeamWrapper(mainElement: Element)
 				})
 			}
 			// Top teambar with Pokémon names
-			else if (classList.contains("teambar"))
-			{
-				teamwrapperElement.childNodes.forEach(function (teambarNode) {
-					var teambarElement = teambarNode as Element;
-
-					// Translate Pokémon name button
-					if (teambarElement.tagName == "BUTTON" && teambarElement.lastChild?.textContent) {
-						teambarElement.lastChild.textContent = translatePokemonName(teambarElement.lastChild.textContent);
-					}
-				})
+			else if (classList.contains("teambar")) {
+				updatePokemonTabList(teamwrapperElement);
 			}
+		}
+	})
+}
+
+function updatePokemonTabList(tabElement: Element | null)
+{
+	if (!tabElement) {
+		tabElement = document.getElementsByClassName("teambar").item(0);
+	}
+
+	tabElement?.childNodes.forEach(function (teambarNode) {
+		var teambarElement = teambarNode as Element;
+
+		// Translate Pokémon name button
+		if (teambarElement.tagName == "BUTTON" && teambarElement.lastChild?.textContent) {
+			teambarElement.lastChild.textContent = translatePokemonName(teambarElement.lastChild.textContent);
 		}
 	})
 }
@@ -742,10 +751,14 @@ function updatePokemonInfo(teamchartElement: Element | null)
 			liComponent.childNodes.forEach(function (formatNode) {
 				var formatElement = formatNode as Element;
 
-				if (formatElement.tagName == "BUTTON" && formatElement.lastChild?.textContent)
+				if (formatElement.tagName == "BUTTON")
 				{
 					// Replace button label
-					formatElement.lastChild.textContent = translateMenu(formatElement.lastChild.textContent);
+					formatElement.childNodes.forEach(function (formatButtonNode) {
+						if (formatButtonNode.textContent) {
+							formatButtonNode.textContent = translateMenu(formatButtonNode.textContent);
+						}
+					})
 				}
 				// Format label
 				else if (formatElement.tagName == "LABEL" && formatElement.textContent) {
