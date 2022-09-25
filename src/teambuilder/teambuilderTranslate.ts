@@ -62,6 +62,10 @@ const FrenchNamesDico = populateFrenchDico();
 updateBattleSearchIndex();
 reorderBattleTeambuilderTable();
 
+// If Teambuilder is reloaded, the original code is not counted as a page change
+// So we need to translate it if needed
+translateTeambuilderHomePage();
+
 // Create a MutationObserver element in order to track every page change
 // So we can it dynamically translate new content
 var observer = new MutationObserver(onMutation);
@@ -94,12 +98,27 @@ function onMutation(mutations: MutationRecord[])
 			for (var j = 0, node; (node = newNodes[j]); j++)
 			{
 				var newElement = node as Element;
+				var parentElement = mutations[i].target as Element;
 				var elementClasses = newElement.classList;
+
+				console.log(newElement);
+
+				// Teambuilder home : teams list
+				// Teampane element is only updated on page init, so we need to check the children mutations
+				if (parentElement.className == "teampane")
+				{
+					updateTeampaneElement(newElement);
+				}
 
 				if (elementClasses)
 				{
+					// Teambuilder home : folders list
+					if (elementClasses.contains("folderlist"))
+					{
+						updateFolderList(newElement);
+					}
 					// Whole page has been loaded
-					if (elementClasses.contains("teamwrapper"))
+					else if (elementClasses.contains("teamwrapper"))
 					{
 						updateTeamWrapper(newElement);
 					}
@@ -155,7 +174,7 @@ function onMutation(mutations: MutationRecord[])
 					}
 					else
 					{
-						console.log("Non-processed nodes : " + newElement.outerHTML);
+						// console.log("Non-processed nodes : " + newElement.outerHTML);
 					}
 				}
 			}
@@ -182,6 +201,140 @@ function isTeambuilderOpen()
 	}
 
 	return false;
+}
+
+function updateTeampaneElement(newElement: Element)
+{
+	newElement.childNodes.forEach(function (teampaneNode) {
+		var teampaneElement = teampaneNode as Element;
+
+		// Regular text menu
+		if ((!teampaneElement.tagName || teampaneElement.className == "storage-warning")
+			&& teampaneElement.textContent)
+		{
+			teampaneElement.textContent = translateMenu(teampaneElement.textContent);
+
+			if (teampaneElement.textContent.startsWith("Score: ")) {
+				teampaneElement.textContent = translateMenu("Score: ") + translateMenu(teampaneElement.textContent.replace("Score: ", ""));
+			}
+
+			// Rock paper scissors lizard spock result
+			if (/(.*) (.*) (.*) (.*), so (.*)/.test(teampaneElement.textContent)) {
+				var gameResult = teampaneElement.textContent.split(" ");
+
+				teampaneElement.textContent = translateMenu(gameResult[0]) + " " // And
+					 + translateMenu(gameResult[1]) + " " // Winner
+					 + translateMenu(gameResult[2]) + " " // Adjective
+					 + translateMenu(gameResult[3].replace(",","")) + ", " // Loser
+					 + translateMenu(teampaneElement.textContent.replace(gameResult[0] + " " + gameResult[1] + " " + gameResult[2] + " " + gameResult[3] + " ", "")); // Rest of the sentence
+			}
+		}
+		// Button or Strong tags usually have labels in them
+		else if (["STRONG", "BUTTON"].includes(teampaneElement.tagName))
+		{
+			teampaneElement.childNodes.forEach(function (labelNode) {
+				if (labelNode.textContent) {
+					labelNode.textContent = translateMenu(labelNode.textContent);
+
+					// Translate format team 
+					if (labelNode.textContent.startsWith(" New") && labelNode.textContent.endsWith(" Team")) {
+						labelNode.textContent = translateMenu(" New Team") + labelNode.textContent.replace(" New", "").replace(" Team", "");
+					}
+				}
+			})
+		}
+		// Only translate the input placeholder
+		else if (teampaneElement.tagName == "INPUT")
+		{
+			var inputElement = teampaneElement as HTMLInputElement;
+
+			if (inputElement.placeholder) {
+				inputElement.placeholder = translateMenu(inputElement.placeholder);
+			}
+		}
+		// Team names
+		else if (teampaneElement.tagName == "LI")
+		{
+			teampaneElement.childNodes.forEach(function (teamNode) {
+				var teamElement = teamNode as Element;
+
+				// Menu buttons
+				if (teamElement.tagName == "BUTTON")
+				{
+					var teamButton = teamElement as HTMLButtonElement;
+
+					// Translate hover label
+					if (teamButton.title) {
+						teamButton.title = translateMenu(teamButton.title);
+					}
+
+					// Translate button label
+					if (teamButton.lastChild?.textContent) {
+						teamButton.lastChild.textContent = translateMenu(teamButton.lastChild.textContent);
+					}
+				}
+				// Team element
+				else if (teamElement.classList.contains("team"))
+				{
+					teamElement.childNodes.forEach(function (teamTitleNode) {
+						var teamTitleElement = teamTitleNode as Element;
+
+						// Team name
+						if (teamTitleElement.tagName == "STRONG" && teamTitleElement.textContent) {
+							// Only translate the default team name
+							teamTitleElement.textContent = translatePokemonTeam(teamTitleElement.textContent);
+						}
+						// Team members
+						else if (teamTitleElement.tagName == "SMALL")
+						{
+							var teamMembers = teamTitleElement.firstChild as Element;
+
+							// Empty team, translate label
+							if (teamMembers?.tagName == "EM" && teamMembers.textContent) {
+								teamMembers.textContent = translateMenu(teamMembers.textContent);
+							}
+						}
+					})
+				}
+				// Empty team
+				else if (teamElement.tagName == "P")
+				{
+					var emptyTeamElement = teamElement.firstChild as Element;
+
+					if (emptyTeamElement.tagName == "EM" && emptyTeamElement.textContent)
+					{
+						emptyTeamElement.textContent = translateMenu(emptyTeamElement.textContent);
+
+						if (emptyTeamElement.textContent.startsWith("you don't have any ") && emptyTeamElement.textContent.endsWith(" teams lol"))
+						{
+							emptyTeamElement.textContent = translateMenu("you don't have any teams ") 
+								+ emptyTeamElement.textContent.replace("you don't have any ", "").replace("teams lol", "")
+								+ "lol"
+						}
+					}
+				}
+			})
+		}
+	})
+}
+
+function updateFolderList(newElement: Element)
+{
+	newElement.childNodes.forEach(function (folderMainNode) {
+		folderMainNode.childNodes.forEach(function (folderNode) {
+			folderNode.childNodes.forEach(function (folderNameNode) {
+				var folderElement = folderNameNode as Element;
+
+				// Only the english labels are translated, not the tier names
+				if (folderElement.className == "selectFolder" && folderElement.lastChild?.textContent) {
+					folderElement.lastChild.textContent = translateMenu(folderElement.lastChild.textContent);
+				}
+				else if (folderElement.textContent) {
+					folderElement.textContent = translateMenu(folderElement.textContent);
+				}
+			})
+		})
+	})
 }
 
 function updateResultTag(resultElement: Element)
@@ -459,8 +612,8 @@ function updateTeamWrapper(mainElement: Element)
 						var inputElement = padElement as HTMLInputElement;
 
 						// Only translate the default team name
-						if (inputElement.value?.startsWith("Untitled ")) {
-							inputElement.value = translateMenu("Untitled ") + inputElement.value.replace("Untitled ","");
+						if (inputElement.value) {
+							inputElement.value = translatePokemonTeam(inputElement.value);
 						}
 					}
 					// Multiple menu buttons
@@ -539,8 +692,6 @@ function updatePokemonInfo(teamchartElement: Element | null)
 	{
 		var liComponent = liNode as HTMLLIElement;
 
-		console.log(liComponent.previousSibling);
-
 		// Clipboard (No way to differenciate with the teams element, so we check the first child)
 		if ((liComponent.firstChild as Element).className == "teambuilder-clipboard-container")
 		{
@@ -569,14 +720,29 @@ function updatePokemonInfo(teamchartElement: Element | null)
 				}
 			})
 		}
+		// Button menu (No way to differenciate with the teams element, so we check the first child)
+		else if ((liComponent.firstChild as Element).tagName == "BUTTON")
+		{
+			// Translate button label
+			if (liComponent.firstChild?.lastChild?.textContent) {
+				liComponent.firstChild.lastChild.textContent = translateMenu(liComponent.firstChild.lastChild.textContent);
+			}
+		}
+		// Label (No way to differenciate with the teams element, so we check the first child)
+		else if ((liComponent.firstChild as Element).tagName == "EM")
+		{
+			// Translate label
+			if (liComponent.firstChild?.textContent) {
+				liComponent.firstChild.textContent = translateMenu(liComponent.firstChild.textContent);
+			}
+		}
 		// Format selection
 		else if (liComponent.className == "format-select")
 		{
 			liComponent.childNodes.forEach(function (formatNode) {
 				var formatElement = formatNode as Element;
 
-				if (formatElement.tagName == "BUTTON" && formatElement.className == "button"
-					&& formatElement.lastChild?.textContent)
+				if (formatElement.tagName == "BUTTON" && formatElement.lastChild?.textContent)
 				{
 					// Replace button label
 					formatElement.lastChild.textContent = translateMenu(formatElement.lastChild.textContent);
@@ -588,7 +754,7 @@ function updatePokemonInfo(teamchartElement: Element | null)
 			})
 		}
 		// Teams
-		else if (Number(liComponent.value) >= 0 && Number(liComponent.value) < 6)
+		else if (Number(liComponent.value) >= 0)
 		{
 			// Team element, iterate over every attribute
 			liComponent?.childNodes.forEach(function(node)
@@ -1572,6 +1738,28 @@ function convertPokemonNameToArray(pokemonName: string)
 	}
 }
 
+function translatePokemonTeam(teamName: string)
+{
+	var translatedName = "";
+
+	while (teamName.startsWith("Copy of ")) {
+		translatedName += translateMenu("Copy of ");
+		teamName = teamName.replace("Copy of ", "");
+	}
+
+	if (teamName.startsWith("Untitled ")) {
+		translatedName += translateMenu("Untitled ");
+		teamName = teamName.replace("Untitled ", "");
+	}
+
+	if (teamName.startsWith("Box ")) {
+		translatedName += translateMenu("Box ");
+		teamName = teamName.replace("Box ", "");
+	}
+
+	return translatedName + teamName;
+}
+
 function getDisplayedDataType(element: Element)
 {
 	var displayedDataType = "";
@@ -1610,6 +1798,20 @@ function getDisplayedDataType(element: Element)
 	}
 	
 	return displayedDataType;
+}
+
+function translateTeambuilderHomePage()
+{
+	var teamSearchBar = document.getElementById("teamSearchBar") as HTMLInputElement;
+
+	if (!teamSearchBar) {
+		return;
+	}
+
+	// If teamSearchBar has already been translated, don't translate the page
+	if (translateMenu(teamSearchBar.placeholder) != teamSearchBar.placeholder) {
+		// Use the Teampanel/Folderpanel methods
+	}
 }
 
 function reorderBattleTeambuilderTable()
