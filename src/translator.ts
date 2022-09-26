@@ -4036,7 +4036,19 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" What will ": "Que va faire ",
 	" do? ": " ? ",
 	"Attack": "Attaquer",
-	"Switch": "Switcher"
+	"Switch": "Switcher",
+	"Connecting...": "Connexion...",
+	"Loading...": "Chargement...",
+	"Battle!": "Combat !",
+	"Find a random opponent": "Trouver un adversaire aléatoire",
+	"Join chat": "Rejoindre le chat",
+	"Watch a battle": "Regarder un combat",
+	"Find a user": "Trouver un utilisateur",
+	"Rules": "Règles",
+	"Credits": "Crédits",
+	"background by ": "par ",
+	"by ": "par ",
+	"Pokémon Showdown Day background ": "Fond d'écran Pokémon Showdown du jour ",
 }
 
 export const BattleMessagesDico:  { [englishName: string]: string; } = {

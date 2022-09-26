@@ -3,7 +3,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab)
     // Load all content script on first loading page
     // It could be cleaner to load the content script only when they are needed by checking the tab URL
     // However this would add loading times during app usage and I would rather avoid that
-    if (changeInfo.status == "complete")
+    if (changeInfo.status == "loading")
     {
         // Check if homeContentScript is already loaded
         chrome.tabs.sendMessage(tabId, {text: "isHomeContentScriptLoaded"}, function(msg)
