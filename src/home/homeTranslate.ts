@@ -1,4 +1,4 @@
-import { translateMenu } from "../translator";
+import { translateMenu, translatePokemonTeam } from "../translator";
 
 console.log("HomeTranslate successfully loaded !");
 
@@ -32,22 +32,47 @@ function onMutation(mutations: MutationRecord[])
 
 				console.log(newElement);
 
-                // Translate menu button labels
-                if (parentElement.classList.contains("mainmenu1"))
+                if (parentElement.classList)
                 {
-                    if (newElement.textContent) {
-                        newElement.textContent = translateMenu(newElement.textContent);
+                    // Translate menu button labels
+                    if (parentElement.classList.contains("mainmenu1"))
+                    {
+                        if (newElement.textContent) {
+                            newElement.textContent = translateMenu(newElement.textContent);
+                        }
+                    }
+                    // Background has been changed
+                    else if (parentElement.className == "bgcredit")
+                    {
+                        // Update Credits
+                        updateBackgroundCredit(newElement);
+                    }
+                    // Room updated
+                    else if (parentElement.className == "inner" && newElement.tagName == "UL")
+                    {
+                        // Translate room name
+                        updateRoomName(newElement);
+                    }
+                    // Team selection has been updated
+                    if (parentElement.classList.contains("teamselect"))
+                    {
+                        // Translate team name
+                        updatePokemonTeamName(parentElement);
                     }
                 }
-                // Background has been changed
-                if (parentElement.className == "bgcredit")
+
+                if (newElement.classList)
                 {
-                    // Update Credits
-                    updateBackgroundCredit(newElement);
-                }
-                else
-                {
-                    // console.log("Non-processed nodes : " + newElement.outerHTML);
+                    // Tier has been updated
+                    if (newElement.classList.contains("teamselect"))
+                    {
+                        // Translate team name
+                        updatePokemonTeamName(newElement);
+                    }
+                    else
+                    {
+                        // console.log("Non-processed nodes : " + newElement.outerHTML);
+                    }
                 }
 			}
 		}
@@ -69,12 +94,41 @@ function translateHomePage()
         // Battle/Teambuilder/Ladder/News
         if (sideMenuElement.className == "leftmenu")
         {
+            sideMenuElement.childNodes.forEach(function (leftMenuNode) {
+                var leftMenuElement = leftMenuNode as Element;
 
+                // Battle/Teambuilder/Ladder/WatchBattle/FindUser
+                if (leftMenuElement.className == "mainmenu")
+                {
+                    // Menugroup
+                    leftMenuElement.childNodes.forEach(function (menuGroupNode) {
+                        var menuGroupElement = menuGroupNode as Element;
+
+                        // Menu elements could be in a form tag
+                        if (menuGroupElement.firstElementChild?.tagName == "FORM") {
+                            updateMainButton(menuGroupElement.firstElementChild)
+                        }
+                        else {
+                            updateMainButton(menuGroupElement);
+                        }
+                    })
+                }
+                // News
+                else if (leftMenuElement.className == "activitymenu")
+                {
+                    
+                }
+            })
         }
-        // Chat rooms
+        // Empty space if chat rooms are hidden
         else if (sideMenuElement.className == "rightmenu")
         {
+            // Button the only element is within three tags layers
+            var joinChatButton = sideMenuElement.firstChild?.firstChild?.firstChild as Element;
             
+            if (joinChatButton.tagName == "BUTTON" && joinChatButton.textContent) {
+                joinChatButton.textContent = translateMenu(joinChatButton.textContent);
+            }
         }
         // Links to Showdown pages/Background credits
         else if (sideMenuElement.className == "mainmenufooter")
@@ -99,6 +153,69 @@ function translateHomePage()
                 }
             })
         }
+    })
+}
+
+function updateRoomName(roomUlElement: Element)
+{
+    roomUlElement.childNodes.forEach(function (roomLiNode) {
+        roomLiNode.childNodes.forEach(function (roomNameNode) {
+            var roomNameElement = roomNameNode as Element;
+
+            // Translate room name
+            if (roomNameElement.tagName == "A" && roomNameElement.lastChild?.textContent) {
+                roomNameElement.lastChild.textContent = translateMenu(roomNameElement.lastChild.textContent);
+            }
+        })
+    })
+}
+
+function updateMainButton(menuGroup: Element)
+{
+    // Mother element has a <p> tag
+    menuGroup.childNodes.forEach(function (pNode) {
+        pNode.childNodes.forEach(function (buttonNode) {
+            var buttonElement = buttonNode as Element;
+
+            // Button label
+            if (buttonElement.tagName == "BUTTON" && buttonElement.firstChild?.textContent) {
+                buttonElement.firstChild.textContent = translateMenu(buttonElement.firstChild.textContent);
+            }
+            else if (buttonElement.tagName == "LABEL")
+            {
+                // Translate every label child
+                buttonElement.childNodes.forEach(function (labelNode) {
+                    var labelElement = labelNode as Element;
+
+                    if (labelElement.textContent) {
+                        labelElement.textContent = translateMenu(labelElement.textContent);
+                    }
+
+                    // <abbr> elements have titles that need to be translated
+                    if (labelElement.tagName == "ABBR")
+                    {
+                        var abbrTitle = labelElement.getAttribute("title");
+
+                        if (abbrTitle) {
+                            labelElement.setAttribute("title", translateMenu(abbrTitle));
+                        }
+                    }
+                })
+            }
+        })
+    })
+}
+
+function updatePokemonTeamName(teamElement: Element)
+{
+    // Translate selected team
+    teamElement.childNodes.forEach(function (teamNameNode) {
+        var teamNameElement = teamNameNode as Element;
+
+        // Team name is in <strong> tag
+        if (teamNameElement.tagName == "STRONG" && teamNameElement.textContent) {
+            teamNameElement.textContent = translatePokemonTeam(teamNameElement.textContent);
+        } 
     })
 }
 

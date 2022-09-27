@@ -3935,6 +3935,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Copy of ": "Copie de ",
 	"Untitled ": "Sans titre ",
 	"Box ": "Boîte ",
+	"Random team": "Équipe aléatoire",
 	"(empty team)": "(équipe vide)",
 	"search teams": "recherche d'équipes",
 	"Edit (you can also just click on the team)": "Modifier (vous pouvez aussi juste cliquer sur l'équipe",
@@ -4037,8 +4038,11 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" do? ": " ? ",
 	"Attack": "Attaquer",
 	"Switch": "Switcher",
+	"Home": "Accueil",
 	"Connecting...": "Connexion...",
 	"Loading...": "Chargement...",
+	"Don't allow spectators": "Interdire les spectateurs",
+	"You can still invite spectators by giving them the URL or using the /invite command": "Vous pouvez tout de même inviter des spectateurs en leur donnant l'URL ou avec la commande /invite",
 	"Battle!": "Combat !",
 	"Find a random opponent": "Trouver un adversaire aléatoire",
 	"Join chat": "Rejoindre le chat",
@@ -4049,6 +4053,10 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"background by ": "par ",
 	"by ": "par ",
 	"Pokémon Showdown Day background ": "Fond d'écran Pokémon Showdown du jour ",
+	"Partner: ": "Partenaire",
+	"Format:": "Format :",
+	"Team:": "Équipe :",
+	"Games:": "Combats :",
 }
 
 export const BattleMessagesDico:  { [englishName: string]: string; } = {
@@ -4388,6 +4396,32 @@ export function translateBattleMessage(englishBattleMessage: string) {
 
 export function translateFilter(englishFilter: string) {
 	return translateToFrench(englishFilter, FILTER);
+}
+
+export function translatePokemonTeam(teamName: string)
+{
+	if (teamName == "Random team") {
+		return translateMenu("Random team");
+	}
+
+	var translatedName = "";
+
+	while (teamName.startsWith("Copy of ")) {
+		translatedName += translateMenu("Copy of ");
+		teamName = teamName.replace("Copy of ", "");
+	}
+
+	if (teamName.startsWith("Untitled ")) {
+		translatedName += translateMenu("Untitled ");
+		teamName = teamName.replace("Untitled ", "");
+	}
+
+	if (teamName.startsWith("Box ")) {
+		translatedName += translateMenu("Box ");
+		teamName = teamName.replace("Box ", "");
+	}
+
+	return translatedName + teamName;
 }
 
 

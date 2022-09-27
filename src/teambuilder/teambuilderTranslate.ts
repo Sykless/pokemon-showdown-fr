@@ -7,7 +7,7 @@ import { isValidEnglishPokemonName, isValidEnglishItem, isValidEnglishAbility, i
 import { CosmeticForms } from '../translator';
 
 import {translatePokemonName, translateAbility, translateMove, translateItem, translateType, 
-	translateHeader, translateFilter, translateMenu,  translateStat, translateNature } from '../translator';
+	translateHeader, translateFilter, translateMenu,  translateStat, translateNature, translatePokemonTeam } from '../translator';
 
 // TODO
 // Don't show duplicate Pokémon/Item (english/french name)
@@ -15,7 +15,10 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 // Matching searches in Item/Ability/Move research (Hidden Power small ?)
 // Details utilichart
 // Translate non-text node with TreeWalker in order to not trigger observer
-// Conjuger les objets/
+// Conjuger les objets
+// One-gender only (Boréas-Totem)
+// Import/Export
+// Paste in clipbloard
 
 // HIDDEN TEXT
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
@@ -1749,28 +1752,6 @@ function convertPokemonNameToArray(pokemonName: string)
 		// Return the translated Pokémon name and its form
 		return [basePokemonName, alternatePokemonFormName]
 	}
-}
-
-function translatePokemonTeam(teamName: string)
-{
-	var translatedName = "";
-
-	while (teamName.startsWith("Copy of ")) {
-		translatedName += translateMenu("Copy of ");
-		teamName = teamName.replace("Copy of ", "");
-	}
-
-	if (teamName.startsWith("Untitled ")) {
-		translatedName += translateMenu("Untitled ");
-		teamName = teamName.replace("Untitled ", "");
-	}
-
-	if (teamName.startsWith("Box ")) {
-		translatedName += translateMenu("Box ");
-		teamName = teamName.replace("Box ", "");
-	}
-
-	return translatedName + teamName;
 }
 
 function getDisplayedDataType(element: Element)
