@@ -1,4 +1,4 @@
-import { translateMenu, translatePokemonTeam } from "../translator";
+import { translateLogMessage, translateMenu, translatePokemonTeam, translateRegexLogMessage, translateRegexMessage } from "../translator";
 
 console.log("HomeTranslate successfully loaded !");
 
@@ -68,6 +68,24 @@ function onMutation(mutations: MutationRecord[])
                     {
                         // Translate team name
                         updatePokemonTeamName(newElement);
+                    }
+                    // New window has ben opened
+                    if (newElement.classList.contains("pm-window"))
+                    {
+                        // Translate window content
+                        updateWindow(newElement);
+                    }
+                    // Chat message has been received
+                    if (newElement.classList.contains("chat"))
+                    {
+                        // Translate log message (don't change chat message)
+                        updateChatMessage(newElement);
+                    }
+                    // Challenge has been received
+                    else if (newElement.className == "challenge" && newElement.firstElementChild) 
+                    {
+                        // Update challenge request
+                        updateMainButton(newElement.firstElementChild);
                     }
                     else
                     {
@@ -177,10 +195,19 @@ function updateMainButton(menuGroup: Element)
         pNode.childNodes.forEach(function (buttonNode) {
             var buttonElement = buttonNode as Element;
 
-            // Button label
-            if (buttonElement.tagName == "BUTTON" && buttonElement.firstChild?.textContent) {
+            // Some information are just in plain text
+            if (!buttonElement.tagName && buttonElement.textContent?.endsWith(" wants to battle!")) {
+                buttonElement.textContent = buttonElement.textContent.replace(" wants to battle!", "") + translateMenu(" wants to battle!");
+            }
+            // Team selection
+            else if (buttonElement.classList?.contains("teamselect")) {
+                updatePokemonTeamName(buttonElement);
+            }
+            // Button
+            else if (buttonElement.tagName == "BUTTON" && buttonElement.firstChild?.textContent) {
                 buttonElement.firstChild.textContent = translateMenu(buttonElement.firstChild.textContent);
             }
+            // Label
             else if (buttonElement.tagName == "LABEL")
             {
                 // Translate every label child
@@ -203,6 +230,53 @@ function updateMainButton(menuGroup: Element)
                 })
             }
         })
+    })
+}
+
+function updateWindow(windowElement: Element)
+{
+    windowElement.childNodes.forEach(function (windowChildNode) {
+        var windowChildElement = windowChildNode as Element;
+
+        console.log(windowChildElement.outerHTML);
+
+        // Messages
+        if (windowChildElement.className == "pm-log")
+        {
+            windowChildElement.childNodes.forEach(function (logWindowNode) {
+                var logWindowElement = logWindowNode as Element;
+
+                // Button log
+                if (logWindowElement.className == "pm-buttonbar" && logWindowElement.firstChild?.textContent) {
+                    logWindowElement.firstChild.textContent = translateMenu(logWindowElement.firstChild.textContent);
+                }
+                // Message log
+                else if (logWindowElement.className == "inner")
+                {
+                    logWindowElement.childNodes.forEach(function (chatNode) {
+                        updateChatMessage(chatNode as Element)
+                    })
+                }
+            })
+        }
+        // Challenge
+        else if (windowChildElement.className == "challenge" && windowChildElement.firstElementChild) 
+        {
+            // Update challenge request
+            updateMainButton(windowChildElement.firstElementChild);
+        }
+    })
+}
+
+function updateChatMessage(chatElement: Element)
+{
+    chatElement.childNodes.forEach(function (chatMessageNode) {
+        var chatMessage = chatMessageNode as Element;
+
+        // Only translate log messages, not chat messages
+        if (chatMessage.textContent && (chatMessage.className == "message-log" || !chatMessage.tagName) ) {
+            chatMessage.textContent = translateRegexMessage(chatMessage.textContent);
+        }
     })
 }
 

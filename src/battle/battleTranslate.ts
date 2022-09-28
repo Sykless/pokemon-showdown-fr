@@ -1,6 +1,6 @@
-import { isValidEnglishAbility, isValidEnglishBattleMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateBattleMessage, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico } from "../translator";
+import { isValidEnglishAbility, isValidEnglishLogMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateLogMessage, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexMessage } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
-import { RegexBattleMessagesMap }  from "../translator"; 
+import { RegexLogMessagesMap }  from "../translator"; 
 
 console.log("BattleTranslate successfully loaded !");
 
@@ -542,18 +542,16 @@ function updateOpponentWait(newElement: Element)
                 waitingLabelElement.childNodes.forEach(function (textElementNode) {
                     var textElement = textElementNode as Element;
 
-                    if (textElement.tagName == "EM")
+                    if (textElement.textContent)
                     {
-                        // The text content is in the EM tag
-                        if (textElement.firstChild?.textContent) {
-                            textElement.firstChild.textContent = translateMenu(textElement.firstChild.textContent);
-                        }
-                    }
-                    else if (textElement.tagName != "BR")
-                    {
-                        // The remaining non-line break is a regular text node including the Pokémon name
-                        if (textElement.textContent)
+                        if (textElement.tagName == "EM")
                         {
+                            // The text content is in the EM tag
+                            textElement.textContent = translateMenu(textElement.textContent);
+                        }
+                        else if (textElement.tagName != "BR")
+                        {
+                            // The remaining non-line break is a regular text node including the Pokémon name
                             // Translate the message depending on the selected option
                             if (textElement.textContent.includes(" will be "))
                             {
@@ -600,6 +598,11 @@ function updateOpponentWait(newElement: Element)
                 if (waitingLabelElement.lastChild?.textContent) {
                     waitingLabelElement.lastChild.textContent = translateMenu(waitingLabelElement.lastChild.textContent);
                 }
+            }
+            if (waitingLabelElement.tagName == "EM" && waitingLabelElement.textContent)
+            {
+                // The text content is in the EM tag
+                waitingLabelElement.textContent = translateMenu(waitingLabelElement.textContent);
             }
         })
     })
@@ -911,158 +914,6 @@ function updateTimerButton(timerElement: Element)
     if (timerElement.lastChild?.textContent) {
         timerElement.lastChild.textContent = translateMenu(timerElement.lastChild.textContent);
     }
-}
-
-// Method used to get Regex matches in battle messages templates
-function translateRegexMessage(originalString: string)
-{
-    // If the message can be directly translated (no Pokémon name, move, etc)
-    if (isValidEnglishBattleMessage(originalString)) {
-        return translateBattleMessage(originalString);
-    }
-    // The message probably contains a variable english name (Pokémon name, move, etc)
-    else  {
-        console.log("Regex message : " + originalString);
-
-        // Use a Regex match in order to translate the message
-        var translated = translateRegexBattleMessage(originalString);
-
-        if (translated.length > 0)
-        {
-            var englishMessage = translated[0].source.split("(.*)");
-            var variablesToTranslate = translated[1].match(/{(.*?)}/g);
-
-            console.log(englishMessage);
-
-            // If a SWAP parameter is present in the template variable, order them by swap id
-            if (variablesToTranslate[0].includes("SWAP")) 
-			{
-                // Alphabetically sort the swaps
-                variablesToTranslate.sort();
-
-                // Remove the SWAP_i_ in the tags
-                for (var i = 0 ; i < variablesToTranslate.length ; i++) {
-                    translated[1] = translated[1].replace("SWAP_" + i + "_", "");
-                    variablesToTranslate[i] = variablesToTranslate[i].replace("SWAP_" + i + "_","");
-                }
-            }
-
-            for (var i = 0 ; i < englishMessage.length - 1 ; i++)
-            {
-                // Remove escaped escaped character
-                if (i == 0) { englishMessage[0] = englishMessage[0].replace(/\\/g,"");}
-                englishMessage[i + 1] = englishMessage[i + 1].replace(/\\/g,"");
-                
-                // Get english variable from the original string
-                var variableName = originalString.slice((i == 0 && englishMessage[i] == "" ? 0 : originalString.indexOf(englishMessage[i]) + englishMessage[i].length),
-                                                              (englishMessage[i + 1] == "" ? originalString.length : originalString.indexOf(englishMessage[i + 1])));
-
-                console.log(variableName);
-
-                // Replace the template variable by the translated value
-                if (variablesToTranslate[i].includes("{POKEMON"))
-                {
-                    // Display the Pokémon name differently depending on if it's the opponent one, or its position in the word, 
-                    if (variableName.includes("he opposing ")) {
-                        if (isFirstWord(variablesToTranslate[i], translated[1])) {
-                            translated[1] = translated[1].replace(variablesToTranslate[i],
-								"Le " + translatePokemonName(variableName.replace("The opposing ", "").replace("the opposing ", "")) + " adverse");
-                        }
-                        else {
-                            translated[1] = translated[1].replace(variablesToTranslate[i],
-								translatePokemonName(variableName.replace("the opposing ", "").replace("The opposing ", "")) + " adverse");
-                        }
-                    }
-                    else {
-                        translated[1] = translated[1].replace(variablesToTranslate[i], translatePokemonName(variableName));
-                    }
-                }
-				else if (variablesToTranslate[i] == "{TEAM}")
-				{
-					if (variableName.includes("he opposing")) {
-						translated[1] = translated[1].replace(variablesToTranslate[i],
-							isFirstWord(variablesToTranslate[i], translated[1]) ? "L'équipe adverse" : "l'équipe adverse");
-						continue;
-					}
-					else if (variableName.includes("our")) {
-						translated[1] = translated[1].replace(variablesToTranslate[i],
-							isFirstWord(variablesToTranslate[i], translated[1]) ? "Votre équipe" : "votre équipe");
-						continue;
-					}
-				}
-				else if (variablesToTranslate[i] == "{STATS}") {
-					if (["Attack", "Sp. Atk", "evasiveness"].includes(variableName)) {
-						translated[1] = translated[1].replace("{STATS}", "L'" + translateStat(variableName));
-					}
-					else {
-						translated[1] = translated[1].replace("{STATS}", "La " + translateStat(variableName));
-					}
-				}
-                else if (variablesToTranslate[i] == "{ABILITY}") {
-                    translated[1] = translated[1].replace("{ABILITY}", translateAbility(variableName));
-                }
-                else if (variablesToTranslate[i] == "{MOVE}") {
-                    translated[1] = translated[1].replace("{MOVE}", translateMove(variableName));
-                }
-				else if (variablesToTranslate[i] == "{ITEM}") {
-                    translated[1] = translated[1].replace("{ITEM}", translateItem(variableName));
-                }
-				else if (variablesToTranslate[i] == "{TYPE}") {
-                    translated[1] = translated[1].replace("{TYPE}", translateType(variableName));
-                }
-				else if (variablesToTranslate[i] == "{EFFECT}") {
-					// Effects could be anything, so we try Abilities, Moves and Items
-					if (isValidEnglishAbility(variableName)) {
-						translated[1] = translated[1].replace("{EFFECT}", translateAbility(variableName));
-					}
-					else if (isValidEnglishMove(variableName)) {
-						translated[1] = translated[1].replace("{EFFECT}", translateMove(variableName));
-					}
-					else if (isValidEnglishItem(variableName)) {
-						translated[1] = translated[1].replace("{EFFECT}", translateItem(variableName));
-					}
-                }
-                else {
-					// Default,just replace the template variable
-                    translated[1] = translated[1].replace(variablesToTranslate[i], variableName);
-                }
-            }
-
-            return translated[1];
-        }
-        else {
-            // No translation found, return the original string
-            return originalString;
-        }
-    }
-}
-
-function translateRegexBattleMessage(messageString: string)
-{
-	for (let RegexTranslation of RegexBattleMessagesMap)
-	{
-		if (RegexTranslation[0].test(messageString)) {
-			return RegexTranslation;
-		}
-	}
-
-	return [];
-}
-
-function isFirstWord(word: string, sentence: string) {
-    var wordPosition = sentence.indexOf(word) - 1;
-
-    while (wordPosition >= 0)
-    {
-        // Check if the character is a letter
-        if (sentence[wordPosition].toLowerCase() == sentence[wordPosition].toUpperCase()) {
-            return false;
-        }
-
-        wordPosition--;
-    }
-
-    return true;
 }
 
 function getCurrentDisplayedInfo(infoTitle: string)
