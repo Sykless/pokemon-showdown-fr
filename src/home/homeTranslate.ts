@@ -83,8 +83,12 @@ function onMutation(mutations: MutationRecord[])
                             newElement.textContent = translateMenu(newElement.textContent);
                         }
                     }
+                    else if (parentElement.classList.contains("roomlist"))
+                    {
+                        translateChatRoom(newElement);
+                    }
                     // A Menugroup has been added
-                    if (parentElement.classList.contains("menugroup"))
+                    else if (parentElement.classList.contains("menugroup"))
                     {
                         // Translate team name
                         updateMenuGroup(newElement);
@@ -102,7 +106,7 @@ function onMutation(mutations: MutationRecord[])
                         updateRoomName(newElement);
                     }
                     // Team selection has been updated
-                    if (parentElement.classList.contains("teamselect"))
+                    else if (parentElement.classList.contains("teamselect"))
                     {
                         // Translate team name
                         updatePokemonTeamName(parentElement);
@@ -115,7 +119,7 @@ function onMutation(mutations: MutationRecord[])
 
 function translateHomePage()
 {
-	var mainMenu = document.getElementsByClassName("mainmenuwrapper");
+    var mainMenu = document.getElementsByClassName("mainmenuwrapper");
 
 	// mainMenu should always be present, but if it's not, the MutationObserver will handle the page creation
 	if (!mainMenu || mainMenu.length <= 0) {
@@ -193,6 +197,62 @@ function updateRoomName(roomUlElement: Element)
                 roomNameElement.lastChild.textContent = translateMenu(roomNameElement.lastChild.textContent);
             }
         })
+    })
+}
+
+function translateChatRoom(chatRoomElement: Element)
+{
+    chatRoomElement.childNodes.forEach(function (roomNode) {
+        var roomElement = roomNode as Element;
+
+        // Chatroom section label
+        if (!roomElement.tagName && roomElement.textContent) {
+            roomElement.textContent = translateMenu(roomElement.textContent);
+        }
+        // Chatroom element
+        else if (roomElement.tagName == "A") {
+            roomElement.childNodes.forEach(function (roomDescriptionNode) {
+                var roomDescription = roomDescriptionNode as Element;
+
+                if (roomDescription.tagName == "SMALL" && roomDescription.textContent)
+                {
+                    // Number of connected users
+                    if (roomDescription.textContent?.endsWith(" users)")) {
+                        roomDescription.textContent = roomDescription.textContent.replace(" users)", "") + translateMenu(" users)");
+                    }
+                    // Room description
+                    else {
+                        roomDescription.textContent = translateMenu(roomDescription.textContent);
+                    }    
+                }
+                // Room name
+                else if (roomDescription.tagName == "STRONG") {
+                    roomDescription.childNodes.forEach(function (roomNameNode) {
+                        var roomNameElement = roomNameNode as Element;
+
+                        if (!roomNameElement.tagName && roomNameElement.textContent) {
+                            roomNameElement.textContent = translateMenu(roomNameElement.textContent);
+                        }
+                    })
+                }
+            })
+        }
+        // Subroom element
+        else if (roomElement.className == "subrooms")
+        {
+            roomElement.childNodes.forEach(function (subRoomNode) {
+                var subRoomElement = subRoomNode as Element;
+
+                // Label
+                if (!subRoomElement.tagName && subRoomElement.textContent) {
+                    subRoomElement.textContent = translateMenu(subRoomElement.textContent);
+                }
+                // Subroom name
+                else if (subRoomElement.tagName == "A" && subRoomElement.lastChild?.textContent) {
+                    subRoomElement.lastChild.textContent = translateMenu(subRoomElement.lastChild.textContent);
+                }
+            })
+        }
     })
 }
 
