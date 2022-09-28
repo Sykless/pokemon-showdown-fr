@@ -4066,6 +4066,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Format:": "Format :",
 	"Team:": "Équipe :",
 	"Games:": "Combats :",
+	"Add game": "Nouveau combat",
 	"Challenge": "Défier", 
 	"Challenge ": "Défier ",
 	"Accept": "Accepter",

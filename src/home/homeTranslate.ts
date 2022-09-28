@@ -29,37 +29,9 @@ function onMutation(mutations: MutationRecord[])
 			{
 				var newElement = node as Element;
                 var parentElement = mutations[i].target as Element;
+                var translatedElement = true;
 
-				console.log(newElement);
-
-                if (parentElement.classList)
-                {
-                    // Translate menu button labels
-                    if (parentElement.classList.contains("mainmenu1"))
-                    {
-                        if (newElement.textContent) {
-                            newElement.textContent = translateMenu(newElement.textContent);
-                        }
-                    }
-                    // Background has been changed
-                    else if (parentElement.className == "bgcredit")
-                    {
-                        // Update Credits
-                        updateBackgroundCredit(newElement);
-                    }
-                    // Room updated
-                    else if (parentElement.className == "inner" && newElement.tagName == "UL")
-                    {
-                        // Translate room name
-                        updateRoomName(newElement);
-                    }
-                    // Team selection has been updated
-                    if (parentElement.classList.contains("teamselect"))
-                    {
-                        // Translate team name
-                        updatePokemonTeamName(parentElement);
-                    }
-                }
+				console.log(newElement.outerHTML);
 
                 if (newElement.classList)
                 {
@@ -89,7 +61,46 @@ function onMutation(mutations: MutationRecord[])
                     }
                     else
                     {
+                        translatedElement = false;
                         // console.log("Non-processed nodes : " + newElement.outerHTML);
+                    }
+                }
+                else {
+                    translatedElement = false;
+                }
+
+                if (parentElement.classList && !translatedElement)
+                {
+                    // Translate menu button labels
+                    if (parentElement.classList.contains("mainmenu1"))
+                    {
+                        if (newElement.textContent) {
+                            newElement.textContent = translateMenu(newElement.textContent);
+                        }
+                    }
+                    // A Menugroup has been added
+                    if (parentElement.classList.contains("menugroup"))
+                    {
+                        // Translate team name
+                        updateMenuGroup(newElement);
+                    }
+                    // Background has been changed
+                    else if (parentElement.className == "bgcredit")
+                    {
+                        // Update Credits
+                        updateBackgroundCredit(newElement);
+                    }
+                    // Room updated
+                    else if (parentElement.className == "inner" && newElement.tagName == "UL")
+                    {
+                        // Translate room name
+                        updateRoomName(newElement);
+                    }
+                    // Team selection has been updated
+                    if (parentElement.classList.contains("teamselect"))
+                    {
+                        // Translate team name
+                        updatePokemonTeamName(parentElement);
                     }
                 }
 			}
@@ -120,15 +131,7 @@ function translateHomePage()
                 {
                     // Menugroup
                     leftMenuElement.childNodes.forEach(function (menuGroupNode) {
-                        var menuGroupElement = menuGroupNode as Element;
-
-                        // Menu elements could be in a form tag
-                        if (menuGroupElement.firstElementChild?.tagName == "FORM") {
-                            updateMainButton(menuGroupElement.firstElementChild)
-                        }
-                        else {
-                            updateMainButton(menuGroupElement);
-                        }
+                        updateMenuGroup(menuGroupNode as Element);
                     })
                 }
                 // News
@@ -188,10 +191,21 @@ function updateRoomName(roomUlElement: Element)
     })
 }
 
-function updateMainButton(menuGroup: Element)
+function updateMenuGroup(menuGroup: Element)
+{
+    // Menu elements could be in a form tag
+    if (menuGroup.firstElementChild?.tagName == "FORM") {
+        updateMainButton(menuGroup.firstElementChild)
+    }
+    else {
+        updateMainButton(menuGroup);
+    }
+}
+
+function updateMainButton(battleForm: Element)
 {
     // Mother element has a <p> tag
-    menuGroup.childNodes.forEach(function (pNode) {
+    battleForm.childNodes.forEach(function (pNode) {
         pNode.childNodes.forEach(function (buttonNode) {
             var buttonElement = buttonNode as Element;
 
