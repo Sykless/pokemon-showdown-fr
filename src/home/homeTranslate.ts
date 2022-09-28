@@ -59,6 +59,11 @@ function onMutation(mutations: MutationRecord[])
                         // Update challenge request
                         updateMainButton(newElement.firstElementChild);
                     }
+                    // Users/Battle counter has been updated
+                    else if (newElement.className == "roomcounters")
+                    {
+                        updateRoomCounter(newElement);
+                    }
                     else
                     {
                         translatedElement = false;
@@ -279,6 +284,38 @@ function updateWindow(windowElement: Element)
             // Update challenge request
             updateMainButton(windowChildElement.firstElementChild);
         }
+    })
+}
+
+function updateRoomCounter(roomCounterElement: Element)
+{
+    roomCounterElement.childNodes.forEach(function (buttonNode)
+    {
+        var buttonElement = buttonNode as HTMLButtonElement;
+
+        // Translate hover label
+        if (buttonElement.title) {
+            buttonElement.title = translateMenu(buttonElement.title);
+        }
+        
+        // Translate button contents
+        buttonElement.childNodes.forEach(function (buttonContentNode) {
+            var buttonContent = buttonContentNode as Element;
+
+            // Meloetta description
+            if (buttonContent.tagName == "SPAN")
+            {
+                var spanElement = buttonContent as HTMLSpanElement;
+
+                if (spanElement.title) {
+                    spanElement.title = translateMenu(spanElement.title);
+                }
+            }
+            // Button label
+            else if (!buttonContent.tagName && buttonContent.textContent) {
+                buttonContent.textContent = translateMenu(buttonContent.textContent);
+            }
+        })
     })
 }
 

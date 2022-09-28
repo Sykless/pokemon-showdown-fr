@@ -4073,7 +4073,13 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Reject": "Refuser",
 	" wants to battle!": " veut se battre !",
 	" rejected the challenge.": " a refusé le défi.",
-	"Challenge cancelled because they changed their username.": "Défi annulé car l'adversaire a changé son pseudo."
+	"Challenge cancelled because they changed their username.": "Défi annulé car l'adversaire a changé son pseudo.",
+	" users online": " joueurs actifs",
+	" active battles": " combats actifs",
+	"Find an online user": "Trouver un utilisateur en ligne",
+	"Watch an active battle": "Regarder un combat en cours",
+	"Meloetta is PS's mascot! The Aria forme is about using its voice, and represents our chatrooms.": "Meloetta est la mascotte de PS ! La forme Chant est associée à l'utilisation de la voix, et représente nos chatrooms.",
+	"Meloetta is PS's mascot! The Pirouette forme is Fighting-type, and represents our battles.": "Meloetta est la mascotte de PS ! La forme Pirouette est de type Combat, et représente les combats Pokémon.",
 }
 
 export const LogMessagesDico:  { [englishName: string]: string; } = {
