@@ -11,7 +11,9 @@ observer.observe(document, {
 	subtree: true,   // observe any descendant elements
 });
 
+// MutationObserver only process new nodes, so we need to translate the original HTML code
 translateHomePage();
+translateRoomPage(null);
 
 // Everytime a new element is added to the page, onMutation method is called
 function onMutation(mutations: MutationRecord[])
@@ -29,11 +31,51 @@ function onMutation(mutations: MutationRecord[])
 			{
 				var newElement = node as Element;
                 var parentElement = mutations[i].target as Element;
+
+                // Don't want to add a break everytime a match is found
+                // so instead we add a boolean that changes when no match is found
                 var translatedElement = true;
 
 				console.log(newElement.outerHTML);
 
-                if (newElement.classList)
+                // Find element by ID
+                if (newElement.id)
+                {
+                    // Room panel has been opened
+                    if (newElement.id == "room-rooms") {
+                        translateRoomPage(newElement);
+                    }
+                    else {
+                        // No translation found
+                        translatedElement = false;
+                    }
+                }
+                else {
+                    // No translation found
+                    translatedElement = false;
+                }
+                
+
+                // Find element by tag
+                if (newElement.tagName && !translatedElement)
+                {
+                    // Filter option has been added
+                    if (newElement.tagName == "OPTION" && newElement.textContent) {
+                        newElement.textContent = translateMenu(newElement.textContent);
+                    }
+                    else {
+                        // No translation found
+                        translatedElement = false;
+                    }
+                }
+                else {
+                    // No translation found
+                    translatedElement = false;
+                }
+
+
+                // Find element by class
+                if (newElement.classList && !translatedElement)
                 {
                     // Tier has been updated
                     if (newElement.classList.contains("teamselect"))
@@ -64,16 +106,19 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updateRoomCounter(newElement);
                     }
-                    else
-                    {
+                    else {
+                        // No translation found
                         translatedElement = false;
                         // console.log("Non-processed nodes : " + newElement.outerHTML);
                     }
                 }
                 else {
+                    // No translation found
                     translatedElement = false;
                 }
 
+
+                // Find element by parent class
                 if (parentElement.classList && !translatedElement)
                 {
                     // Translate menu button labels
@@ -115,6 +160,59 @@ function onMutation(mutations: MutationRecord[])
 			}
 		}
 	}
+}
+
+function translateRoomPage(roomMenu: Element | null)
+{
+    // roomMenu should always be present, but if it's not, the MutationObserver will handle the page creation
+	if (!roomMenu) {
+        roomMenu = document.getElementById("room-rooms");
+
+        if (!roomMenu) {
+            return
+        };
+	}
+
+    roomMenu.childNodes.forEach(function (padNode) {
+
+        console.log((padNode as Element).outerHTML);
+
+        padNode.childNodes.forEach(function (roomNode) {
+            roomNode.childNodes.forEach(function (roomContentNode) {
+                var roomContent = roomContentNode as Element;
+
+                console.log(roomContent.tagName);
+                console.log(roomContent.textContent);
+
+                // Translate all labels from text/buttons
+                if (roomContent.textContent && (!roomContent.tagName || roomContent.tagName == "BUTTON")) {
+                    console.log(roomContent.textContent)
+                    roomContent.textContent = translateMenu(roomContent.textContent);
+                    console.log(translateMenu(" Hide"));
+                    console.log(roomContent.textContent)
+                }
+                // Translate big labels
+                if (roomContent.tagName == "P" && roomContent.firstChild?.textContent) {
+                    roomContent.firstChild.textContent = translateMenu(roomContent.firstChild.textContent);
+                }
+                // Translate room filter options
+                else if (roomContent.tagName == "SELECT") {
+                    var selectElement = roomContent as HTMLSelectElement;
+
+                    for (var i = 0 ; i < selectElement.options?.length ; i++)
+                    {
+                        var roomFilter = selectElement.options[i].textContent;
+
+                        if (roomFilter) {
+                            selectElement.options[i].textContent = translateMenu(roomFilter);
+                        }
+                    }
+                }
+
+                console.log(roomContent.outerHTML);
+            })
+        })
+    })
 }
 
 function translateHomePage()
