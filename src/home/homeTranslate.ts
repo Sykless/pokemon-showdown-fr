@@ -1,4 +1,4 @@
-import { translateLogMessage, translateMenu, translatePokemonTeam, translateRegexLogMessage, translateRegexMessage } from "../translator";
+import { translateMenu, translatePokemonTeam, translateRegexBattleMessage, translateRegexValidatorMessage } from "../translator";
 
 console.log("HomeTranslate successfully loaded !");
 
@@ -106,6 +106,11 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updateRoomCounter(newElement);
                     }
+                    // Popup has been opened
+                    else if (newElement.className == "ps-popup")
+                    {
+                        updatePopup(newElement);
+                    }
                     else {
                         // No translation found
                         translatedElement = false;
@@ -174,22 +179,13 @@ function translateRoomPage(roomMenu: Element | null)
 	}
 
     roomMenu.childNodes.forEach(function (padNode) {
-
-        console.log((padNode as Element).outerHTML);
-
         padNode.childNodes.forEach(function (roomNode) {
             roomNode.childNodes.forEach(function (roomContentNode) {
                 var roomContent = roomContentNode as Element;
 
-                console.log(roomContent.tagName);
-                console.log(roomContent.textContent);
-
                 // Translate all labels from text/buttons
                 if (roomContent.textContent && (!roomContent.tagName || roomContent.tagName == "BUTTON")) {
-                    console.log(roomContent.textContent)
                     roomContent.textContent = translateMenu(roomContent.textContent);
-                    console.log(translateMenu(" Hide"));
-                    console.log(roomContent.textContent)
                 }
                 // Translate big labels
                 if (roomContent.tagName == "P" && roomContent.firstChild?.textContent) {
@@ -208,8 +204,6 @@ function translateRoomPage(roomMenu: Element | null)
                         }
                     }
                 }
-
-                console.log(roomContent.outerHTML);
             })
         })
     })
@@ -415,8 +409,6 @@ function updateWindow(windowElement: Element)
     windowElement.childNodes.forEach(function (windowChildNode) {
         var windowChildElement = windowChildNode as Element;
 
-        console.log(windowChildElement.outerHTML);
-
         // Messages
         if (windowChildElement.className == "pm-log")
         {
@@ -484,7 +476,7 @@ function updateChatMessage(chatElement: Element)
 
         // Only translate log messages, not chat messages
         if (chatMessage.textContent && (chatMessage.className == "message-log" || !chatMessage.tagName) ) {
-            chatMessage.textContent = translateRegexMessage(chatMessage.textContent);
+            chatMessage.textContent = translateRegexBattleMessage(chatMessage.textContent);
         }
     })
 }
@@ -534,6 +526,81 @@ function updateBackgroundCredit(footerElement: Element)
                     creditsNode.textContent = translateMenu("background by ") + creditsNode.textContent.replace("background by ", "");
                 }
             })
+        }
+    })
+}
+
+function updatePopup(popupElement: Element)
+{
+    var firstChild = popupElement.firstChild as Element;
+
+    if (firstChild?.tagName == "FORM")
+    {
+        var formChild = firstChild.firstChild as Element;
+        
+        // Team validation popup
+        if (formChild?.getAttribute("style")?.includes("white-space:pre-wrap;word-wrap:break-word")) {
+            updateValidatePopup(firstChild);
+        }
+        // Regular pop-up
+        else {
+            updateGenericPopup(firstChild);
+        }
+    }
+    else if (firstChild?.tagName == "P")
+    {
+        updateGenericPopup(popupElement);
+    }
+}
+
+function updateGenericPopup(popupElement: Element)
+{
+    popupElement.childNodes.forEach(function (pNode) {
+        pNode.childNodes.forEach(function (popupContentNode) {
+            var popupContent = popupContentNode as Element;
+
+            // Raw text element
+            if (popupContent.textContent && (!popupContent.tagName || popupContent.tagName == "STRONG")) {
+                popupContent.textContent = translateMenu(popupContent.textContent);
+            }
+            // Iterate in children in order to find raw text elements
+            else {
+                popupContent.childNodes.forEach(function (popupLabelNode) {
+                    var popupLabel = popupLabelNode as Element;
+
+                    // Raw text element
+                    if (popupLabel.textContent && (!popupLabel.tagName || popupLabel.tagName == "STRONG")) {
+                        popupLabel.textContent = translateMenu(popupLabel.textContent);
+                    }
+                })
+            }
+        })
+    })
+}
+
+function updateValidatePopup(pElement: Element)
+{
+    pElement.childNodes.forEach(function (popupNode) {
+        var popupElement = popupNode as Element;
+
+        // Only translate the element without a class
+        if (!popupElement.className && popupElement.textContent) {
+            var translatedValidator = "";
+            var teamValidation = popupElement.textContent.split("\n");
+
+            // Translate every teamValidation element
+            for (var i = 0 ; i < teamValidation.length ; i++)
+            {
+                if (teamValidation[i]) {
+                    translatedValidator += translateRegexValidatorMessage(teamValidation[i])
+                }
+
+                if (i < teamValidation.length - 1) {
+                    translatedValidator += "\n";
+                }
+            }
+
+            popupElement.textContent = translatedValidator;
         }
     })
 }

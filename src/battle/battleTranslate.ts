@@ -1,4 +1,4 @@
-import { isValidEnglishAbility, isValidEnglishLogMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateLogMessage, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexMessage } from "../translator";
+import { isValidEnglishAbility, isValidEnglishLogMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateLogMessage, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexMessage, translateRegexBattleMessage } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 import { RegexLogMessagesMap }  from "../translator"; 
 
@@ -777,8 +777,7 @@ function updateShowdownMessage(messageElement: Element)
             }
             // Small tags or text tags : various battle messages
             else if (messagePart.tagName == "SMALL" || messagePart.tagName != "BR") {
-                console.log("Child text : " + messagePart.textContent);
-                messagePart.textContent = translateRegexMessage(messagePart.textContent);
+                messagePart.textContent = translateRegexBattleMessage(messagePart.textContent);
             }
         }
     })

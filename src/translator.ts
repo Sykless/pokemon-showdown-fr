@@ -9,10 +9,168 @@ const EFFECT = 7;
 const WEATHER = 8
 const HEADER = 9;
 const MENU = 10;
-const LOGMESSAGE = 11
-const FILTER = 12;
+const FILTER = 11;
+const VALIDATOR = 12;
+const LOGMESSAGE = 13;
 
+
+export const RegexValidatorMap = new Map();
 export const RegexLogMessagesMap = new Map();
+
+// TEAM VALIDATOR
+RegexValidatorMap.set(/Your team is valid for (.*)\./, "Ton équipe est valide pour {FORMAT}.");
+RegexValidatorMap.set(/The format (.*) was not found\./, "Le format {FORMAT} n'existe pas.");
+RegexValidatorMap.set(/- (.*) has no moves \(it must have at least one to be usable\)\./, "- {NICKNAME} n'a pas de capacités (il doit avoir au moins une capacité pour être utilisable).");
+RegexValidatorMap.set(/- (.*) has exactly 0 EVs \- did you forget to EV it\? \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\./, "- {NICKNAME} a exactement 0 EV - as-tu oublié de lui donner des EVs ? (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
+RegexValidatorMap.set(/- (.*) has exactly (.*) EVs, but this format does not restrict you to 510 EVs \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\./, "- {NICKNAME} a exactement {NUMBER} EVs, mais ce format ne restreint pas à 510 EVs (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
+RegexValidatorMap.set(/- (.*) is level 50, but this format allows level (.*) Pokémon. (If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake). \./,  "- {NICKNAME} est niveau 50, mais ce format autorise les Pokémon de niveau {NUMBER} (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
+RegexValidatorMap.set(/- (.*)'s item (.*) does not exist in Gen (.*)\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
+RegexValidatorMap.set(/- (.*)'s move (.*) does not exist in Gen (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
+RegexValidatorMap.set(/- (.*)'s ability (.*) does not exist in Gen (.*)\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
+RegexValidatorMap.set(/- (.*)'s nature (.*) does not exist in Gen (.*)\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
+RegexValidatorMap.set(/- (.*)'s item (.*) does not exist in this game\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
+RegexValidatorMap.set(/- (.*)'s move (.*) does not exist in this game\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
+RegexValidatorMap.set(/- (.*)'s ability (.*) does not exist in this game\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
+RegexValidatorMap.set(/- (.*)'s nature (.*) does not exist in this game\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
+RegexValidatorMap.set(/- (.*) does not exist in this game\./, "- {NICKNAME} n'existe pas dans ce jeu.");
+RegexValidatorMap.set(/- (.*) does not exist in Gen (.*)\./, "- {NICKNAME} n'existe pas en Génération {NUMBER}.");
+RegexValidatorMap.set(/- (.*) does not exist in this game, only in Let's Go Pikachu\/Eevee\./, "- {NICKNAME} n'existe pas dans ce jeu, seulement dans Let's Go Pikachu/Évoli.");
+RegexValidatorMap.set(/- (.*) is a CAP and does not exist in this game\./, "- {NICKNAME} est un CAP et n'existe pas dans ce jeu.");
+RegexValidatorMap.set(/- (.*) is not possible to obtain in this game./, "- {NICKNAME} n'est pas obtenable dans ce jeu.");
+RegexValidatorMap.set(/- (.*) is a placeholder for a Gigantamax sprite, not a real Pokémon. (This message is likely to be a validator bug.)/, "- {NICKNAME} est un placeholder pour un sprite Gigantamax, pas un Pokémon utilisable. (Ce message est probablement un bug de validation");
+RegexValidatorMap.set(/- (.*) must be at least level (.*) to be evolved\./, "- {NICKNAME} doit être au moins niveau {NUMBER} pour être évolué.");
+RegexValidatorMap.set(/- (.*) is not obtainable at levels below (.*) in Gen 1\./, "- {NICKNAME} n'est pas obtenable avant le niveau {NUMBER} en Génération 1.");
+RegexValidatorMap.set(/- (.*) transforms in-battle with (.*), please fix its ability\./, "- {NICKNAME} se transforme en combat en utilisant {ABILITY}, tu dois modifier son talent.");
+RegexValidatorMap.set(/- (.*) transforms in-battle with (.*), please fix its item\./, "- {NICKNAME} se transforme en combat en utilisant {ABILITY}, tu dois modifier son objet.");
+RegexValidatorMap.set(/- (.*) transforms in-battle with (.*), please fix its moves\./, "- {NICKNAME} se transforme en combat en utilisant {ABILITY}, tu dois modifier ses capacités.");
+RegexValidatorMap.set(/- You must bring at least (.*) Pokémon \(your team has (.*)\)\./, "- Tu dois choisir au moins {NUMBER} Pokémon (ton équipe en a {NUMBER}).");
+RegexValidatorMap.set(/- You may only bring up to (.*) Pokémon \(your team has (.*)\)\./, "- Tu ne peux choisir que {NUMBER} Pokémon (ton équipe en a {NUMBER}).");
+RegexValidatorMap.set(/- You are limited to (.*) by (.*)\./, "- Tu es limité à \"{RULE}\" par \"{CAUSE}\".");
+RegexValidatorMap.set(/- You are limited to (.*)\./, "- Tu es limité à \"{RULE}\".");
+RegexValidatorMap.set(/- (.*) is limited to (.*) by (.*)\./, "- {NICKNAME} est limité à \"{RULE}\" par \"{CAUSE}\".");
+RegexValidatorMap.set(/- (.*) is limited to (.*)\./, "- {NICKNAME} est limité à \"{RULE}\".");
+RegexValidatorMap.set(/- Your team has the combination of (.*), which is banned by (.*)\./, "- Ton équipe a la combinaison \"{COMBINATION}\", qui est bannie par \"{CAUSE}\".");
+RegexValidatorMap.set(/- Your team has the combination of (.*), which is banned\./, "- Ton équipe a la combinaison \"{COMBINATION}\", qui est bannie.");
+RegexValidatorMap.set(/- (.*) has the combination of (.*), which is banned by (.*)\./, "- {NICKNAME} a la combinaison \"{COMBINATION}\", qui est bannie par \"{CAUSE}\".");
+RegexValidatorMap.set(/- (.*) has the combination of (.*), which is banned\./, "- {NICKNAME} a la combinaison \"{COMBINATION}\", qui est bannie.");
+RegexValidatorMap.set(/- (.*) has the combination of (.*), which is impossible to obtain legitimately\./, "- {NICKNAME} a la combinaison \"{COMBINATION}\", qui est impossible d'obtenir de manière légitime.");
+RegexValidatorMap.set(/- Nickname (.*) too long \(should be 18 characters or fewer\)/, "- Le surnom {NAME} est trop long (18 caractères max).");
+RegexValidatorMap.set(/- (.*) \(level (.*)\) is below the minimum level of (.*) from (.*)/, "- {NICKNAME} (niveau {NUMBER}) est sous le niveau minimum ({NUMBER}) de \"{SOURCE}\"");
+RegexValidatorMap.set(/- (.*) \(level (.*)\) is below the minimum level of (.*)/, "- {NICKNAME} (niveau {NUMBER}) est sous le niveau minimum ({NUMBER})");
+RegexValidatorMap.set(/- (.*) \(level (.*)\) is above the maximum level of (.*) from (.*)/, "- {NICKNAME} (niveau {NUMBER}) est au dessus du niveau maximum ({NUMBER}) de \"{SOURCE}\"");
+RegexValidatorMap.set(/- (.*) \(level (.*)\) is above the maximum level of (.*)/, "- {NICKNAME} (niveau {NUMBER}) est au dessus du niveau maximum ({NUMBER})");
+RegexValidatorMap.set(/- The Pokemon "(.*)" does not exist\./, "- Le Pokémon \"{POKEMON}\" n'existe pas.");
+RegexValidatorMap.set(/- "(.*)" is an invalid item\./, "- L'objet \"{ITEM}\" est invalide.");
+RegexValidatorMap.set(/- "(.*)" is an invalid ability\./, "- Le talent \"{ABILITY}\" est invalide.");
+RegexValidatorMap.set(/- "(.*)" is an invalid nature\./, "- La nature \"{NATURE}\" est invalide.");
+RegexValidatorMap.set(/- "(.*)" is an invalid move\./, "- La capacité \"{MOVE}\" est invalide.");
+RegexValidatorMap.set(/- (.*) has an invalid happiness value\./, "- {NICKNAME} a une valeur de bonheur invalide.");
+RegexValidatorMap.set(/- (.*)'s Hidden Power type \((.*)\) is invalid\./, "- Le type de la Puissance Cachée de {NICKNAME} ({TYPE}) est invalide.");
+RegexValidatorMap.set(/- (.*) cannot hold the Griseous Orb\./, "- {NICKNAME} ne peut pas porter l'Orbe Platiné.");
+RegexValidatorMap.set(/- (.*) needs to have an ability\./, "- {NICKNAME} doit avoir un talent.");
+RegexValidatorMap.set(/- (.*) can't have (.*)\./, "- {NICKNAME} ne peut pas avoir {ABILITY}.");
+RegexValidatorMap.set(/- (.*)'s Hidden Ability is unreleased\./, "- Le Talent Caché de {NICKNAME} n'est pas disponible.");
+RegexValidatorMap.set(/- (.*)'s Hidden Ability is only available from Virtual Console, which is not allowed in this format\./, "- Le Talent Caché de {NICKNAME} n'est disponible que sur Console Virtuelle, qui n'est pas autorisée dans ce format.");
+RegexValidatorMap.set(/- (.*)'s Hidden Ability is unreleased for the Orange and White forms\./, "- Le Talent Caché de {NICKNAME} n'est pas disponible pour les formes Orange et Blanc.");
+RegexValidatorMap.set(/- (.*) must be at least level 10 to have a Hidden Ability\./, "- {NICKNAME} doit être au moins niveau 10 pour avoir un Talent Caché.");
+RegexValidatorMap.set(/- (.*) must be male to have a Hidden Ability\./, "- {NICKNAME} doit être mâle pour avoir un Talent Caché.");
+RegexValidatorMap.set(/- (.*) has (.*) moves, which is more than the limit of (.*)\./, "- {NICKNAME} a {NUMBER} capacités, qui dépasse la limite ({NUMBER}).");
+RegexValidatorMap.set(/- (.*) has an event-exclusive move that it doesn't qualify for \(only one of several ways to get the move will be listed\):/, "- {NICKNAME} a une capacité évènementielle qu'il n'est pas censé avoir - exemple de moyen d'obtenir la capacité :");
+RegexValidatorMap.set(/- (.*) is only obtainable from an event \- it needs to match its event:/, "- {POKEMON} est uniquement obtenable dans un événement - il doit correspondre à son événement :");
+RegexValidatorMap.set(/- (.*) is only obtainable from events \- it needs to match one of its events, such as:/, "- {POKEMON} est uniquement obtenable dans des événements - il doit correspondre à un de ses événements :");
+RegexValidatorMap.set(/- This format requires Pokemon from gen (.*) or later and (.*) is from gen (.*) because it has a move only available from an event\./, "- Ce format nécessite d'utiliser des Pokémon de la Génération {NUMBER} ou plus, mais {NICKNAME} est de la Génération {NUMBER} car il possède une capacité événementielle.");
+RegexValidatorMap.set(/- This format requires Pokemon from gen (.*) or later and (.*) is from gen (.*)\./, "- Ce format nécessite d'utiliser des Pokémon de la Génération {NUMBER} ou plus, mais {NICKNAME} est de la Génération {NUMBER}.");
+RegexValidatorMap.set(/- This format is in gen (.*) and (.*) is from gen (.*) because it has a move only available from an event\./, "- Ce format est en Génération {NUMBER}, mais {NICKNAME} est de la Génération {NUMBER} car il possède une capacité événementielle.");
+RegexValidatorMap.set(/- This format is in gen (.*) and (.*) is from gen (.*)\./, "- Ce format est en Génération {NUMBER}, mais {NICKNAME} est de la Génération {NUMBER}.");
+RegexValidatorMap.set(/- (.*) has moves from Japan-only events, but this format simulates International Yellow\/Crystal which can't trade with Japanese games\./, "- {NICKNAME} a des capacités évènementielles japonaises, mais ce format utilise Pokémon Jaune/Cristal international qui ne peut pas faire d'échange avec les jeux japonais.");
+RegexValidatorMap.set(/- (.*) must be at least level (.*) because it has a move only available from an event\./, "- {NICKNAME} doit être au moins niveau {LEVEL} car il possède une capacité événementielle.");
+RegexValidatorMap.set(/- (.*) must be at least level (.*)\./, "- {NICKNAME} doit être au moins niveau {LEVEL}.");
+RegexValidatorMap.set(/- (.*) must be shiny because it has a move only available from an event\./, "- {NICKNAME} doit être shiny car il possède une capacité événementielle.");
+RegexValidatorMap.set(/- (.*) must be shiny\./, "- {NICKNAME} doit être shiny.");
+RegexValidatorMap.set(/- (.*) must not be shiny because it has a move only available from an event\./, "- {NICKNAME} ne doit pas être shiny car il possède une capacité événementielle.");
+RegexValidatorMap.set(/- (.*) must not be shiny\./, "- {NICKNAME} ne doit pas être shiny.");
+RegexValidatorMap.set(/- (.*)'s gender must be (.*) because it has a move only available from an event\./, "- {NICKNAME} doit être {GENDER} car il possède une capacité événementielle.");
+RegexValidatorMap.set(/- (.*)'s gender must be (.*)\./, "- {NICKNAME} doit être {GENDER}.");
+RegexValidatorMap.set(/- (.*) must have a (.*) nature because it has a move only available from an event \- Mints are only available starting gen 8\./, "- {NICKNAME} doit avoir une nature {NATURE} car il possède une capacité événementielle - Les Aromates ne sont pas disponibles avant la Génération 8.");
+RegexValidatorMap.set(/- (.*) must have a (.*) nature \- Mints are only available starting gen 8\./, "- {NICKNAME} doit avoir une nature {NATURE} - Les Aromates ne sont pas disponibles avant la Génération 8.");
+RegexValidatorMap.set(/- (.*) must have (.*) (.*) IVs because it has a move only available from an event\./, "- {NICKNAME} doit {NUMBER} IVs en {STATS} car il possède une capacité événementielle.");
+RegexValidatorMap.set(/- (.*) must have (.*) (.*) IVs\./, "- {NICKNAME} doit {NUMBER} IVs en {STATS}.");
+RegexValidatorMap.set(/- (.*) can only have Hidden Power (.*) because it has a move only available from an event\./, "- {NICKNAME} ne peut avoir qu'une Puissance Cachée de type {TYPE} car il possède une capacité événementielle.");
+RegexValidatorMap.set(/- (.*) can only have Hidden Power (.*)\./, "- {NICKNAME} ne peut avoir qu'une Puissance Cachée de type {TYPE}.");
+RegexValidatorMap.set(/- (.*) can't use Hidden Power Fighting because it must have at least three perfect IVs\./, "- {NICKNAME} ne peut pas avoir Puissance Cachée Combat car il doit avoir au moins trois IVs parfaits.");
+RegexValidatorMap.set(/- (.*) can only use Hidden Power Dark\/Dragon\/Electric\/Steel\/Ice because it must have at least 5 perfect IVs\./, "- {NICKNAME} ne peut pas avoir Puissance Cachée Acier/Dragon/Électrik/Glace/Ténèbres car il doit avoir au moins cinq IVs parfaits.");
+RegexValidatorMap.set(/- (.*) must have its Hidden Ability\./, "- {NICKNAME} doit avoir son Talent Caché.");
+RegexValidatorMap.set(/- (.*) must not have its Hidden Ability\./, "- {NICKNAME} ne doit pas avoir {ABILITY}.");
+RegexValidatorMap.set(/- (.*) is not obtainable at levels below (.*) in Gen 1\./, "- {NICKNAME} ne peut pas être obtenu sous le niveau {NUMBER} en Génération 1.");
+RegexValidatorMap.set(/- (.*) must be at least level (.*) to be evolved\./, "- {NICKNAME} doit être au moins niveau {NUMBER} pour être évolué.");
+RegexValidatorMap.set(/- (.*) has Secret Sword, which is only compatible with Keldeo-Ordinary obtained from Gen 5\./, "- {NICKNAME} a Lame Ouinte, qui n'est utilisable que par Keldeo-Normal en Génération 5.");
+RegexValidatorMap.set(/- (.*) has a Gen 4 ability and isn't evolved \- it can't use moves from Gen 3\./, "- {NICKNAME} a un talent de Génération 4 et n'est pas évolué - il ne peut pas utiliser de capacités de Génération 3.");
+RegexValidatorMap.set(/- (.*) has a Hidden Ability \- it can't use moves from before Gen 5\./, "- {NICKNAME} a un Talent Caché, il ne peut utiliser de capacités d'avant la Génération 5.");
+RegexValidatorMap.set(/- (.*) has an unbreedable Hidden Ability \- it can't use egg moves\./, "- {NICKNAME} a un Talent Caché non reproductible, il ne peut pas utiliser d'Egg move.");
+RegexValidatorMap.set(/- (.*) must not be nicknamed a different Pokémon species than what it actually is\./, "- {NICKNAME} ne doit pas avoir le nom d'un autre Pokémon comme surnom.");
+RegexValidatorMap.set(/- (.*)'s Hidden Power type (.*) is incompatible with Hidden Power (.*)/, "- Le type {SWAP_1_TYPE_1} de la Puissance Cachée de {SWAP_0_NICKNAME} est incompatible avec Puissance Cachée {SWAP_2_TYPE_2}");
+RegexValidatorMap.set(/- (.*) must have at least three perfect IVs because it's a legendary and this format requires Gen (.*) Pokémon\./, "- {NICKNAME} doit avoir au moins trois IVs parfaits car c'est un légendaire et ce format utilise des Pokémon de Génération {NUMBER}.");
+RegexValidatorMap.set(/- (.*) must have at least three perfect IVs because it's a legendary in Gen 6 or later\./, "- {NICKNAME} doit avoir au moins trois IVs parfaits car c'est un légendaire en Génération 6+.");
+RegexValidatorMap.set(/- (.*) must have at least (.*) perfect IVs because it has a move only available from an event\./, "- {NICKNAME} doit avoir au moins {NUMBER} IVs parfaits car il possède une capacité événementielle.");
+RegexValidatorMap.set(/- (.*) must have at least (.*) perfect IVs\./, "- {NICKNAME} doit avoir au moins {NUMBER} IVs parfaits.");
+RegexValidatorMap.set(/- (.*) has Hidden Power (.*), but its IVs are for Hidden Power (.*)\./, "- {NICKNAME} a Puissance Cachée {TYPE}, mais ses IVs sont pour Puissance Cachée {TYPE}");
+RegexValidatorMap.set(/- (.*) has Hidden Power (.*), but its IVs don't allow this even with \(Bottle Cap\) Hyper Training\./, "- {NICKNAME} a Puissance Cachée {TYPE}, mais ses IVs sont incompatibles, même avec l'Entraînement Ultime.");
+RegexValidatorMap.set(/- (.*) has an HP DV of (.*), but its Atk, Def, Spe, and Spc DVs give it an HP DV of (.*)\./, "- {NICKNAME} a des DVs en PV de {NUMBER}, mais ses DVs en Atq, Déf, Vit et Spé lui donnent des DVs en PV de {NUMBER}.");
+RegexValidatorMap.set(/- (.*) has different SpA and SpD DVs, which is not possible in Gen 2\./, "- {NICKNAME} a des DVs en SpA et SpD différents, ce qui est impossible en Génération 2.");
+RegexValidatorMap.set(/- (.*) is (.*), but it has an Atk DV of (.*), which makes its gender (.*)\./, "- {NICKNAME} est {GENDER}, mais ses DVs d'Atq sont à {NUMBER}, ce qui le rend {GENDER}.");
+RegexValidatorMap.set(/- (.*) is not shiny, which does not match its DVs\./, "- {NICKNAME} n'est pas shiny, ce qui est incohérent avec ses DVs.");
+RegexValidatorMap.set(/- (.*) is shiny, which does not match its DVs (its DVs must all be 10, except Atk which must be 2, 3, 6, 7, 10, 11, 14, or 15)\./, "- {NICKNAME} est shiny, ce qui est incohérent avec ses DVs (ses DVs doivent tous être à 10, sauf l'Atq qui doit être 2, 3, 6, 7, 10, 11, 14, ou 15).");
+RegexValidatorMap.set(/- (.*) has less than 0 EVs in (.*)\./, "- {NICKNAME} a moins de 0 EV en {STATS}.");
+RegexValidatorMap.set(/- (.*) has less than 0 Awakening Values in (.*)\./, "- {NICKNAME} a moins de 0 Awakening Values en {STATS}.");
+RegexValidatorMap.set(/- (.*) has Awakening Values but this format doesn't allow them\./, "- {NICKNAME} a des Awakening Values mais le format ne les autorise pas.");
+RegexValidatorMap.set(/- (.*) has more than 200 Awakening Values in (.*)\./, "- {NICKNAME} a plus de 200 Awakening Values en {STATS}.");
+RegexValidatorMap.set(/- (.*) has more than 255 EVs in (.*)\./, "- {NICKNAME} a plus de 255 EVs en {STATS}.");
+RegexValidatorMap.set(/- (.*) has different SpA and SpD EVs, which is not possible in Gen 2\./, "- {NICKNAME} a des EVs en SpA et SpD différents, ce qui est impossible en Génération 2.");
+RegexValidatorMap.set(/- (.*) has EVs, which is not allowed by this format.\./, "- {NICKNAME} a des EVs, ce qui n'est pas autorisé dans ce format.");
+RegexValidatorMap.set(/- (.*) has (.*) total EVs, which is more than this format's limit of (.*)\./, "- {NICKNAME} a {NUMBER} EVs en tout, ce qui est plus que la limite du format ({NUMBER})");
+RegexValidatorMap.set(/- (.*) needs to hold (.*) or (.*) to be in its (.*) forme\./, "- {NICKNAME} doit tenir {ITEM} ou {ITEM} pour être sous sa forme \"{FORM}\".");
+RegexValidatorMap.set(/- (.*) needs to hold (.*) to be in its (.*) forme\./, "- {NICKNAME} doit tenir {ITEM} pour être sous sa forme \"{FORM}\".");
+RegexValidatorMap.set(/- (.*) needs to hold (.*) or (.*)\./, "- {NICKNAME} doit tenir {ITEM} ou {ITEM}.");
+RegexValidatorMap.set(/- (.*) needs to hold (.*)\./, "- {NICKNAME} doit tenir {ITEM}.");
+RegexValidatorMap.set(/- (.*) needs to know the move (.*) to be in its (.*) forme\./, "- {NICKNAME} doit connaître la capacité {MOVE} pour être sous sa forme \"{FORM}\".");
+RegexValidatorMap.set(/- (.*) needs to know a Fairy-type move to evolve, so it can only know 3 other moves from (.*)\./, "- {NICKNAME} doit connaître une capacité de type Fée pour évoluer, il ne peut donc connaître que 3 capacités supplémentaires de {POKEMON}.");
+RegexValidatorMap.set(/- (.*) needs to know (.*) to evolve, so it can only know 3 other moves from (.*)\./, "- {NICKNAME} doit connaître {MOVE} pour évoluer, il ne peut donc connaître que 3 capacités supplémentaires de {POKEMON}.");
+RegexValidatorMap.set(/- (.*) has a hidden ability - it can't have moves only learned before gen 5\./, "- {NICKNAME} a un Talent Caché, il ne peut pas utiliser de capacités apprises seulement dans les générations < 5.");
+RegexValidatorMap.set(/- (.*)'s event\/egg moves are from an evolution, and are incompatible with its moves from (.*)\./, "- {NICKNAME} a des capacités exclusives aux générations < {NUMBER}, et sont incompatibles avec les capacités de {POKEMON}.");
+RegexValidatorMap.set(/- (.*) has moves from before Gen (.*), which are incompatible with its moves from (.*)\./, "- Les capacités événementielles/oeuf de {NICKNAME} viennent d'une évolution, et sont incompatibles avec les capacités de {POKEMON}.");
+RegexValidatorMap.set(/- (.*) can't learn any moves at all.\./, "- {NICKNAME} ne peut pas apprendre aucune capacité.");
+RegexValidatorMap.set(/- (.*)'s move (.*) can't be Sketched\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être Gribouillée.");
+RegexValidatorMap.set(/- (.*)'s move (.*) can't be Sketched because it's a Gen 8 move and Sketch isn't available in Gen 8\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être Gribouillée car elle povient de la Génération 8 et Gribouille n'existe pas en Génération 8.");
+RegexValidatorMap.set(/- (.*)'s move (.*) can't be transferred from Gen (.*) to (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être transférée de la Génération {SWAP_2_NUMBER} vers la Génération {SWAP_3_NUMBER}.");
+RegexValidatorMap.set(/- (.*)'s move (.*) can only be learned in gens without Hidden Abilities\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être apprise dans une génération sans Talent caché.");
+RegexValidatorMap.set(/- (.*)'s move (.*) can't be transferred from Gen 3 to 4 because it's an HM move\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être transférée de la Génération 3 à la Génération 4 car c'est une CS.");
+RegexValidatorMap.set(/- (.*)'s move (.*) can't be transferred from Gen 4 to 5 because it's an HM move\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être transférée de la Génération 4 à la Génération 5 car c'est une CS.");
+RegexValidatorMap.set(/- (.*)'s move (.*) is learned at level (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être apprise au niveau {SWAP_2_NUMBER}.");
+RegexValidatorMap.set(/- (.*)'s moves (.*), (.*) are incompatible\./, "- Les capacités {SWAP_1_MOVE} et {SWAP_2_MOVE} de {SWAP_0_NICKNAME} sont incompatibles.");
+RegexValidatorMap.set(/- (.*) can't Sketch (.*) and (.*) because it can only Sketch 1 move\./, "- {NICKNAME} ne peut pas Gribouiller {MOVE} et {MOVE} car une seule capacité peut être Gribouillée.");
+RegexValidatorMap.set(/- (.*) can't simultaneously transfer Defog and Whirlpool from Gen 4 to 5\./, "- {NICKNAME} ne peut pas transférer Anti-Brume et Siphon depuis la Génération 4 vers la Génération 5.");
+RegexValidatorMap.set(/- (.*) can't learn (.*)\./, "- {NICKNAME} ne peut pas apprendre {MOVE}.");
+RegexValidatorMap.set(/- \(It will revert to its (.*) forme if you remove the item or give it a different item\.\)/, "- (Il retrouvera sa forme \"{FORM}\" s'il perd son objet ou s'il obtient un objet différent.)");
+RegexValidatorMap.set(/- \(It will revert to its (.*) forme if it forgets the move\.\)/, "- (Il retrouvera sa forme \"{FORM}\" s'il oublie la capacité.)");
+RegexValidatorMap.set(/- (.*) must have (.*)\./, "- {NICKNAME} doit avoir {ABILITY}.");
+RegexValidatorMap.set(/- (.*) cannot Gigantamax but is flagged as being able to\./, "- {NICKNAME} ne peut pas Gigantamaxer mais est noté comme pouvant le faire.");
+RegexValidatorMap.set(/- (.*) is flagged as gigantamax, but it cannot gigantamax without hacking or glitches\./, "- {NICKNAME} est taggé comme Gigantamax mais ne peut pas gigantamaxer sans hack ou glitch.");
+RegexValidatorMap.set(/- (.*) is tagged (.*), which is banned\./, "- {NICKNAME} est taggé \"{TAG}\", qui est banni.");
+RegexValidatorMap.set(/- (.*) is tagged (.*), which is (.*)\./, "- {NICKNAME} est taggé \"{TAG}\", qui est \"{QUALIFY}\".");
+RegexValidatorMap.set(/- (.*) is not in the list of allowed pokemon\./, "- {NICKNAME} n'est pas dans la liste des Pokémon autorisés.");
+RegexValidatorMap.set(/- (.*) not holding an item is (.*)\./, "- {NICKNAME} sans objet est \"{BANREASON}\".");
+RegexValidatorMap.set(/- (.*) is not obtainable without hacking or glitches\./, "- {ITEM} n'est pas obtenable sans hack ou glitch.");
+RegexValidatorMap.set(/- (.*) is not usable without Gigantamaxing its user, (.*)\./, "- {MOVE} n'est pas utilisable sans Gigantamaxer son utilisateur, {POKEMON}.");
+RegexValidatorMap.set(/- (.*)'s item (.*) is (.*)\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} est \"{SWAP_2_BANREASON}\".");
+RegexValidatorMap.set(/- (.*)'s item (.*) is tagged (.*), which is (.*)\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
+RegexValidatorMap.set(/- (.*)'s move (.*) is tagged (.*), which is (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
+RegexValidatorMap.set(/- (.*)'s ability (.*) is tagged (.*), which is (.*)\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
+RegexValidatorMap.set(/- (.*)'s nature (.*) is tagged (.*), which is (.*)\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
+RegexValidatorMap.set(/- (.*)'s item (.*) is not in the list of allowed items\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} n'est pas dans la liste des objets autorisés.");
+RegexValidatorMap.set(/- (.*)'s move (.*) is not in the list of allowed moves\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'est pas dans la liste des capacités autorisées.");
+RegexValidatorMap.set(/- (.*)'s ability (.*) is not in the list of allowed abilities\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'est pas dans la liste des talents autorisés.");
+RegexValidatorMap.set(/- (.*)'s nature (.*) is not in the list of allowed abilities\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'est pas dans la liste des natures autorisées.");
+
 
 // TRAINER
 RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le combat entre {TRAINER} et {TRAINER} a commencé !");
@@ -22,10 +180,10 @@ RegexLogMessagesMap.set(/(.*) forfeited\./, "{TRAINER} a déclaré forfait.");
 RegexLogMessagesMap.set(/(.*) and (.*) left/, "{TRAINER} et {TRAINER} sont partis");
 RegexLogMessagesMap.set(/(.*) left/, "{TRAINER} est parti");
 RegexLogMessagesMap.set(/Turn (.*)/, "Tour {NUMBER}");
-RegexLogMessagesMap.set(/Turn (.*)/, "Tour {NUMBER}");
 
 // HOME PAGE LOG
 RegexLogMessagesMap.set(/(.*) wants to battle!/, "{TRAINER} veut se battre !");
+RegexLogMessagesMap.set(/Challenge (.*)?/, "Défier {TRAINER} ?");
 RegexLogMessagesMap.set(/(.*) accepted the challenge, starting (.*)/, "{TRAINER} a accepté le défi : {URL}");
 RegexLogMessagesMap.set(/(.*) rejected the challenge./, "{TRAINER} a refusé le défi.");
 RegexLogMessagesMap.set(/(.*) cancelled the challenge./, "{TRAINER} a annulé le défi.");
@@ -4171,6 +4329,64 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"printf(\"Hello, World!\\n\"); We aren't technical support.": "printf(\"Hello, World!\\n\"); Nous ne sommes pas le support technique.",
 	"The headquarters for all TV & Film discussion! Entertainment awaits.": "Le QG des discussions sur la TV ou les films !",
 
+	// Popup
+	"Effect volume:": "Volume des effets :",
+	"Music volume:": "Volume de la musique :",
+	"Notification volume:": "Volume des notifications :",
+	"(muted)": "(muet)",
+	" Mute sounds": "Désactiver le son",
+	"Room name:": "Nom du salon :",
+	"Join room": "Rejoindre",
+	"Username": "Nom d'utilisateur",
+	"Username: ": "Nom d'utilisateur : ",
+	"Folder name:": "Nom du dossier :",
+	"Create folder": "Créer",
+	"Open": "Ouvrir",
+	"Reconnect": "Se reconnecter",
+	"Work offline": "Rester hors ligne",
+	"(color)": "(couleur)",
+	"(Others will be able to see your name change. To change name privately, use \"Log out\")": "(Le changement sera visible par tout le monde. Pour changer de nom en privé, utiliser \"Déconnexion\")",
+	"Choose name": "Changer de nom",
+	"Add a Pokémon to your team before uploading it!": "Ajoute un Pokémon à ton équipe avant de l'uploader",
+	"You have been disconnected – possibly because the server was restarted.": "Tu as été déconnecté - potentiellement parce que le serveur a été redémarré."
+}
+
+export const FiltersDico:  { [englishName: string]: string; } = {
+    "HP": "PV",
+    "Atk": "Atq",
+    "Def": "Déf",
+    "SpA": "SpA",
+	"SpD": "SpD",
+	"Spe": "Vit",
+	"BST": "BST",
+	"Cat": "Cat",
+	"Pow": "Pui",
+	"Acc": "Pré",
+	"Power": "Puissance",
+	"Accuracy": "Précision",
+	"PP": "PP",
+	"Sort: ": "Tri :",
+	"Name": "Nom",
+	"Type": "Type",
+	"Types" : "Types",
+	"Abilities": "Talents",
+	"Number" : "Numéro",
+}
+
+export const ValidatorDico: { [englishName: string]: string; } = {
+	"Your team was rejected for the following reasons:": "Ton équipe a été refusée pour les raisons suivantes :",
+	"Add a Pokémon to your team before uploading it!": "Ajoute un Pokémon à ton équipe avant de l'uploader !",
+	"- You can only have one of Pikachu-Starter or Eevee-Starter on a team.": "- Tu ne peux avoir qu'un Pikachu-Starter ou Évoli-Starter dans ton équipe.",
+	"- You cannot have more than one type of Deoxys forme.": "- Tu ne peux pas avoir qu'une seule forme de Deoxys.",
+	"- (Each game in Gen 3 supports only one forme of Deoxys.)": "- (Chaque jeu de la troisième génération ne comportait qu'une seule forme de Deoxys.)",
+	"- (It will revert to its base forme if you remove the item or give it a different item.)": "- (Il retrouvera sa forme de base s'il perd son objet ou s'il obtient un objet différent.)",
+	"- (It will revert to its Normal forme if you remove the item or give it a different item.)": "- (Il retrouvera sa forme Normale s'il perd son objet ou s'il obtient un objet différent.)",
+	"- (In Gen 4, only Giratina could hold the Griseous Orb).": "(En Génération 4, seul Giratina peut porter l'Orbe Platiné.)",
+	"- Necrozma-Ultra must start the battle holding Ultranecrozium Z.": "- Ultra-Necrozma doit commencer le combat en tenant une Ultranécrozélite.",
+	"- Necrozma-Ultra must start the battle as Necrozma-Dusk-Mane or Necrozma-Dawn-Wings holding Ultranecrozium Z. Please specify which Necrozma it should start as.": 
+	"- Ultra-Necrozma doit commencer le combat en forme Aurore ou Couchant en tenant une Ultranécrozélite. Merci de préciser quelle forme il doit adopter.",
+	"- Zygarde-Complete must start the battle as Zygarde or Zygarde-10% with Power Construct. Please specify which Zygarde it should start as.": "- Zygarde-Parfait doit commencer le combat en forme 10% ou 50% avec Rassemblement. Merci de préciser quelle forme il doit adopter.",
+	"- Battle Bond Greninja must be male.": "- Amphinobi avec Synergie doit être mâle.",
 }
 
 export const LogMessagesDico:  { [englishName: string]: string; } = {
@@ -4261,28 +4477,6 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Go! ": "En avant ! ",
 	")!": ") !",
 	"!": " !",
-}
-
-export const FiltersDico:  { [englishName: string]: string; } = {
-    "HP": "PV",
-    "Atk": "Atq",
-    "Def": "Déf",
-    "SpA": "SpA",
-	"SpD": "SpD",
-	"Spe": "Vit",
-	"BST": "BST",
-	"Cat": "Cat",
-	"Pow": "Pui",
-	"Acc": "Pré",
-	"Power": "Puissance",
-	"Accuracy": "Précision",
-	"PP": "PP",
-	"Sort: ": "Tri :",
-	"Name": "Nom",
-	"Type": "Type",
-	"Types" : "Types",
-	"Abilities": "Talents",
-	"Number" : "Numéro",
 }
 
 export const CosmeticForms: Array<string> = [
@@ -4378,11 +4572,11 @@ export const CosmeticForms: Array<string> = [
 ]
 
 const MainDico: Array<{ [englishName: string]: string; }>  = [
-	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, EffectsDico, WeatherDicos, HeadersDico, MenuDico, LogMessagesDico, FiltersDico
+	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, EffectsDico, WeatherDicos, HeadersDico, MenuDico, FiltersDico, ValidatorDico, LogMessagesDico
 ]
 
 const LogTranslationType: Array<string> = [
-	"pokémon", "ability", "move", "item", "type", "nature", "stat", "effect", "weather", "header", "menu", "logmessage", "filter"
+	"pokémon", "ability", "move", "item", "type", "nature", "stat", "effect", "weather", "header", "menu", "filter", "validator", "logmessage"
 ]
 
 function translateToFrench(englishWord: string, translationType: number)
@@ -4487,12 +4681,16 @@ export function translateMenu(englishMenu: string) {
 	return translateToFrench(englishMenu, MENU);
 }
 
-export function translateLogMessage(englishLogMessage: string) {
-	return translateToFrench(englishLogMessage, LOGMESSAGE);
-}
-
 export function translateFilter(englishFilter: string) {
 	return translateToFrench(englishFilter, FILTER);
+}
+
+export function translateValidator(englishValidator: string) {
+	return translateToFrench(englishValidator, VALIDATOR);
+}
+
+export function translateLogMessage(englishLogMessage: string) {
+	return translateToFrench(englishLogMessage, LOGMESSAGE);
 }
 
 
@@ -4541,12 +4739,16 @@ export function translateMenuToEnglish(frenchMenu: string) {
 	return translateToEnglish(frenchMenu, MENU);
 }
 
-export function translateLogMessageToEnglish(frenchLogMessage: string) {
-	return translateToEnglish(frenchLogMessage, LOGMESSAGE);
-}
-
 export function translateFilterToEnglish(frenchFilter: string) {
 	return translateToEnglish(frenchFilter, FILTER);
+}
+
+export function translateValidatorToEnglish(frenchValidator: string) {
+	return translateToEnglish(frenchValidator, VALIDATOR);
+}
+
+export function translateLogMessageToEnglish(frenchLogMessage: string) {
+	return translateToEnglish(frenchLogMessage, LOGMESSAGE);
 }
 
 
@@ -4595,12 +4797,16 @@ export function isValidFrenchMenu(frenchMenu: string) {
 	return translateToEnglish(frenchMenu, MENU) != frenchMenu;
 }
 
-export function isValidFrenchLogMessage(frenchLogMessage: string) {
-	return translateToEnglish(frenchLogMessage, LOGMESSAGE) != frenchLogMessage;
-}
-
 export function isValidFrenchFilter(frenchFilter: string) {
 	return translateToEnglish(frenchFilter, FILTER) != frenchFilter;
+}
+
+export function isValidFrenchValidator(frenchValidator: string) {
+	return translateToEnglish(frenchValidator, VALIDATOR) != frenchValidator;
+}
+
+export function isValidFrenchLogMessage(frenchLogMessage: string) {
+	return translateToEnglish(frenchLogMessage, LOGMESSAGE) != frenchLogMessage;
 }
 
 
@@ -4649,12 +4855,16 @@ export function isValidEnglishMenu(englishMenu: string) {
 	return MenuDico[englishMenu];
 }
 
-export function isValidEnglishLogMessage(englishLogMessage: string) {
-	return LogMessagesDico[englishLogMessage];
-}
-
 export function isValidEnglishFilter(englishFilter: string) {
 	return FiltersDico[englishFilter];
+}
+
+export function isValidEnglishValidator(englishValidator: string) {
+	return ValidatorDico[englishValidator];
+}
+
+export function isValidEnglishLogMessage(englishLogMessage: string) {
+	return LogMessagesDico[englishLogMessage];
 }
 
 // Diverse Translation methods
@@ -4684,19 +4894,27 @@ export function translatePokemonTeam(teamName: string)
 	return translatedName + teamName;
 }
 
+export function translateRegexValidatorMessage(originalString: string) {
+	return translateRegexMessage(originalString, VALIDATOR)
+}
+
+export function translateRegexBattleMessage(originalString: string) {
+	return translateRegexMessage(originalString, LOGMESSAGE)
+}
+
 // Method used to get Regex matches in log messages templates
-export function translateRegexMessage(originalString: string)
+export function translateRegexMessage(originalString: string, translationType: number)
 {
     // If the message can be directly translated (no Pokémon name, move, etc)
-    if (isValidEnglishLogMessage(originalString)) {
-        return translateLogMessage(originalString);
+    if (isValidEnglishWord(originalString, translationType)) {
+        return translateToFrench(originalString, translationType);
     }
     // The message probably contains a variable english name (Pokémon name, move, etc)
     else  {
         console.log("Regex message : " + originalString);
 
         // Use a Regex match in order to translate the message
-        var translated = translateRegexLogMessage(originalString);
+        var translated = translateRegex(originalString, translationType);
 
         if (translated.length > 0)
         {
@@ -4748,6 +4966,20 @@ export function translateRegexMessage(originalString: string)
                         translated[1] = translated[1].replace(variablesToTranslate[i], translatePokemonName(variableName));
                     }
                 }
+				else if (variablesToTranslate[i] == "{NICKNAME}")
+                {
+                    // The Pokémon nickname could be set
+                    if (/(.*) \(.*\)/.test(variableName))
+					{
+						var pokemonName = variableName.slice(variableName.lastIndexOf("("),variableName.lastIndexOf(")"))
+						var pokemonNickname = variableName.replace(pokemonName, "").slice(0,-1);
+						
+						translated[1] = translated[1].replace("{NICKNAME}", pokemonNickname + "(" + translatePokemonName(pokemonName) + ")")
+                    }
+                    else {
+                        translated[1] = translated[1].replace("{NICKNAME}", translatePokemonName(variableName));
+                    }
+                }
 				else if (variablesToTranslate[i] == "{TEAM}")
 				{
 					if (variableName.includes("he opposing")) {
@@ -4781,6 +5013,9 @@ export function translateRegexMessage(originalString: string)
 				else if (variablesToTranslate[i] == "{TYPE}") {
                     translated[1] = translated[1].replace("{TYPE}", translateType(variableName));
                 }
+				else if (variablesToTranslate[i] == "{NATURE}") {
+                    translated[1] = translated[1].replace("{NATURE}", translateNature(variableName));
+                }
 				else if (variablesToTranslate[i] == "{EFFECT}") {
 					// Effects could be anything, so we try Abilities, Moves and Items
 					if (isValidEnglishAbility(variableName)) {
@@ -4808,15 +5043,18 @@ export function translateRegexMessage(originalString: string)
     }
 }
 
-export function translateRegexLogMessage(messageString: string)
+export function translateRegex(messageString: string, translationType: number)
 {
-	for (let RegexTranslation of RegexLogMessagesMap)
+	var RegexMap = translationType == VALIDATOR ? RegexValidatorMap : 
+					translationType == LOGMESSAGE ? RegexLogMessagesMap : [];
+
+	for (let RegexTranslation of RegexMap)
 	{
 		if (RegexTranslation[0].test(messageString)) {
 			return RegexTranslation;
 		}
 	}
-
+	
 	return [];
 }
 
