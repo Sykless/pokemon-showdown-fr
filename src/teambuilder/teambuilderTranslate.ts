@@ -266,15 +266,28 @@ function updateTeampaneElement(newElement: Element)
 				if (teamElement.tagName == "BUTTON")
 				{
 					var teamButton = teamElement as HTMLButtonElement;
+					var buttonChild = teamButton.lastChild as Element;
 
 					// Translate hover label
 					if (teamButton.title) {
 						teamButton.title = translateMenu(teamButton.title);
 					}
 
-					// Translate button label
-					if (teamButton.lastChild?.textContent) {
-						teamButton.lastChild.textContent = translateMenu(teamButton.lastChild.textContent);
+					if (buttonChild)
+					{
+						// Translate button label
+						if (buttonChild.textContent) {
+							buttonChild.textContent = translateMenu(buttonChild.textContent);
+						}
+						
+						// Translate child hover label
+						if (buttonChild.tagName == "I") {
+							var childTitle = buttonChild.getAttribute("title");
+
+							if (childTitle) {
+								buttonChild.setAttribute("title", translateMenu(childTitle));
+							}
+						}
 					}
 				}
 				// Team element
