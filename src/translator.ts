@@ -171,7 +171,6 @@ RegexValidatorMap.set(/- (.*)'s move (.*) is not in the list of allowed moves\./
 RegexValidatorMap.set(/- (.*)'s ability (.*) is not in the list of allowed abilities\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'est pas dans la liste des talents autorisés.");
 RegexValidatorMap.set(/- (.*)'s nature (.*) is not in the list of allowed abilities\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'est pas dans la liste des natures autorisées.");
 
-
 // TRAINER
 RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le combat entre {TRAINER} et {TRAINER} a commencé !");
 RegexLogMessagesMap.set(/Tie between (.*) and (.*)!/, "Égalité entre {TRAINER} et {TRAINER} !");
@@ -183,10 +182,12 @@ RegexLogMessagesMap.set(/Turn (.*)/, "Tour {NUMBER}");
 
 // HOME PAGE LOG
 RegexLogMessagesMap.set(/(.*) wants to battle!/, "{TRAINER} veut se battre !");
-RegexLogMessagesMap.set(/Challenge (.*)?/, "Défier {TRAINER} ?");
+RegexLogMessagesMap.set(/Challenge (.*)\?/, "Défier {TRAINER} ?");
 RegexLogMessagesMap.set(/(.*) accepted the challenge, starting (.*)/, "{TRAINER} a accepté le défi : {URL}");
-RegexLogMessagesMap.set(/(.*) rejected the challenge./, "{TRAINER} a refusé le défi.");
-RegexLogMessagesMap.set(/(.*) cancelled the challenge./, "{TRAINER} a annulé le défi.");
+RegexLogMessagesMap.set(/(.*) rejected the challenge\./, "{TRAINER} a refusé le défi.");
+RegexLogMessagesMap.set(/(.*) cancelled the challenge\./, "{TRAINER} a annulé le défi.");
+RegexLogMessagesMap.set(/User '(.*)' ignored\. \(Moderator messages will not be ignored\.\)/, "L'utilisateur '{USER}' est ignoré. (Les messages des modérateurs ne seront pas ignorés.)");
+RegexLogMessagesMap.set(/User '(.*)' no longer ignored\./, "L'utilisateur '{USER}' n'est plus ignoré.");
 
 // STATUS
 RegexLogMessagesMap.set(/(.*) was burned!/, "{POKEMON} est brûlé !");
@@ -4330,11 +4331,16 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"The headquarters for all TV & Film discussion! Entertainment awaits.": "Le QG des discussions sur la TV ou les films !",
 
 	// Popup
+	" Change name": " Changer de nom",
+	" Log out": " Déconnexion",
+	"Private rooms:": "Salon privé :",
 	"Effect volume:": "Volume des effets :",
 	"Music volume:": "Volume de la musique :",
 	"Notification volume:": "Volume des notifications :",
 	"(muted)": "(muet)",
 	" Mute sounds": "Désactiver le son",
+	"Choose an avatar or ": "Choisir un avatar ou ",
+	"Chat self": "Message à soi-même",
 	"Room name:": "Nom du salon :",
 	"Join room": "Rejoindre",
 	"Username": "Nom d'utilisateur",
@@ -4342,13 +4348,20 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Folder name:": "Nom du dossier :",
 	"Create folder": "Créer",
 	"Open": "Ouvrir",
+	"Ignore": "Ignorer",
+	"Unignore": "Désignorer",
+	"Report": "Signaler",
+	"Add friend": "Ajouter en ami",
+	"Chat": "Message",
 	"Reconnect": "Se reconnecter",
 	"Work offline": "Rester hors ligne",
 	"(color)": "(couleur)",
+	"(Offline)": "(Hors ligne)",
 	"(Others will be able to see your name change. To change name privately, use \"Log out\")": "(Le changement sera visible par tout le monde. Pour changer de nom en privé, utiliser \"Déconnexion\")",
 	"Choose name": "Changer de nom",
 	"Add a Pokémon to your team before uploading it!": "Ajoute un Pokémon à ton équipe avant de l'uploader",
-	"You have been disconnected – possibly because the server was restarted.": "Tu as été déconnecté - potentiellement parce que le serveur a été redémarré."
+	"You have been disconnected – possibly because the server was restarted.": "Tu as été déconnecté - potentiellement parce que le serveur a été redémarré.",
+	"You can't battle yourself. The best you can do is open PS in Private Browsing (or another browser) and log into a different username, and battle that username.": "Tu ne peux pas te défier toi-même. La meilleure solution serait d'ouvrir PS en Navigation Privée (ou dans un autre navigateur) et se connecter avec un autre pseudo, puis défier ce pseudo."
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
@@ -4477,6 +4490,8 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Go! ": "En avant ! ",
 	")!": ") !",
 	"!": " !",
+
+	"You can't friend yourself.": "Tu ne peux pas t'ajouter en ami",
 }
 
 export const CosmeticForms: Array<string> = [

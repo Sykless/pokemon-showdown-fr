@@ -1,4 +1,4 @@
-import { translateMenu, translatePokemonTeam, translateRegexBattleMessage, translateRegexValidatorMessage } from "../translator";
+import { isValidEnglishMenu, translateMenu, translatePokemonTeam, translateRegexBattleMessage, translateRegexValidatorMessage } from "../translator";
 
 console.log("HomeTranslate successfully loaded !");
 
@@ -101,10 +101,21 @@ function onMutation(mutations: MutationRecord[])
                         // Update challenge request
                         updateMainButton(newElement.firstElementChild);
                     }
+                    // Challenge has been updated
+                    else if (newElement.className == "battleform") 
+                    {
+                        // Update challenge request
+                        updateMainButton(newElement);
+                    }
                     // Users/Battle counter has been updated
                     else if (newElement.className == "roomcounters")
                     {
                         updateRoomCounter(newElement);
+                    }
+                    // User popup has been opened
+                    else if (newElement.className == "userdetails")
+                    {
+                        updateUserDetails(parentElement);
                     }
                     // Popup has been opened
                     else if (newElement.className == "ps-popup")
@@ -367,8 +378,15 @@ function updateMainButton(battleForm: Element)
             var buttonElement = buttonNode as Element;
 
             // Some information are just in plain text
-            if (!buttonElement.tagName && buttonElement.textContent?.endsWith(" wants to battle!")) {
-                buttonElement.textContent = buttonElement.textContent.replace(" wants to battle!", "") + translateMenu(" wants to battle!");
+            if (!buttonElement.tagName)
+            {
+                // Challenge request title
+                if (buttonElement.textContent?.endsWith(" wants to battle!")) {
+                    buttonElement.textContent = buttonElement.textContent.replace(" wants to battle!", "") + translateMenu(" wants to battle!");
+                }
+                else if (buttonElement.textContent?.startsWith("Challenge ")) {
+                    buttonElement.textContent = translateMenu("Challenge ") + buttonElement.textContent.replace("Challenge ", "").slice(0,-1) + " ?";
+                }
             }
             // Team selection
             else if (buttonElement.classList?.contains("teamselect")) {
@@ -560,7 +578,7 @@ function updateGenericPopup(popupElement: Element)
             var popupContent = popupContentNode as Element;
 
             // Raw text element
-            if (popupContent.textContent && (!popupContent.tagName || popupContent.tagName == "STRONG")) {
+            if (popupContent.textContent && (!popupContent.tagName || ["STRONG", "SMALL"].includes(popupContent.tagName))) {
                 popupContent.textContent = translateMenu(popupContent.textContent);
             }
             // Iterate in children in order to find raw text elements
@@ -569,12 +587,62 @@ function updateGenericPopup(popupElement: Element)
                     var popupLabel = popupLabelNode as Element;
 
                     // Raw text element
-                    if (popupLabel.textContent && (!popupLabel.tagName || popupLabel.tagName == "STRONG")) {
+                    if (popupLabel.textContent && (!popupLabel.tagName || ["STRONG", "SMALL"].includes(popupLabel.tagName))) {
                         popupLabel.textContent = translateMenu(popupLabel.textContent);
                     }
                 })
             }
         })
+    })
+}
+
+function updateUserDetails(popupElement: Element)
+{
+    popupElement.childNodes.forEach(function (popupContentNode) {
+        var popupContent = popupContentNode as Element;
+
+        // Room name
+        if (popupContent.className == "userdetails") {
+            popupContent.childNodes.forEach(function (userdetailsNode) {
+                // Only translate room element
+                if ((userdetailsNode as Element).className == "rooms") {
+                    userdetailsNode.childNodes.forEach(function (detailsNode) {
+                        var detailsElement = detailsNode as Element;
+
+                        // Translate room menu label (not the room name itself)
+                        if (detailsElement.tagName == "EM" && detailsElement.textContent) {
+                            detailsElement.textContent = translateMenu(detailsElement.textContent);
+                        }
+                    })
+                }
+            })
+        }
+        // User status
+        else if (popupContent.classList.contains("userstatus")) {
+            popupContent.childNodes.forEach(function (userstatusNode) {
+                var userstatusElement = userstatusNode as Element;
+
+                // Raw label
+                if (!userstatusElement.tagName && userstatusElement.textContent) {
+                    userstatusElement.textContent = translateMenu(userstatusElement.textContent);
+                }
+            })
+        }
+        // User buttons (Challenge, chat, etc)
+        else if (popupContent.className == "buttonbar") {
+            popupContent.childNodes.forEach(function (buttonBarNode) {
+                buttonBarNode.childNodes.forEach(function (buttonContentNode) {
+                    var buttonContent = buttonContentNode as Element;
+
+                    console.log(buttonContent);
+
+                    // Translate button labels
+                    if (buttonContent.textContent) {
+                        buttonContent.textContent = translateMenu(buttonContent.textContent);
+                    }
+                })
+            })
+        }
     })
 }
 
@@ -584,23 +652,31 @@ function updateValidatePopup(pElement: Element)
         var popupElement = popupNode as Element;
 
         // Only translate the element without a class
-        if (!popupElement.className && popupElement.textContent) {
-            var translatedValidator = "";
-            var teamValidation = popupElement.textContent.split("\n");
-
-            // Translate every teamValidation element
-            for (var i = 0 ; i < teamValidation.length ; i++)
-            {
-                if (teamValidation[i]) {
-                    translatedValidator += translateRegexValidatorMessage(teamValidation[i])
-                }
-
-                if (i < teamValidation.length - 1) {
-                    translatedValidator += "\n";
-                }
+        if (!popupElement.className && popupElement.textContent)
+        {
+            // Pop-up could be a single menu message
+            if (isValidEnglishMenu(popupElement.textContent)) {
+                popupElement.textContent = translateMenu(popupElement.textContent);
             }
+            // Unknown menu message : most likely the team validator
+            else {
+                var translatedValidator = "";
+                var teamValidation = popupElement.textContent.split("\n");
 
-            popupElement.textContent = translatedValidator;
+                // Translate every teamValidation element
+                for (var i = 0 ; i < teamValidation.length ; i++)
+                {
+                    if (teamValidation[i]) {
+                        translatedValidator += translateRegexValidatorMessage(teamValidation[i])
+                    }
+
+                    if (i < teamValidation.length - 1) {
+                        translatedValidator += "\n";
+                    }
+                }
+
+                popupElement.textContent = translatedValidator;
+            }
         }
     })
 }
