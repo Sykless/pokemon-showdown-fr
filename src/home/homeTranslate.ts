@@ -115,7 +115,12 @@ function onMutation(mutations: MutationRecord[])
                     // User popup has been opened
                     else if (newElement.className == "userdetails")
                     {
-                        updateUserDetails(parentElement);
+                        updateUserDetails(newElement);
+                    }
+                    // Button has been added
+                    else if (newElement.classList.contains("buttonbar"))
+                    {
+                        updateButtonBar(newElement);
                     }
                     // Popup has been opened
                     else if (newElement.className == "ps-popup")
@@ -625,8 +630,6 @@ function updateTeamPopup(ulElement: Element)
             else if (teamElement.tagName == "BUTTON" && teamElement.textContent) {
                 var teamButton = teamElement as HTMLButtonElement;
 
-                console.log(teamButton.name);
-
                 switch (teamButton.name)
                 {
                     // Folder name, only translate the default name
@@ -707,54 +710,47 @@ function updateGenericPopup(popupElement: Element)
 
 function updateUserDetails(popupElement: Element)
 {
-    popupElement.childNodes.forEach(function (popupContentNode) {
-        var popupContent = popupContentNode as Element;
+    popupElement.childNodes.forEach(function (userdetailsNode)
+    {
+        var userdetailsElement = userdetailsNode as Element;
 
-        console.log(popupContent.outerHTML);
+        // Room name : only translate menu label
+        if (userdetailsElement.className == "rooms") {
+            userdetailsNode.childNodes.forEach(function (detailsNode) {
+                var detailsElement = detailsNode as Element;
 
-        // Room name
-        if (popupContent.className == "userdetails") {
-            popupContent.childNodes.forEach(function (userdetailsNode)
-            {
-                var userdetailsElement = userdetailsNode as Element;
-
-                // Room name : only translate menu label
-                if (userdetailsElement.className == "rooms") {
-                    userdetailsNode.childNodes.forEach(function (detailsNode) {
-                        var detailsElement = detailsNode as Element;
-
-                        // Translate room menu label (not the room name itself)
-                        if (detailsElement.tagName == "EM" && detailsElement.textContent) {
-                            detailsElement.textContent = translateMenu(detailsElement.textContent);
-                        }
-                    })
-                }
-                // User status
-                else if (userdetailsElement.classList.contains("userstatus")) {
-                    userdetailsElement.childNodes.forEach(function (userstatusNode) {
-                        var userstatusElement = userstatusNode as Element;
-
-                        // Raw label
-                        if (!userstatusElement.tagName && userstatusElement.textContent) {
-                            userstatusElement.textContent = translateMenu(userstatusElement.textContent);
-                        }
-                    })
+                // Translate room menu label (not the room name itself)
+                if (detailsElement.tagName == "EM" && detailsElement.textContent) {
+                    detailsElement.textContent = translateMenu(detailsElement.textContent);
                 }
             })
         }
-        // User buttons (Challenge, chat, etc)
-        else if (popupContent.className == "buttonbar") {
-            popupContent.childNodes.forEach(function (buttonBarNode) {
-                buttonBarNode.childNodes.forEach(function (buttonContentNode) {
-                    var buttonContent = buttonContentNode as Element;
+        // User status
+        else if (userdetailsElement.classList.contains("userstatus")) {
+            userdetailsElement.childNodes.forEach(function (userstatusNode) {
+                var userstatusElement = userstatusNode as Element;
 
-                    // Translate button labels
-                    if (buttonContent.textContent) {
-                        buttonContent.textContent = translateMenu(buttonContent.textContent);
-                    }
-                })
+                // Raw label
+                if (!userstatusElement.tagName && userstatusElement.textContent) {
+                    userstatusElement.textContent = translateMenu(userstatusElement.textContent);
+                }
             })
         }
+    })
+}
+
+function updateButtonBar(buttonElement: Element)
+{
+    // Iterate over list of buttons
+    buttonElement.childNodes.forEach(function (buttonBarNode) {
+        buttonBarNode.childNodes.forEach(function (buttonContentNode) {
+            var buttonContent = buttonContentNode as Element;
+
+            // Translate button labels
+            if (buttonContent.textContent) {
+                buttonContent.textContent = translateMenu(buttonContent.textContent);
+            }
+        })
     })
 }
 

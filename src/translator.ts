@@ -4208,6 +4208,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Switch": "Switcher",
 	"Home": "Accueil",
 	"Connecting...": "Connexion...",
+	" Connecting...": " Connexion...",
 	"Loading...": "Chargement...",
 	" Hide": " Masquer",
 	"Rooms filter: ": "Salons affichés : ",
