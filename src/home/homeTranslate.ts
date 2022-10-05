@@ -505,10 +505,25 @@ function updatePokemonTeamName(teamElement: Element)
     teamElement.childNodes.forEach(function (teamNameNode) {
         var teamNameElement = teamNameNode as Element;
 
-        // Team name is in <strong> tag
-        if (teamNameElement.tagName == "STRONG" && teamNameElement.textContent) {
-            teamNameElement.textContent = translatePokemonTeam(teamNameElement.textContent);
-        } 
+        if (teamNameElement.textContent)
+        {
+            // Team name is in <strong> tag
+            if (teamNameElement.tagName == "STRONG") {
+                teamNameElement.textContent = translatePokemonTeam(teamNameElement.textContent);
+            }
+            // This is not a team name but a label, just translate it
+            else if (teamNameElement.tagName == "EM") {
+                teamNameElement.textContent = translateMenu(teamNameElement.textContent);
+            }
+            // No team name either, but contains a label
+            else if (teamNameElement.tagName == "SMALL") {
+                var smallChild = teamNameElement.firstChild as Element;
+
+                if (smallChild?.tagName == "EM" && smallChild.textContent) {
+                    smallChild.textContent = translateMenu(smallChild.textContent);
+                }
+            }
+        }
     })
 }
 
@@ -565,9 +580,103 @@ function updatePopup(popupElement: Element)
             updateGenericPopup(firstChild);
         }
     }
+    else if (firstChild?.tagName == "UL")
+    {
+        updateTeamPopup(firstChild);
+    }
     else if (firstChild?.tagName == "P")
     {
         updateGenericPopup(popupElement);
+    }
+}
+
+function updateTeamPopup(ulElement: Element)
+{
+    ulElement.childNodes.forEach(function (liNode) {
+        liNode.childNodes.forEach(function (teamNode) {
+            var teamElement = teamNode as Element;
+
+            // Group by folder checkbox, just translate the label
+            if (teamElement.tagName == "STRONG" && teamElement.textContent) {
+                teamElement.textContent = translateMenu(teamElement.textContent);
+            }
+            // Label parent, translate the child
+            if (teamElement.tagName == "P") {
+                var emElement = teamElement.firstChild as Element;
+
+                if (emElement?.tagName == "EM" && emElement.textContent?.includes("You have no ")) {
+                    emElement.textContent = translateMenu("You have no ") + translateMenu(" teams") 
+                        + emElement.textContent.replace("You have no ", "").slice(0, - " teams".length)
+                }
+            }
+            // Label, translate it
+            if (teamElement.tagName == "H3" && teamElement.textContent) 
+            {
+                // Format/generation teams label, just translate "teams"
+                if (teamElement.textContent.includes("[")) {
+                    teamElement.textContent = translateTeamFormat(teamElement.textContent);
+                }
+                // Regular label, just translate it
+                else {
+                    teamElement.textContent = translateMenu(teamElement.textContent);
+                }
+            }
+            // Button : could be a team, a folder, or a teambuilder link
+            else if (teamElement.tagName == "BUTTON" && teamElement.textContent) {
+                var teamButton = teamElement as HTMLButtonElement;
+
+                console.log(teamButton.name);
+
+                switch (teamButton.name)
+                {
+                    // Folder name, only translate the default name
+                    case "selectFolder":
+                        if (teamElement.textContent == "(No Folder)") {
+                            teamElement.textContent = translateMenu("(No Folder)")
+                        }
+
+                        break;
+
+                    // Team name, only translate the default name
+                    case "selectTeam":
+                        teamElement.textContent = translatePokemonTeam(teamElement.textContent);
+                        break;
+
+                    // Regular label button, just translate it
+                    case "moreTeams":
+                        teamElement.textContent = translateMenu(teamElement.textContent);
+                        break;
+
+                    // Teambuilder link, just translate "teams" and alter the syntax
+                    case "teambuilder":
+                        teamElement.childNodes.forEach(function (teambuilderNode)
+                        {
+                            // Only translate the raw label
+                            if (!(teambuilderNode as Element).tagName && teambuilderNode.textContent) {
+                                teambuilderNode.textContent = translateTeamFormat(teambuilderNode.textContent);
+                            }
+                        })
+                        
+                        break;
+                }
+            }
+        }) 
+    })
+}
+
+function translateTeamFormat(teamFormat: string)
+{
+    if (/^\[.*\] (.*) teams$/.test(teamFormat))
+    {
+        // Retrieve gen number and format
+        var gen = teamFormat.split("] ")[0] + "] ";
+        var format = teamFormat.replace(" teams", "").replace(gen, "");
+
+        return gen + "Équipes " + format;
+    } 
+    // Wrong format, just return the original string
+    else {
+        return teamFormat;
     }
 }
 
@@ -601,11 +710,16 @@ function updateUserDetails(popupElement: Element)
     popupElement.childNodes.forEach(function (popupContentNode) {
         var popupContent = popupContentNode as Element;
 
+        console.log(popupContent.outerHTML);
+
         // Room name
         if (popupContent.className == "userdetails") {
-            popupContent.childNodes.forEach(function (userdetailsNode) {
-                // Only translate room element
-                if ((userdetailsNode as Element).className == "rooms") {
+            popupContent.childNodes.forEach(function (userdetailsNode)
+            {
+                var userdetailsElement = userdetailsNode as Element;
+
+                // Room name : only translate menu label
+                if (userdetailsElement.className == "rooms") {
                     userdetailsNode.childNodes.forEach(function (detailsNode) {
                         var detailsElement = detailsNode as Element;
 
@@ -615,16 +729,16 @@ function updateUserDetails(popupElement: Element)
                         }
                     })
                 }
-            })
-        }
-        // User status
-        else if (popupContent.classList.contains("userstatus")) {
-            popupContent.childNodes.forEach(function (userstatusNode) {
-                var userstatusElement = userstatusNode as Element;
+                // User status
+                else if (userdetailsElement.classList.contains("userstatus")) {
+                    userdetailsElement.childNodes.forEach(function (userstatusNode) {
+                        var userstatusElement = userstatusNode as Element;
 
-                // Raw label
-                if (!userstatusElement.tagName && userstatusElement.textContent) {
-                    userstatusElement.textContent = translateMenu(userstatusElement.textContent);
+                        // Raw label
+                        if (!userstatusElement.tagName && userstatusElement.textContent) {
+                            userstatusElement.textContent = translateMenu(userstatusElement.textContent);
+                        }
+                    })
                 }
             })
         }
@@ -633,8 +747,6 @@ function updateUserDetails(popupElement: Element)
             popupContent.childNodes.forEach(function (buttonBarNode) {
                 buttonBarNode.childNodes.forEach(function (buttonContentNode) {
                     var buttonContent = buttonContentNode as Element;
-
-                    console.log(buttonContent);
 
                     // Translate button labels
                     if (buttonContent.textContent) {

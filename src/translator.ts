@@ -23,7 +23,7 @@ RegexValidatorMap.set(/The format (.*) was not found\./, "Le format {FORMAT} n'e
 RegexValidatorMap.set(/- (.*) has no moves \(it must have at least one to be usable\)\./, "- {NICKNAME} n'a pas de capacités (il doit avoir au moins une capacité pour être utilisable).");
 RegexValidatorMap.set(/- (.*) has exactly 0 EVs \- did you forget to EV it\? \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\./, "- {NICKNAME} a exactement 0 EV - as-tu oublié de lui donner des EVs ? (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
 RegexValidatorMap.set(/- (.*) has exactly (.*) EVs, but this format does not restrict you to 510 EVs \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\./, "- {NICKNAME} a exactement {NUMBER} EVs, mais ce format ne restreint pas à 510 EVs (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
-RegexValidatorMap.set(/- (.*) is level 50, but this format allows level (.*) Pokémon. (If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake). \./,  "- {NICKNAME} est niveau 50, mais ce format autorise les Pokémon de niveau {NUMBER} (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
+RegexValidatorMap.set(/- (.*) is level 50, but this format allows level (.*) Pokémon\. \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\./,  "- {NICKNAME} est niveau 50, mais ce format autorise les Pokémon de niveau {NUMBER} (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
 RegexValidatorMap.set(/- (.*)'s item (.*) does not exist in Gen (.*)\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
 RegexValidatorMap.set(/- (.*)'s move (.*) does not exist in Gen (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
 RegexValidatorMap.set(/- (.*)'s ability (.*) does not exist in Gen (.*)\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
@@ -4236,6 +4236,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Format:": "Format :",
 	"Team:": "Équipe :",
 	"Games:": "Combats :",
+	"Select a team": "Choix de l'équipe",
 	"Add game": "Nouveau combat",
 	"Challenge": "Défier", 
 	"Challenge ": "Défier ",
@@ -4355,13 +4356,21 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Chat": "Message",
 	"Reconnect": "Se reconnecter",
 	"Work offline": "Rester hors ligne",
+	"Group by folders": "Grouper par dossiers",
+	"Show all teams": "Afficher toutes les équipes",
+	"Other teams": "Autres équipes",
+	"You have no ": "Tu n'as pas d'",
+	" teams": "équipe ",
 	"(color)": "(couleur)",
 	"(Offline)": "(Hors ligne)",
+	"(Idle) ": "(Inactif) ",
+	"(No Folder)": "(Pas de Dossier)",
 	"(Others will be able to see your name change. To change name privately, use \"Log out\")": "(Le changement sera visible par tout le monde. Pour changer de nom en privé, utiliser \"Déconnexion\")",
 	"Choose name": "Changer de nom",
 	"Add a Pokémon to your team before uploading it!": "Ajoute un Pokémon à ton équipe avant de l'uploader",
 	"You have been disconnected – possibly because the server was restarted.": "Tu as été déconnecté - potentiellement parce que le serveur a été redémarré.",
-	"You can't battle yourself. The best you can do is open PS in Private Browsing (or another browser) and log into a different username, and battle that username.": "Tu ne peux pas te défier toi-même. La meilleure solution serait d'ouvrir PS en Navigation Privée (ou dans un autre navigateur) et se connecter avec un autre pseudo, puis défier ce pseudo."
+	"You can't battle yourself. The best you can do is open PS in Private Browsing (or another browser) and log into a different username, and battle that username.": "Tu ne peux pas te défier toi-même. La meilleure solution serait d'ouvrir PS en Navigation Privée (ou dans un autre navigateur) et se connecter avec un autre pseudo, puis défier ce pseudo.",
+	"Please select a team.": "Merci de choisir une équipe.",
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
