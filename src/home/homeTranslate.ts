@@ -591,8 +591,67 @@ function updatePopup(popupElement: Element)
     }
     else if (firstChild?.tagName == "P")
     {
-        updateGenericPopup(popupElement);
+        var firstContent = firstChild.firstChild as Element;
+
+        // If the first children has a trainersprite class, it probably is the user options panel
+        if (firstContent?.className == "trainersprite") {
+            updateUserOptionsPopup(popupElement);
+        }
+        else {
+            updateGenericPopup(popupElement);
+        }
     }
+}
+
+function updateUserOptionsPopup(popupElement: Element)
+{
+    popupElement.childNodes.forEach(function (pNode) {
+        pNode.childNodes.forEach(function (popupContentNode) {
+            var popupContent = popupContentNode as Element;
+
+            if (popupContent.textContent)
+            {
+                // Label title, just translate it
+                if (popupContent.tagName == "STRONG")
+                {
+                    // The username is also in <strong> tag, so we don't translate it
+                    if (!(popupContent.previousElementSibling?.tagName == "IMG")) {
+                        popupContent.textContent = translateMenu(popupContent.textContent);
+                    }
+                }
+                // Other options : buttons, dropdown lists, checkboxes
+                else if (["LABEL", "BUTTON"].includes(popupContent.tagName)) {
+                    popupContent.childNodes.forEach(function (labelContentNode) {
+                        var labelContent = labelContentNode as Element;
+
+                        if (labelContent.textContent)
+                        {
+                            // Raw text element, just translate it
+                            if (!labelContent.tagName || labelContent.tagName == "BUTTON") {
+                                labelContent.textContent = translateMenu(labelContent.textContent);
+                            }
+                            // Dropdown list, translate each option
+                            else if (labelContent.tagName == "SELECT")
+                            {
+                                var selectElement = labelContent as HTMLSelectElement;
+
+                                // Don't try to translate language or timestamps options
+                                if (!["timestamps-lobby", "timestamps-pms", "language"].includes(selectElement.name)) {
+                                    labelContent.childNodes.forEach(function (optionNode) {
+                                        var optionElement = optionNode as Element;
+
+                                        if (optionElement.tagName == "OPTION" && optionElement.textContent) {
+                                            optionElement.textContent = translateMenu(optionElement.textContent);
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                    })
+                }
+            }
+        })
+    })
 }
 
 function updateTeamPopup(ulElement: Element)
@@ -690,7 +749,7 @@ function updateGenericPopup(popupElement: Element)
             var popupContent = popupContentNode as Element;
 
             // Raw text element
-            if (popupContent.textContent && (!popupContent.tagName || ["STRONG", "SMALL"].includes(popupContent.tagName))) {
+            if (popupContent.textContent && (!popupContent.tagName || ["STRONG", "SMALL", "EM"].includes(popupContent.tagName))) {
                 popupContent.textContent = translateMenu(popupContent.textContent);
             }
             // Iterate in children in order to find raw text elements
@@ -698,9 +757,16 @@ function updateGenericPopup(popupElement: Element)
                 popupContent.childNodes.forEach(function (popupLabelNode) {
                     var popupLabel = popupLabelNode as Element;
 
-                    // Raw text element
-                    if (popupLabel.textContent && (!popupLabel.tagName || ["STRONG", "SMALL"].includes(popupLabel.tagName))) {
-                        popupLabel.textContent = translateMenu(popupLabel.textContent);
+                    if (popupLabel.textContent)
+                    {
+                        // Raw text element
+                        if (!popupLabel.tagName || ["STRONG", "SMALL", "EM"].includes(popupLabel.tagName)) {
+                            popupLabel.textContent = translateMenu(popupLabel.textContent);
+                        }
+                        // Span, search for raw text elements
+                        else if (popupLabel.tagName == "SPAN") {
+                            translateSpanElement(popupLabel);
+                        }
                     }
                 })
             }
@@ -785,6 +851,22 @@ function updateValidatePopup(pElement: Element)
 
                 popupElement.textContent = translatedValidator;
             }
+        }
+    })
+}
+
+function translateSpanElement(spanElement: Element)
+{
+    spanElement.childNodes.forEach(function (spanContentNode) {
+        var spanContent = spanContentNode as Element;
+
+        // Raw text element, just translate it
+        if (!spanContent.tagName && spanContent.textContent) {
+            spanContent.textContent = translateMenu(spanContent.textContent);
+        }
+        // Other tag, search for text content
+        else {
+            translateSpanElement(spanContent);
         }
     })
 }
