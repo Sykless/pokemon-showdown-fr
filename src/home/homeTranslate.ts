@@ -89,8 +89,8 @@ function onMutation(mutations: MutationRecord[])
                         // Translate window content
                         updateWindow(newElement);
                     }
-                    // Chat message has been received
-                    if (newElement.classList.contains("chat"))
+                    // Chat message has been received (message-log is a class used for chatrooms, we exclude that)
+                    if (newElement.classList.contains("chat") && !parentElement.classList?.contains("message-log"))
                     {
                         // Translate log message (don't change chat message)
                         updateChatMessage(newElement);
@@ -345,7 +345,7 @@ function translateChatRoom(chatRoomElement: Element)
                         var roomNameElement = roomNameNode as Element;
 
                         if (!roomNameElement.tagName && roomNameElement.textContent) {
-                            roomNameElement.textContent = translateMenu(roomNameElement.textContent);
+                            roomNameElement.textContent = " " + translateMenu(roomNameElement.textContent.slice(1));
                         }
                     })
                 }
@@ -504,7 +504,7 @@ function updateChatMessage(chatElement: Element)
         var chatMessage = chatMessageNode as Element;
 
         // Only translate log messages, not chat messages
-        if (chatMessage.textContent && (chatMessage.className == "message-log" || !chatMessage.tagName) ) {
+        if (chatMessage.textContent && chatMessage.textContent != " " && (chatMessage.className == "message-log" || !chatMessage.tagName) ) {
             chatMessage.textContent = translateRegexBattleMessage(chatMessage.textContent);
         }
     })
