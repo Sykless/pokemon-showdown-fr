@@ -112,6 +112,10 @@ function onMutation(mutations: MutationRecord[])
 				{
 					updateTeampaneElement(newElement);
 				}
+				else if (parentElement.className == "teambuilder-import-smogon-sets")
+				{
+					updateSetImportElement(newElement);
+				}
 
 				if (elementClasses)
 				{
@@ -664,6 +668,32 @@ function updateTeamWrapper(mainElement: Element)
 							}
 						})
 					}
+				})
+			}
+			// Import/Export set element
+			else if (classList.contains("teambuilder-pokemon-import")) {
+				teamwrapperElement.childNodes.forEach(function (importNode) {
+					var importElement = importNode as Element;
+
+					// Only translate button menus
+					if (importElement.className == "pokemonedit-buttons") {
+						importElement.childNodes.forEach(function (buttonNode) {
+							var buttonElement = buttonNode as Element;
+
+							if (buttonElement.tagName == "BUTTON") {
+								buttonElement.childNodes.forEach(function (buttonContentNode) {
+									var buttonContent = buttonContentNode as Element;
+
+									// Raw text element
+									if (!buttonContent.tagName && buttonContent.textContent) {
+										buttonContent.textContent = translateMenu(buttonContent.textContent);
+									}
+								})
+							}
+						})
+					}
+
+					console.log(importElement.outerHTML);
 				})
 			}
 			// Top teambar with Pokémon names
@@ -1726,6 +1756,25 @@ function updateRemainingEVElement(remainingNode: Element | null)
 		if (remainingElement.tagName == "EM" && remainingElement.textContent) {
 			remainingElement.textContent = translateMenu(remainingElement.textContent);
 		}
+	}
+}
+
+function updateSetImportElement(setElement: Element)
+{
+	// Raw text element
+	if (!setElement.tagName && setElement.textContent) {
+		setElement.textContent = translateMenu(setElement.textContent);
+	}
+	// Smogon Analysis element, find the link in the children
+	else if (setElement.tagName == "SMALL") {
+		setElement.childNodes.forEach(function (smallContentNode) {
+			var smallContent = smallContentNode as Element;
+
+			// Link to Smogon sets
+			if (smallContent.tagName == "A" && smallContent.textContent) {
+				smallContent.textContent = translateMenu(smallContent.textContent);
+			}
+		})
 	}
 }
 
