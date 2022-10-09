@@ -17,8 +17,6 @@ window.addEventListener('RecieveContent', function(evt: any) {
 
 declare var app: any;
 
-const DEBUG: boolean = false;
-
 // Create a MutationObserver element in order to track every page change
 // So we can it dynamically translate new content
 var observer = new MutationObserver(onMutation);
@@ -47,23 +45,28 @@ function onMutation(mutations: MutationRecord[])
 			for (var j = 0, node; (node = newNodes[j]); j++)
 			{
 				var newElement = node as Element;
-				var elementClasses = newElement.classList;
+                var parentElement = mutations[i].target as Element;
 
-                // console.log(newElement);
+                var elementClasses = newElement.classList;
+                var parentClasses = parentElement.classList;
 
-				if (elementClasses)
-				{
-					// The whole room has been loaded
-					if (elementClasses.contains("innerbattle"))
-					{
+                // Don't want to add a break everytime a match is found
+                // so instead we add a boolean that changes when no match is found
+                var translatedElement = true;
+
+                console.log(newElement.outerHTML);
+
+                if (elementClasses)
+                {
+                    // The whole room has been loaded
+                    if (elementClasses.contains("innerbattle"))
+                    {
                         console.log("Whole room, rien d'intéressant : " + newElement.outerHTML);
-                        // console.log(newElement.outerHTML);
-					}
-					// Tooltip has been opened
-					else if (elementClasses.contains("tooltipinner"))
-					{
+                    }
+                    // Tooltip has been opened
+                    else if (elementClasses.contains("tooltipinner"))
+                    {
                         var tooltip = newElement.firstChild as Element;
-                        if (DEBUG) console.log("Raw Tooltip :" + newElement.outerHTML);
 
                         if (tooltip.classList.contains("tooltip-pokemon") || tooltip.classList.contains("tooltip-activepokemon")
                             || tooltip.classList.contains("tooltip-switchpokemon")  || tooltip.classList.contains("tooltip-allypokemon"))
@@ -75,92 +78,52 @@ function onMutation(mutations: MutationRecord[])
                         {
                             updateMoveTooltip(tooltip);
                         }
-
-                        if (DEBUG) console.log("Updated Tooltip :" + newElement.outerHTML);
-					}
+                    }
                     else if (elementClasses.contains("switch-controls"))
                     {
-                        if (DEBUG) console.log("Raw Switch controls :" + newElement.outerHTML);
                         updateSwitchControls(newElement);
-                        if (DEBUG) console.log("Updated Switch Controls :" + newElement.outerHTML);
-
                     }
                     // Main control interface : Moves, 
                     else if (elementClasses.contains("controls"))
                     {
-                        console.log("Raw Controls :" + newElement.outerHTML);
-
                         // Waiting and Active control panel use different structures
-                        if ((newElement.firstChild as Element).tagName == "P") {
-                            updateOpponentWait(newElement);
+                        if ((newElement.firstChild as Element).tagName == "P")
+                        {
+                            if (newElement.getElementsByClassName("replayDownloadButton").length) {
+                                updateBattleEnded(newElement);
+                            }
+                            else {
+                                updateOpponentWait(newElement);
+                            }
                         }
                         else {
                             updateControlPanel(newElement);
                         }
-
-                        console.log("Updated Controls:" + newElement.outerHTML);
-                    }
-                    // Timer button
-                    else if (elementClasses.contains("timerbutton"))
-                    {
-                        if (DEBUG) console.log("Raw Timer :" + newElement.outerHTML);
-                        updateTimerButton(newElement);
-                        if (DEBUG) console.log("Updated Timer :" + newElement.outerHTML);
                     }
                     // Pokémon name and status
                     else if (elementClasses.contains("statbar"))
                     {
-                        if (DEBUG) console.log("Raw Healthbar :" + newElement.outerHTML);
                         updatePokemonHealthBar(newElement);
-                        if (DEBUG) console.log("Raw Healthbar :" + newElement.outerHTML);
                     }
                     // Pokémon result (little toast on the Pokémon to display what happened)
                     else if (elementClasses.contains("result"))
                     {
-                        if (DEBUG) console.log("Raw Result :" + newElement.outerHTML);
                         updatePokemonResult(newElement);
-                        if (DEBUG) console.log("Updated Result :" + newElement.outerHTML);
-                    }
-                    // Pokémon condition (status under the health bar)
-                    else if (newElement.tagName == "SPAN")
-                    {
-                        if (DEBUG) console.log("Raw Condition :" + newElement.parentElement?.outerHTML);
-                        if ((newElement.parentElement as Element)?.classList?.contains("status")) {
-                            updatePokemonCondition(newElement);
-                        }
-                        if (DEBUG) console.log("Update Condition ? :" + newElement.parentElement?.outerHTML);
                     }
                     // Type sprite
                     else if (newElement.tagName == "IMG")
                     {
                         updatePokemonTypeSprite(newElement as HTMLImageElement);
                     }
-                    else if (newElement.tagName == "P")
+                    // Transitory message that is only displayed a couple seconds
+                    else if (newElement.tagName == "P" && newElement.getAttribute("style")?.includes("display: block; opacity: 0"))
                     {
-                        if (newElement.getAttribute("style")?.includes("display: block; opacity: 0") ) {
-                            if (DEBUG) console.log("Raw message : " + newElement.outerHTML);
-                            updateShowdownMessage(newElement);
-                            if (DEBUG) console.log("Updated message : " + newElement.outerHTML);
-                        }
-                        else {
-                            console.log("Not my style : " + newElement.outerHTML);
-                        }
+                        updateShowdownMessage(newElement);
                     }
-                    // Weather and side-conditions
-                    else if (newElement.tagName == "EM")
-                    {
-                        if (DEBUG) console.log("Raw weather : " + newElement.outerHTML);
-                        // No class-name, need to check the parent node
-                        if ((newElement.parentElement as Element)?.classList?.contains("weather")) {
-                            updateWeather(newElement);
-                        }
-                        if (DEBUG) console.log("Raw weather : " + newElement.outerHTML);
-                    }
+                    // Log message for battle action
                     else if (elementClasses.contains("battle-history"))
                     {
-                        if (DEBUG) console.log("Raw history message : " + newElement.outerHTML);
                         updateShowdownMessage(newElement);
-                        if (DEBUG) console.log("Updated history message : " + newElement.outerHTML);
                     }
                     // Various battle chat messages
                     else if (elementClasses.contains("battle-log-add"))
@@ -175,11 +138,34 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updateCommand(newElement);
                     }
-                    else 
-                    {
-                        console.log("Non-processed nodes : " + newElement.outerHTML);
+                    else {
+                        // No translation found
+                        translatedElement = false;
                     }
-				}
+                }
+                else {
+                    // No translation found
+                    translatedElement = false;
+                }
+
+				if (parentClasses && !translatedElement)
+                {
+                    // Weather and side-conditions
+                    if (newElement.tagName == "EM" && parentClasses.contains("weather"))
+                    {
+                        updateWeather(newElement);
+                    }
+                    // Pokémon condition (status under the health bar)
+                    else if (newElement.tagName == "SPAN" && parentClasses.contains("status"))
+                    {
+                        updatePokemonCondition(newElement);
+                    }
+                    // Battle controls between turns (skip turn, etc)
+                    else if (newElement.tagName == "P" && parentClasses.contains("battle-controls"))
+                    {
+                        updateControlBetweenTurns(newElement);
+                    }
+                }
 			}
 		}
 	}
@@ -413,7 +399,7 @@ function updateSwitchControls(switchControls: Element)
 
 function updateControlPanel(newElement: Element)
 {
-    // Main control board (moves, switches, timer)
+    // Main control board (moves, switches)
     newElement.childNodes.forEach(function (selectOptionNode) {
         var selectionOption = selectOptionNode as Element;
 
@@ -431,10 +417,6 @@ function updateControlPanel(newElement: Element)
                     // Pokémon name
                     else if (whatToDo.tagName == "STRONG") {
                         whatToDo.textContent = translatePokemonName(whatToDo.textContent);
-                    }
-                    // Timer
-                    else if (whatToDo.tagName == "BUTTON") {
-                        updateTimerButton(whatToDo);
                     }
                     // Regular text
                     else {
@@ -507,6 +489,21 @@ function updateControlPanel(newElement: Element)
     })
 }
 
+function updateControlBetweenTurns(controlElement: Element)
+{
+    // Translate button text
+    controlElement.childNodes.forEach(function (buttonNode) {
+        buttonNode.childNodes.forEach(function (buttonContentNode) {
+            var buttonContent = buttonContentNode as Element;
+
+            // Raw text element
+            if (!buttonContent.tagName && buttonContent.textContent) {
+                buttonContent.textContent = translateMenu(buttonContent.textContent);
+            }
+        })
+    })
+}
+
 function updateMove(moveMainNode: Node)
 {
     moveMainNode.childNodes.forEach(function (moveButtonNode) {
@@ -531,9 +528,8 @@ function updateMove(moveMainNode: Node)
 
 function updateOpponentWait(newElement: Element)
 {
-    // Main control board (moves, switches, timer)
-    newElement.childNodes.forEach(function (waitingNode)
-    {
+    // Next action translation
+    newElement.childNodes.forEach(function (waitingNode) {
         waitingNode.childNodes.forEach(function (waitingLabelNode) {
             var waitingLabelElement = waitingLabelNode as Element;
 
@@ -544,9 +540,8 @@ function updateOpponentWait(newElement: Element)
 
                     if (textElement.textContent)
                     {
-                        if (textElement.tagName == "EM")
-                        {
-                            // The text content is in the EM tag
+                        // The text content is in the EM tag
+                        if (textElement.tagName == "EM") {
                             textElement.textContent = translateMenu(textElement.textContent);
                         }
                         else if (textElement.tagName != "BR")
@@ -577,7 +572,7 @@ function updateOpponentWait(newElement: Element)
                             }
                             else if (textElement.textContent.includes(" will switch "))
                             {
-                                // A Move has been selected
+                                // A Pokémon has been selected
                                 var switchInSplit = textElement.textContent.split(" will ");
                                 var switchOutSplit = textElement.textContent.split(" replacing ");
 
@@ -604,6 +599,32 @@ function updateOpponentWait(newElement: Element)
                 // The text content is in the EM tag
                 waitingLabelElement.textContent = translateMenu(waitingLabelElement.textContent);
             }
+        })
+    })
+}
+
+function updateBattleEnded(newElement: Element)
+{
+    newElement.childNodes.forEach(function (pNode) {
+        pNode.childNodes.forEach(function (controlPanelMainNode) {
+            controlPanelMainNode.childNodes.forEach(function (controlPanelNode) {
+                var controlPanel = controlPanelNode as Element;
+
+                // Raw text element
+                if (controlPanel.textContent && (!controlPanel.tagName || ["STRONG", "SMALL"].includes(controlPanel.tagName))) {
+                    controlPanel.textContent = translateMenu(controlPanel.textContent);
+                }
+                // Button/Link : find text content
+                else if (["BUTTON", "A"].includes(controlPanel.tagName)) {
+                    controlPanel.childNodes.forEach(function (buttonContentNode) {
+                        var buttonContent = buttonContentNode as Element;
+
+                        if (!buttonContent.tagName && buttonContent.textContent) {
+                            buttonContent.textContent = translateMenu(buttonContent.textContent);
+                        }
+                    })
+                }
+            })
         })
     })
 }
@@ -812,7 +833,7 @@ function updateCommand(messageElement: Element)
             }
         })
     }
-    // Command
+    // Default : Command
     else if (app.curRoom.chatHistory.lines?.length > 0)
     {
         // Commands are processed on the back-end, so we can't modify the data in order to add french names
@@ -820,6 +841,8 @@ function updateCommand(messageElement: Element)
         // Instead we check if an error message is sent in a command result
         // and if the searched content was in french, we launch the command again with the translated name
         // We just need to remove the error message and the potentially wrong info
+
+        var noCommandFound = true;
 
         // Get last message sent
         var message = app.curRoom.chatHistory.lines[app.curRoom.chatHistory.lines.length - 1];
@@ -854,6 +877,7 @@ function updateCommand(messageElement: Element)
                                     messageElement.parentElement?.removeChild(messageElement.nextSibling)
                                 }
                                 messageElement.parentElement?.removeChild(messageElement);
+                                noCommandFound = false;
 
                                 // We add a "<>" symbol that will be removed by the HTML sanitizer just to indicate that we generated this message
                                 app.send(commandContent[0] + ' <"' + englishValue + '">', app.curRoom.id);
@@ -886,6 +910,7 @@ function updateCommand(messageElement: Element)
                                 {
                                     // Add the translated value to the final string
                                     englishValue += currentEnglishValue + ",";
+                                    noCommandFound = false;
 
                                     // Last value to translate, we send the command
                                     if (i == multipleValues.length - 1) {
@@ -904,14 +929,18 @@ function updateCommand(messageElement: Element)
                 }
             })
         }
-    }
-}
 
-function updateTimerButton(timerElement: Element)
-{
-    // Translate Timer button
-    if (timerElement.lastChild?.textContent) {
-        timerElement.lastChild.textContent = translateMenu(timerElement.lastChild.textContent);
+        console.log("noCommandFound : " + noCommandFound);
+        console.log(messageElement.textContent);
+        
+        // No command found : error message, translate it
+        if (noCommandFound && messageElement.classList.contains("message-error") && messageElement.textContent) {
+            messageElement.textContent = translateRegexBattleMessage(messageElement.textContent);
+        }
+    }
+    // Error message, translate it
+    else if (messageElement.classList.contains("message-error") && messageElement.textContent) {
+        messageElement.textContent = translateRegexBattleMessage(messageElement.textContent);
     }
 }
 

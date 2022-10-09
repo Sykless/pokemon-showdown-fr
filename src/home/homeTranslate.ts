@@ -927,9 +927,17 @@ function updateVolumeElement(volumeElement: Element)
 
 function updateActiveBattleElement(activeBattleElement: Element)
 {
-    // Translate number of current battles
-    if (activeBattleElement.tagName == "P" && activeBattleElement.textContent?.includes(" battle")) {
+    // Translate label
+    if (activeBattleElement.tagName == "P" && activeBattleElement.textContent)
+    {
+        // Number of active battles
+        if (activeBattleElement.textContent?.includes(" battle")) {
         activeBattleElement.textContent = activeBattleElement.textContent.replace(" battle", translateMenu(" battle"));
+        }
+        // Other label
+        else {
+            activeBattleElement.textContent = translateMenu(activeBattleElement.textContent);
+        }
     }
     // Active battle
     else if (activeBattleElement.tagName == "DIV") {

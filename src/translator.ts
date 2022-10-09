@@ -176,9 +176,16 @@ RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le match entre
 RegexLogMessagesMap.set(/Tie between (.*) and (.*)!/, "Égalité entre {TRAINER} et {TRAINER} !");
 RegexLogMessagesMap.set(/(.*)'s team\:/, "Équipe de {TRAINER}");
 RegexLogMessagesMap.set(/(.*) forfeited\./, "{TRAINER} a déclaré forfait.");
+RegexLogMessagesMap.set(/(.*) disconnected and has (.*) seconds to reconnect!\./, "{TRAINER} est déconnecté et a {NUMBER} secondes pour se reconnecter !.");
+RegexLogMessagesMap.set(/(.*) reconnected and has (.*) seconds left/, "{TRAINER} n'a plus que {NUMBER} secondes.");
+RegexLogMessagesMap.set(/(.*) has (.*) seconds left\./, "{TRAINER} n'a plus que {NUMBER} secondes.");
 RegexLogMessagesMap.set(/(.*) and (.*) left/, "{TRAINER} et {TRAINER} sont partis");
 RegexLogMessagesMap.set(/(.*) left/, "{TRAINER} est parti");
+RegexLogMessagesMap.set(/(.*) lost due to inactivity./, "{TRAINER} a perdu pour cause inactivité.");
 RegexLogMessagesMap.set(/Turn (.*)/, "Tour {NUMBER}");
+RegexLogMessagesMap.set(/User (.*) not found\./, "L'utilisateur {TRAINER} n'existe pas.");
+RegexLogMessagesMap.set(/Battle timer is ON: inactive players will automatically lose when time's up. \(requested by (.*)\)/, "Le Timer est activé : les joueurs inactifs perdront automatiquement quand le temps sera écoulé (demandé par {TRAINER})");
+RegexLogMessagesMap.set(/The timer can't be re-enabled so soon after disabling it \((.*) seconds remaining\)\./, "Le Timer ne peut pas être réactivé aussi tôt après avoir été désactivé ({NUMBER} secondes restantes)");
 
 // HOME PAGE LOG
 RegexLogMessagesMap.set(/(.*) wants to battle!/, "{TRAINER} veut se battre !");
@@ -4107,6 +4114,12 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" Close": " Fermer",
 	" Refresh": " Actualiser",
 	" battle": " match",
+	" Download replay": " Télécharger le replay",
+	" Upload and share replay": " Uploader et partager le replay",
+	"Instant replay": "Replay immédiat",
+	"Main menu": "Menu principal",
+	"Rematch": "Revanche",
+	"(closes this battle)": "(ferme le match)",
 	"(rated: ": "(classé : ",
 	"Sample sets: ": "Sets proposés : ",
 	"Smogon analysis": "Analyse de Smogon",
@@ -4206,7 +4219,6 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"tricked": "échangé",
 	"disturbed": "possédé",
 	"How will you start the battle?": "Comment commencerez-vous le match ?",
-	" Timer": " Temps",
 	"Choose Lead": "Choisir un Lead",
 	" will be sent out first.": " sera envoyé en premier.",
 	" will use ": "va utiliser ",
@@ -4258,6 +4270,10 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Challenge ": "Défier ",
 	"Accept": "Accepter",
 	"Reject": "Refuser",
+	"Skip turn": "Passer le tour",
+	"Skip to end": "Passer à la fin",
+	"First turn": "Premier tour",
+	"Last turn": "Tour précédent",
 	" wants to battle!": " veut se battre !",
 	" rejected the challenge.": " a refusé le défi.",
 	"Challenge cancelled because they changed their username.": "Défi annulé car l'adversaire a changé son pseudo.",
@@ -4372,6 +4388,8 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Tournaments: ": "Tournois : ",
 	"No Notifications": "Pas de Notifications",
 	"Hide": "Masquer",
+	"Start timer": "Démarrer le Timer",
+	"Stop timer": "Arrêter le Timer",
 	"Language: ": "Langage (laisser English pour l'extension) : ",
 	"Timestamps in chat rooms: ": "Timestamps dans les salons de discussion : ",
 	"Timestamps in PMs: ": "Timestamps dans les MPs : ",
@@ -4441,6 +4459,11 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" Make [[clickable links]] unclickable": " Rendre les [[liens cliquables]] incliquables",
 	" Don't warn for untrusted links": " Pas d'avertissment pour les liens non sûrs",
 	"Close": "Fermer",
+	"Forfeiting makes you lose the battle. Are you sure?": "Déclarer forfait te fera perdre le match. Es-tu sûr ?",
+	" Close after forfeiting": " Fermer après avoir déclaré forfait",
+	"Forfeit": "Déclarer forfait",
+	"Replace player": "Changer de joueur",
+	"Replacement player's username": "Nom du joueur remplaçant",
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
@@ -4566,6 +4589,9 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"When the flame touched the powder on the Pok\u00E9mon, it exploded!": "La Nuée de Poudre entre en réaction avec la flamme et explose !",
 	"Its disguise served it as a decoy!": "Le déguisement absorbe l'attaque !",
 	"But it failed!": "Mais cela échoue !",
+	"All players are inactive.": "Tous les joueurs sont inactifs.",
+	"Battle timer is now OFF.": "Le Timer est désactivé.",
+	"[Invalid choice] There's nothing to cancel": "[Choix invalide] Il n'y a rien à annuler",
 	"Go! ": "En avant ! ",
 	")!": ") !",
 	"!": " !",
