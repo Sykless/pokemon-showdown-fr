@@ -165,6 +165,12 @@ function onMutation(mutations: MutationRecord[])
                         // Update Credits
                         updateBackgroundCredit(newElement);
                     }
+                    // Volume has been updated
+                    else if (parentElement.className.endsWith("-volume"))
+                    {
+                        // Update Credits
+                        updateVolumeElement(newElement);
+                    }
                     // Room updated
                     else if (parentElement.className == "inner" && newElement.tagName == "UL")
                     {
@@ -726,22 +732,6 @@ function updateTeamPopup(ulElement: Element)
     })
 }
 
-function translateTeamFormat(teamFormat: string)
-{
-    if (/^\[.*\] (.*) teams$/.test(teamFormat))
-    {
-        // Retrieve gen number and format
-        var gen = teamFormat.split("] ")[0] + "] ";
-        var format = teamFormat.replace(" teams", "").replace(gen, "");
-
-        return gen + "Équipes " + format;
-    } 
-    // Wrong format, just return the original string
-    else {
-        return teamFormat;
-    }
-}
-
 function updateGenericPopup(popupElement: Element)
 {
     popupElement.childNodes.forEach(function (pNode) {
@@ -805,21 +795,6 @@ function updateUserDetails(popupElement: Element)
     })
 }
 
-function updateButtonBar(buttonElement: Element)
-{
-    // Iterate over list of buttons
-    buttonElement.childNodes.forEach(function (buttonBarNode) {
-        buttonBarNode.childNodes.forEach(function (buttonContentNode) {
-            var buttonContent = buttonContentNode as Element;
-
-            // Translate button labels
-            if (buttonContent.textContent) {
-                buttonContent.textContent = translateMenu(buttonContent.textContent);
-            }
-        })
-    })
-}
-
 function updateValidatePopup(pElement: Element)
 {
     pElement.childNodes.forEach(function (popupNode) {
@@ -853,6 +828,45 @@ function updateValidatePopup(pElement: Element)
             }
         }
     })
+}
+
+function updateVolumeElement(volumeElement: Element)
+{
+    // Translate <label> and <em> tags
+    if (volumeElement.textContent && ["LABEL", "EM"].includes(volumeElement.tagName)) {
+        volumeElement.textContent = translateMenu(volumeElement.textContent);
+    }
+}
+
+function updateButtonBar(buttonElement: Element)
+{
+    // Iterate over list of buttons
+    buttonElement.childNodes.forEach(function (buttonBarNode) {
+        buttonBarNode.childNodes.forEach(function (buttonContentNode) {
+            var buttonContent = buttonContentNode as Element;
+
+            // Translate button labels
+            if (buttonContent.textContent) {
+                buttonContent.textContent = translateMenu(buttonContent.textContent);
+            }
+        })
+    })
+}
+
+function translateTeamFormat(teamFormat: string)
+{
+    if (/^\[.*\] (.*) teams$/.test(teamFormat))
+    {
+        // Retrieve gen number and format
+        var gen = teamFormat.split("] ")[0] + "] ";
+        var format = teamFormat.replace(" teams", "").replace(gen, "");
+
+        return gen + "Équipes " + format;
+    } 
+    // Wrong format, just return the original string
+    else {
+        return teamFormat;
+    }
 }
 
 function translateSpanElement(spanElement: Element)
