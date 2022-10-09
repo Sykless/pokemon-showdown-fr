@@ -172,7 +172,7 @@ RegexValidatorMap.set(/- (.*)'s ability (.*) is not in the list of allowed abili
 RegexValidatorMap.set(/- (.*)'s nature (.*) is not in the list of allowed abilities\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'est pas dans la liste des natures autorisées.");
 
 // TRAINER
-RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le combat entre {TRAINER} et {TRAINER} a commencé !");
+RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le match entre {TRAINER} et {TRAINER} a commencé !");
 RegexLogMessagesMap.set(/Tie between (.*) and (.*)!/, "Égalité entre {TRAINER} et {TRAINER} !");
 RegexLogMessagesMap.set(/(.*)'s team\:/, "Équipe de {TRAINER}");
 RegexLogMessagesMap.set(/(.*) forfeited\./, "{TRAINER} a déclaré forfait.");
@@ -4198,7 +4198,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"bestowed": "offert",
 	"tricked": "échangé",
 	"disturbed": "possédé",
-	"How will you start the battle?": "Comment commencerez-vous le combat ?",
+	"How will you start the battle?": "Comment commencerez-vous le match ?",
 	" Timer": " Temps",
 	"Choose Lead": "Choisir un Lead",
 	" will be sent out first.": " sera envoyé en premier.",
@@ -4230,7 +4230,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Battle!": "Combat !",
 	"Find a random opponent": "Trouver un adversaire aléatoire",
 	"Join chat": "Rejoindre le chat",
-	"Watch a battle": "Regarder un combat",
+	"Watch a battle": "Regarder un match",
 	"Find a user": "Trouver un utilisateur",
 	"Rules": "Règles",
 	"Credits": "Crédits",
@@ -4240,9 +4240,9 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Partner: ": "Partenaire",
 	"Format:": "Format :",
 	"Team:": "Équipe :",
-	"Games:": "Combats :",
+	"Games:": "Matchs :",
 	"Select a team": "Choix de l'équipe",
-	"Add game": "Nouveau combat",
+	"Add game": "Nouveau match",
 	"Challenge": "Défier", 
 	"Challenge ": "Défier ",
 	"Accept": "Accepter",
@@ -4251,11 +4251,11 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" rejected the challenge.": " a refusé le défi.",
 	"Challenge cancelled because they changed their username.": "Défi annulé car l'adversaire a changé son pseudo.",
 	" users online": " joueurs actifs",
-	" active battles": " combats actifs",
+	" active battles": " matchs actifs",
 	"Find an online user": "Trouver un utilisateur en ligne",
-	"Watch an active battle": "Regarder un combat en cours",
+	"Watch an active battle": "Regarder un match en cours",
 	"Meloetta is PS's mascot! The Aria forme is about using its voice, and represents our chatrooms.": "Meloetta est la mascotte de PS ! La forme Chant est associée à l'utilisation de la voix, et représente nos salons de discussion.",
-	"Meloetta is PS's mascot! The Pirouette forme is Fighting-type, and represents our battles.": "Meloetta est la mascotte de PS ! La forme Pirouette est de type Combat, et représente les combats Pokémon.",
+	"Meloetta is PS's mascot! The Pirouette forme is Fighting-type, and represents our battles.": "Meloetta est la mascotte de PS ! La forme Pirouette est de type Combat, et représente les matchs Pokémon.",
 	
 	// Chat rooms
 	" users)": " utilisateurs)",
@@ -4521,7 +4521,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"The Pok\u00E9mon was hit 1 time!": "Touché 1 fois !",
 	"But there was no PP left for the move!": "Mais il n'y a plus de PP pour cette capacité !",
 	"The move was blocked by the power of Dynamax!": "La puissance du Dynamax a bloqué l'attaque !",
-	" won the battle!": " remporte le combat !",
+	" won the battle!": " remporte le match !",
 	"It's not very effective...": "Ce n'est pas très efficace...",
 	"It's super effective!": "C'est super efficace !",
 	"A critical hit!": "Coup critique !",
