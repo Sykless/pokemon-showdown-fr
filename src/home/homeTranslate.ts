@@ -45,6 +45,10 @@ function onMutation(mutations: MutationRecord[])
                     if (newElement.id == "room-rooms") {
                         translateRoomPage(newElement);
                     }
+                    // Active Battles room has been opened
+                    if (newElement.id == "room-battles") {
+                        translateBattlesRoomPage(newElement);
+                    }
                     else {
                         // No translation found
                         translatedElement = false;
@@ -183,6 +187,12 @@ function onMutation(mutations: MutationRecord[])
                         // Translate team name
                         updatePokemonTeamName(parentElement);
                     }
+                    // Active battles tab has been updated
+                    else if (parentElement.tagName == "DIV" && parentElement.className == "list")
+                    {
+                        // Translate battle content
+                        updateActiveBattleElement(newElement);
+                    }
                 }
 			}
 		}
@@ -297,6 +307,69 @@ function translateHomePage()
                 }
             })
         }
+    })
+}
+
+function translateBattlesRoomPage(roomElement: Element)
+{
+    roomElement.childNodes.forEach(function (padNode) {
+        padNode.childNodes.forEach(function (roomContentNode) {
+            var roomContent = roomContentNode as Element;
+
+            // Actual room content
+            if (roomContent.className == "roomlist") {
+                roomContent.childNodes.forEach(function (activeBattlesMainNode) {
+                    activeBattlesMainNode.childNodes.forEach(function (activeBattlesNode) {
+                        var activeBattles = activeBattlesNode as Element;
+
+                        // Raw text element
+                        if (activeBattles.textContent && (!activeBattles.tagName || activeBattles.tagName == "LABEL")) {
+                            activeBattles.textContent = translateMenu(activeBattles.textContent);
+                        }
+                        // Button/Div : search for raw text element if present
+                        else if (["BUTTON", "P"].includes(activeBattles.tagName)) {
+                            activeBattles.childNodes.forEach(function (buttonContentNode) {
+                                var buttonContent = buttonContentNode as Element;
+
+                                if (!buttonContent.tagName && buttonContent.textContent) {
+                                    buttonContent.textContent = translateMenu(buttonContent.textContent);
+                                }
+                            })
+                        }
+                        // <select> tag, translate the options if needed
+                        else if (activeBattles.tagName == "SELECT") {
+                            activeBattles.childNodes.forEach(function (optionNode) {
+                                var optionElement = optionNode as Element;
+
+                                if (optionElement.tagName == "OPTION" && optionElement.textContent) {
+                                    optionElement.textContent = translateMenu(optionElement.textContent);
+                                }
+                            })
+                        }
+                        // Meloetta icon : translate the title
+                        else if (activeBattles.tagName == "SPAN") {
+                            var spanMeloetta = activeBattles as HTMLSpanElement;
+
+                            if (spanMeloetta.title) {
+                                spanMeloetta.title = translateMenu(spanMeloetta.title);
+                            }
+                        }
+                        // Input element : translate the placeholder
+                        else if (activeBattles.tagName == "INPUT") {
+                            var inputElement = activeBattles as HTMLInputElement;
+
+                            if (inputElement.placeholder) {
+                                inputElement.placeholder = translateMenu(inputElement.placeholder);
+                            }
+                        }
+                    })
+                })
+            }
+            // Close button
+            else if (roomContent.tagName == "BUTTON" && roomContent.textContent) {
+                roomContent.textContent = translateMenu(roomContent.textContent);
+            }
+        })
     })
 }
 
@@ -835,6 +908,29 @@ function updateVolumeElement(volumeElement: Element)
     // Translate <label> and <em> tags
     if (volumeElement.textContent && ["LABEL", "EM"].includes(volumeElement.tagName)) {
         volumeElement.textContent = translateMenu(volumeElement.textContent);
+    }
+}
+
+function updateActiveBattleElement(activeBattleElement: Element)
+{
+    // Translate number of current battles
+    if (activeBattleElement.tagName == "P" && activeBattleElement.textContent?.includes(" battle")) {
+        activeBattleElement.textContent = activeBattleElement.textContent.replace(" battle", translateMenu(" battle"));
+    }
+    // Active battle
+    else if (activeBattleElement.tagName == "DIV") {
+        var activeBattleLink = activeBattleElement.firstChild as Element;
+
+        if (activeBattleLink?.tagName == "A") {
+            activeBattleLink.childNodes.forEach(function (battleNode) {
+                var battleElement = battleNode as Element;
+    
+                // Translate rating
+                if (battleElement.tagName == "SMALL" && battleElement.textContent?.includes("(rated: ")) {
+                    battleElement.textContent = battleElement.textContent.replace("(rated: ", translateMenu("(rated: "));
+                }
+            })
+        }
     }
 }
 
