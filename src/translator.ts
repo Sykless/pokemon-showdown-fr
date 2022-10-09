@@ -4250,6 +4250,8 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Format:": "Format :",
 	"Team:": "Équipe :",
 	"Games:": "Matchs :",
+	"Battles:": "Matchs :",
+	"Chatrooms:": "Salons de discussions :",
 	"Select a team": "Choix de l'équipe",
 	"Add game": "Nouveau match",
 	"Challenge": "Défier", 

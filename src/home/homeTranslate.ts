@@ -1,4 +1,4 @@
-import { isValidEnglishMenu, translateMenu, translatePokemonTeam, translateRegexBattleMessage, translateRegexValidatorMessage } from "../translator";
+import { isValidEnglishMenu, MenuDico, translateMenu, translatePokemonTeam, translateRegexBattleMessage, translateRegexValidatorMessage } from "../translator";
 
 console.log("HomeTranslate successfully loaded !");
 
@@ -848,9 +848,23 @@ function updateUserDetails(popupElement: Element)
             userdetailsNode.childNodes.forEach(function (detailsNode) {
                 var detailsElement = detailsNode as Element;
 
-                // Translate room menu label (not the room name itself)
-                if (detailsElement.tagName == "EM" && detailsElement.textContent) {
-                    detailsElement.textContent = translateMenu(detailsElement.textContent);
+                if (detailsElement.textContent)
+                {
+                    // Translate room menu label
+                    if (detailsElement.tagName == "EM") {
+                        detailsElement.textContent = translateMenu(detailsElement.textContent);
+                    }
+                    // Only translate chatroom name
+                    else if (detailsElement.tagName == "A") {
+                        for (var englishMenuLabel in MenuDico)
+                        {
+                            // Find lowercase sanitized chatroom name translation
+                            if (removeSpecialCharacters(englishMenuLabel.toLowerCase()) == detailsElement.textContent) {
+                                detailsElement.textContent = removeSpecialCharacters(MenuDico[englishMenuLabel].toLowerCase());
+                                break;
+                            }
+                        }
+                    }
                 }
             })
         }
@@ -979,4 +993,8 @@ function translateSpanElement(spanElement: Element)
             translateSpanElement(spanContent);
         }
     })
+}
+
+function removeSpecialCharacters(text: string) {
+	return text.replace(/[^a-z0-9]+/g, "");
 }
