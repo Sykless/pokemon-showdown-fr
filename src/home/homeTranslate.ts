@@ -131,6 +131,11 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updatePopup(newElement);
                     }
+                    // Battle challenge has been updated
+                    else if (newElement.classList.contains("battleform"))
+                    {
+                        updateMainButton(newElement);
+                    }
                     else {
                         // No translation found
                         translatedElement = false;
@@ -462,15 +467,8 @@ function updateMainButton(battleForm: Element)
             var buttonElement = buttonNode as Element;
 
             // Some information are just in plain text
-            if (!buttonElement.tagName)
-            {
-                // Challenge request title
-                if (buttonElement.textContent?.endsWith(" wants to battle!")) {
-                    buttonElement.textContent = buttonElement.textContent.replace(" wants to battle!", "") + translateMenu(" wants to battle!");
-                }
-                else if (buttonElement.textContent?.startsWith("Challenge ")) {
-                    buttonElement.textContent = translateMenu("Challenge ") + buttonElement.textContent.replace("Challenge ", "").slice(0,-1) + " ?";
-                }
+            if (!buttonElement.tagName && buttonElement.textContent) {
+                buttonElement.textContent = translateRegexBattleMessage(buttonElement.textContent);
             }
             // Team selection
             else if (buttonElement.classList?.contains("teamselect")) {
@@ -932,7 +930,7 @@ function updateActiveBattleElement(activeBattleElement: Element)
     {
         // Number of active battles
         if (activeBattleElement.textContent?.includes(" battle")) {
-        activeBattleElement.textContent = activeBattleElement.textContent.replace(" battle", translateMenu(" battle"));
+            activeBattleElement.textContent = activeBattleElement.textContent.replace(" battle", translateMenu(" battle"));
         }
         // Other label
         else {

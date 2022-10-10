@@ -544,45 +544,9 @@ function updateOpponentWait(newElement: Element)
                         if (textElement.tagName == "EM") {
                             textElement.textContent = translateMenu(textElement.textContent);
                         }
-                        else if (textElement.tagName != "BR")
-                        {
-                            // The remaining non-line break is a regular text node including the Pokémon name
-                            // Translate the message depending on the selected option
-                            if (textElement.textContent.includes(" will be "))
-                            {
-                                // A Lead has been selected
-                                var optionSplit = textElement.textContent.split(" will ");
-
-                                // Separate the Pokémon name and the rest of the sentence, then translate them both
-                                textElement.textContent = translatePokemonName(optionSplit[0]) + " "
-                                    + translateMenu(textElement.textContent.slice(optionSplit[0].length));
-                            }
-                            else if (textElement.textContent.includes(" will use "))
-                            {
-                                // A Move has been selected
-                                var optionPokemonSplit = textElement.textContent.split(" will ");
-                                var optionMoveSplit = textElement.textContent.split(" use ");
-
-                                console.log(textElement.textContent.slice(optionPokemonSplit[0].length, - optionMoveSplit[1].length - 1));
-
-                                // Separate the Pokémon name, the Move and the rest of the sentence, then translate them all
-                                textElement.textContent = translatePokemonName(optionPokemonSplit[0]) + " "
-                                    + translateMenu(textElement.textContent.slice(optionPokemonSplit[0].length, - optionMoveSplit[1].length)) + " "
-                                    + translateMove(optionMoveSplit[1].slice(0,-1)) + ".";
-                            }
-                            else if (textElement.textContent.includes(" will switch "))
-                            {
-                                // A Pokémon has been selected
-                                var switchInSplit = textElement.textContent.split(" will ");
-                                var switchOutSplit = textElement.textContent.split(" replacing ");
-
-                                console.log(textElement.textContent.slice(switchInSplit[0].length, - switchOutSplit[1].length - 1));
-
-                                // Separate the Pokémon names and the rest of the sentence, then translate them all
-                                textElement.textContent = translatePokemonName(switchInSplit[0]) + " "
-                                    + translateMenu(textElement.textContent.slice(switchInSplit[0].length, - switchOutSplit[1].length)) + " "
-                                    + translatePokemonName(switchOutSplit[1].slice(0,-1)) + ".";
-                            }
+                        // Message indicating the following ation
+                        else if (!textElement.tagName) {
+                            textElement.textContent = translateRegexBattleMessage(textElement.textContent);
                         }
                     }
                 })

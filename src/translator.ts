@@ -189,6 +189,8 @@ RegexLogMessagesMap.set(/The timer can't be re-enabled so soon after disabling i
 
 // HOME PAGE LOG
 RegexLogMessagesMap.set(/(.*) wants to battle!/, "{TRAINER} veut se battre !");
+RegexLogMessagesMap.set(/Waiting for (.*)\.\.\./, "En attente de {TRAINER}...");
+RegexLogMessagesMap.set(/Challenging (.*)\.\.\./, "En attente de {TRAINER}...");
 RegexLogMessagesMap.set(/Challenge (.*)\?/, "Défier {TRAINER} ?");
 RegexLogMessagesMap.set(/(.*) accepted the challenge, starting (.*)/, "{TRAINER} a accepté le défi : {URL}");
 RegexLogMessagesMap.set(/(.*) rejected the challenge\./, "{TRAINER} a refusé le défi.");
@@ -255,6 +257,10 @@ RegexLogMessagesMap.set(/(.*) went back to (.*)!/, "{POKEMON} revient vers {TRAI
 RegexLogMessagesMap.set(/(.*) fainted!/, "{POKEMON} est K.O. !");
 RegexLogMessagesMap.set(/(.*) avoided the attack!/, "{POKEMON} évite l'attaque !");
 RegexLogMessagesMap.set(/(.*) used /, "{POKEMON} a utilisé ");
+RegexLogMessagesMap.set(/(.*) will be sent out first\./, "{POKEMON} sera envoyé en premier.");
+RegexLogMessagesMap.set(/(.*) will switch in, replacing (.*)\./, "{POKEMON_1} va être envoyé et remplacera {POKEMON_2}.");
+RegexLogMessagesMap.set(/(.*) will use (.*)\./, "{POKEMON} va utiliser {MOVE}.");
+RegexLogMessagesMap.set(/(.*) will Dynamax, then use (.*)\./, "{POKEMON} va Dynamaxer, puis utiliser {MOVE}.");
 RegexLogMessagesMap.set(/\((.*) lost (.*) of its health!\)/, "({POKEMON} a perdu {PERCENTAGE} de ses points de vie !)");
 RegexLogMessagesMap.set(/(.*)'s HP is full!/, "Les PV de {POKEMON} sont au max !");
 RegexLogMessagesMap.set(/\[(.*)'s (.*)\]/, "[{SWAP_1_ABILITY} de {SWAP_0_POKEMON}]");
@@ -4220,9 +4226,6 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"disturbed": "possédé",
 	"How will you start the battle?": "Comment commencerez-vous le match ?",
 	"Choose Lead": "Choisir un Lead",
-	" will be sent out first.": " sera envoyé en premier.",
-	" will use ": "va utiliser ",
-	" will switch in, replacing ": " va être envoyé et remplacera ",
 	"Waiting for opponent...": "En attente de l'adversaire...",
 	"Cancel": "Annuler",
 	" What will ": "Que va faire ",
@@ -4267,16 +4270,12 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Select a team": "Choix de l'équipe",
 	"Add game": "Nouveau match",
 	"Challenge": "Défier", 
-	"Challenge ": "Défier ",
 	"Accept": "Accepter",
 	"Reject": "Refuser",
 	"Skip turn": "Passer le tour",
 	"Skip to end": "Passer à la fin",
 	"First turn": "Premier tour",
 	"Last turn": "Tour précédent",
-	" wants to battle!": " veut se battre !",
-	" rejected the challenge.": " a refusé le défi.",
-	"Challenge cancelled because they changed their username.": "Défi annulé car l'adversaire a changé son pseudo.",
 	" users online": " joueurs actifs",
 	" active battles": " matchs actifs",
 	"username prefix": "préfixe du pseudo",
@@ -4592,6 +4591,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"All players are inactive.": "Tous les joueurs sont inactifs.",
 	"Battle timer is now OFF.": "Le Timer est désactivé.",
 	"[Invalid choice] There's nothing to cancel": "[Choix invalide] Il n'y a rien à annuler",
+	"Challenge cancelled because they changed their username.": "Défi annulé car l'adversaire a changé son pseudo.",
 	"Go! ": "En avant ! ",
 	")!": ") !",
 	"!": " !",
