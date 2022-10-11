@@ -174,7 +174,6 @@ RegexValidatorMap.set(/- (.*)'s nature (.*) is not in the list of allowed abilit
 // TRAINER
 RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le match entre {TRAINER} et {TRAINER} a commencé !");
 RegexLogMessagesMap.set(/Tie between (.*) and (.*)!/, "Égalité entre {TRAINER} et {TRAINER} !");
-RegexLogMessagesMap.set(/(.*)'s team\:/, "Équipe de {TRAINER}");
 RegexLogMessagesMap.set(/(.*) forfeited\./, "{TRAINER} a déclaré forfait.");
 RegexLogMessagesMap.set(/(.*) disconnected and has (.*) seconds to reconnect!\./, "{TRAINER} est déconnecté et a {NUMBER} secondes pour se reconnecter !.");
 RegexLogMessagesMap.set(/(.*) reconnected and has (.*) seconds left/, "{TRAINER} n'a plus que {NUMBER} secondes.");
@@ -4230,6 +4229,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Cancel": "Annuler",
 	" What will ": "Que va faire ",
 	" do? ": " ? ",
+	"'s team:": "Équipe de ",
 	"Attack": "Attaquer",
 	"Switch": "Switcher",
 	"Home": "Accueil",

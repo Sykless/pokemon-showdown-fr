@@ -755,13 +755,31 @@ function updateShowdownMessage(messageElement: Element)
                 else if (isValidEnglishMove(messagePart.textContent)) {
                     messagePart.textContent = translateMove(messagePart.textContent);
                 }
+                // Specific case : trainer's team
+                else if (messagePart.textContent.endsWith("'s team:")) {
+                    messagePart.textContent = translateMenu("'s team:") + messagePart.textContent.replace("'s team:", "") + " :";
+                }
                 // Could be a trainer name, we don't update it
                 else {
                     console.log("Unknown info in strong tag : " + messagePart.outerHTML);
                 }
             }
+            // <em> tag : Pokémon team
+            else if (messagePart.tagName == "EM") {
+                var translatedTeam = "";
+                var splittedTeam = messagePart.textContent.split(" / ");
+                
+                // Translate each Pokémon name
+                for (var i = 0 ; i < splittedTeam.length ; i++)
+                {
+                    translatedTeam += translatePokemonName(splittedTeam[i])
+                        + (i < splittedTeam.length - 1 ? " / " : "");
+                }
+
+                messagePart.textContent = translatedTeam;
+            }
             // Small tags or text tags : various battle messages
-            else if (messagePart.tagName == "SMALL" || messagePart.tagName != "BR") {
+            else {
                 messagePart.textContent = translateRegexBattleMessage(messagePart.textContent);
             }
         }
