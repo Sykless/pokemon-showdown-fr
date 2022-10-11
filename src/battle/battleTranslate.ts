@@ -268,16 +268,19 @@ function updatePokemonTooltip(tooltip: Element)
                     // Info name
                     if (tooltipSubInfoElement.tagName == "SMALL")
                     {
+                        currentDisplayedInfo = getCurrentDisplayedInfo(tooltipSubInfoElement.textContent);
+
                         // Specific case
                         if (tooltipSubInfoElement.textContent.startsWith("Would take if ability removed: ")) {
                             tooltipSubInfoElement.textContent = translateMenu("Would take if ability removed: ")
                                 + tooltipSubInfoElement.textContent.replace("Would take if ability removed: ", "");
                         }
                         // Actual info name
-                        else if (tooltipSubInfoElement.textContent.includes(":"))
-                        {
-                            currentDisplayedInfo = getCurrentDisplayedInfo(tooltipSubInfoElement.textContent);
+                        else if (tooltipSubInfoElement.textContent.includes(":")) {
                             tooltipSubInfoElement.textContent = translateMenu(tooltipSubInfoElement.textContent.slice(0,-1)) + " :";
+                        }
+                        else {
+                            tooltipSubInfoElement.textContent = translateMenu(tooltipSubInfoElement.textContent);
                         }
                     }
                     // Status
