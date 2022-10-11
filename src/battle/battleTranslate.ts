@@ -165,6 +165,11 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updateControlBetweenTurns(newElement);
                     }
+                    // Basic chat messages without class (rules, format)
+                    else if (newElement.className == "" && parentClasses.contains("message-log"))
+                    {
+                        updateBattleRules(newElement);
+                    }
                 }
 			}
 		}
@@ -924,6 +929,25 @@ function updateDefaultChatMessage(messageElement: Element)
             messageElement.firstElementChild.textContent = translateRegexBattleMessage(messageElement.firstElementChild.textContent);
         }
     }
+}
+
+function updateBattleRules(messageElement: Element)
+{
+    messageElement.childNodes.forEach(function (ruleNode) {
+        var ruleElement = ruleNode as Element;
+
+        // Small tag may contain the rule name and rule description
+        if (ruleElement.tagName == "SMALL") {
+            ruleElement.childNodes.forEach(function (ruleContentNode) {
+                var ruleContent = ruleContentNode as Element;
+
+                // Don't translate rule names
+                if (ruleContent.textContent && ruleContent.tagName != "EM") {
+                    ruleContent.textContent = translateMenu(ruleContent.textContent);
+                }
+            })
+        }
+    })
 }
 
 function getCurrentDisplayedInfo(infoTitle: string)
