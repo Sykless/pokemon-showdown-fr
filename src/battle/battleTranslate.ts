@@ -788,21 +788,8 @@ function updateShowdownMessage(messageElement: Element)
 
 function updateCommand(messageElement: Element)
 {
-    console.log("updateCommand : " + messageElement.outerHTML);
-
-    var playerMessage: boolean = false;
-
-    for (var className of messageElement.classList)
-    {
-        // If the message comes from a player
-        if (/chatmessage-.*/.test(className)) {
-            playerMessage = true;
-            break;
-        }
-    }
-
-    // Chat message
-    if (playerMessage)
+    // Chat message sent by player
+    if (isChatMessage(messageElement))
     {
         messageElement.childNodes.forEach(function (chatNode) {
             var chatElement = chatNode as Element;+
@@ -815,7 +802,7 @@ function updateCommand(messageElement: Element)
             }
         })
     }
-    // Default : Command
+    // Not a message, check if the message could be a command result
     else if (app.curRoom.chatHistory.lines?.length > 0)
     {
         // Commands are processed on the back-end, so we can't modify the data in order to add french names
@@ -911,18 +898,31 @@ function updateCommand(messageElement: Element)
                 }
             })
         }
-
-        console.log("noCommandFound : " + noCommandFound);
-        console.log(messageElement.textContent);
         
-        // No command found : error message, translate it
-        if (noCommandFound && messageElement.classList.contains("message-error") && messageElement.textContent) {
-            messageElement.textContent = translateRegexBattleMessage(messageElement.textContent);
+        // No command found : translate the message
+        if (noCommandFound) {
+            updateDefaultChatMessage(messageElement);
         }
     }
-    // Error message, translate it
-    else if (messageElement.classList.contains("message-error") && messageElement.textContent) {
-        messageElement.textContent = translateRegexBattleMessage(messageElement.textContent);
+    // Default message, translate it
+    else {
+        updateDefaultChatMessage(messageElement);
+    }
+}
+
+function updateDefaultChatMessage(messageElement: Element)
+{
+    // Translate the message
+    if (messageElement.textContent) 
+    {
+        // Error message or player status
+        if (messageElement.classList.contains("message-error")) {
+            messageElement.textContent = translateRegexBattleMessage(messageElement.textContent);
+        }
+        // Player status
+        else if (messageElement.childElementCount == 1 && messageElement.firstElementChild?.tagName == "SMALL" && messageElement.firstElementChild.textContent) {
+            messageElement.firstElementChild.textContent = translateRegexBattleMessage(messageElement.firstElementChild.textContent);
+        }
     }
 }
 
@@ -954,6 +954,22 @@ function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
         // Use the french type sprite
         spriteImage.src = SpriteURL + "French_Type_" + spriteImage.alt + ".png"
     }
+}
+
+function isChatMessage(messageElement: Element)
+{
+    var playerMessage: boolean = false;
+
+    for (var className of messageElement.classList)
+    {
+        // If the message comes from a player
+        if (/chatmessage-.*/.test(className)) {
+            playerMessage = true;
+            break;
+        }
+    }
+
+    return playerMessage;
 }
 
 function removeSpecialCharacters(text: string) {

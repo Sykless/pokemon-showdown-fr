@@ -179,7 +179,9 @@ RegexLogMessagesMap.set(/(.*) disconnected and has (.*) seconds to reconnect!\./
 RegexLogMessagesMap.set(/(.*) reconnected and has (.*) seconds left/, "{TRAINER} n'a plus que {NUMBER} secondes.");
 RegexLogMessagesMap.set(/(.*) has (.*) seconds left\./, "{TRAINER} n'a plus que {NUMBER} secondes.");
 RegexLogMessagesMap.set(/(.*) and (.*) left/, "{TRAINER} et {TRAINER} sont partis");
+RegexLogMessagesMap.set(/(.*) and (.*) joined/, "{TRAINER_1} et {TRAINER_2} ont rejoint la partie");
 RegexLogMessagesMap.set(/(.*) left/, "{TRAINER} est parti");
+RegexLogMessagesMap.set(/(.*) joined/, "{TRAINER} a rejoint la partie");
 RegexLogMessagesMap.set(/(.*) lost due to inactivity./, "{TRAINER} a perdu pour cause inactivité.");
 RegexLogMessagesMap.set(/Turn (.*)/, "Tour {NUMBER}");
 RegexLogMessagesMap.set(/User (.*) not found\./, "L'utilisateur {TRAINER} n'existe pas.");
@@ -247,6 +249,10 @@ RegexLogMessagesMap.set(/(.*)'s (.*) won't go any lower!/, "{SWAP_1_STATS} du {S
 
 // POKEMON
 RegexLogMessagesMap.set(/Go! (.*) \(/, "En avant ! {POKEMON} (");
+RegexLogMessagesMap.set(/(.*) will be sent out first\./, "{POKEMON} sera envoyé en premier.");
+RegexLogMessagesMap.set(/(.*) will switch in, replacing (.*)\./, "{POKEMON_1} va être envoyé et remplacera {POKEMON_2}.");
+RegexLogMessagesMap.set(/(.*) will use (.*)\./, "{POKEMON} va utiliser {MOVE}.");
+RegexLogMessagesMap.set(/(.*) will Dynamax, then use (.*)\./, "{POKEMON} va Dynamaxer, puis utiliser {MOVE}.");
 RegexLogMessagesMap.set(/(.*) sent out (.*) \(/, "{TRAINER} a envoyé {POKEMON} (");
 RegexLogMessagesMap.set(/(.*) sent out /, "{TRAINER} a envoyé ");
 RegexLogMessagesMap.set(/(.*), come back!/, "{POKEMON}, reviens !");
@@ -256,10 +262,6 @@ RegexLogMessagesMap.set(/(.*) went back to (.*)!/, "{POKEMON} revient vers {TRAI
 RegexLogMessagesMap.set(/(.*) fainted!/, "{POKEMON} est K.O. !");
 RegexLogMessagesMap.set(/(.*) avoided the attack!/, "{POKEMON} évite l'attaque !");
 RegexLogMessagesMap.set(/(.*) used /, "{POKEMON} a utilisé ");
-RegexLogMessagesMap.set(/(.*) will be sent out first\./, "{POKEMON} sera envoyé en premier.");
-RegexLogMessagesMap.set(/(.*) will switch in, replacing (.*)\./, "{POKEMON_1} va être envoyé et remplacera {POKEMON_2}.");
-RegexLogMessagesMap.set(/(.*) will use (.*)\./, "{POKEMON} va utiliser {MOVE}.");
-RegexLogMessagesMap.set(/(.*) will Dynamax, then use (.*)\./, "{POKEMON} va Dynamaxer, puis utiliser {MOVE}.");
 RegexLogMessagesMap.set(/\((.*) lost (.*) of its health!\)/, "({POKEMON} a perdu {PERCENTAGE} de ses points de vie !)");
 RegexLogMessagesMap.set(/(.*)'s HP is full!/, "Les PV de {POKEMON} sont au max !");
 RegexLogMessagesMap.set(/\[(.*)'s (.*)\]/, "[{SWAP_1_ABILITY} de {SWAP_0_POKEMON}]");
