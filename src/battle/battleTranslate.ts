@@ -268,14 +268,23 @@ function updatePokemonTooltip(tooltip: Element)
                     // Info name
                     if (tooltipSubInfoElement.tagName == "SMALL")
                     {
-                        currentDisplayedInfo = getCurrentDisplayedInfo(tooltipSubInfoElement.textContent);
-
-                        if (tooltipSubInfoElement.textContent.includes(":")) {
+                        // Specific case
+                        if (tooltipSubInfoElement.textContent.startsWith("Would take if ability removed: ")) {
+                            tooltipSubInfoElement.textContent = translateMenu("Would take if ability removed: ")
+                                + tooltipSubInfoElement.textContent.replace("Would take if ability removed: ", "");
+                        }
+                        // Actual info name
+                        else if (tooltipSubInfoElement.textContent.includes(":"))
+                        {
+                            currentDisplayedInfo = getCurrentDisplayedInfo(tooltipSubInfoElement.textContent);
                             tooltipSubInfoElement.textContent = translateMenu(tooltipSubInfoElement.textContent.slice(0,-1)) + " :";
                         }
-                        else {
-                            tooltipSubInfoElement.textContent = translateMenu(tooltipSubInfoElement.textContent);
-                        }
+                    }
+                    // Status
+                    else if (tooltipSubInfoElement.classList?.contains("status"))
+                    {
+                        // Translate status
+                        tooltipSubInfoElement.textContent = translateEffect(tooltipSubInfoElement.textContent)
                     }
                     // Info value
                     else
@@ -331,6 +340,19 @@ function updatePokemonTooltip(tooltip: Element)
                             }
                             else {
                                 tooltipSubInfoElement.textContent = " " + translateItem(tooltipSubInfoElement.textContent.slice(1));
+                            }
+                        }
+                        // Stats, don't translate values - however status specific cases could be present
+                        else if (currentDisplayedInfo == STATS)
+                        {
+                            // Deal with specific cases
+                            if (tooltipSubInfoElement.textContent.startsWith(" Next damage: ")) {
+                                tooltipSubInfoElement.textContent = translateMenu(" Next damage: ")
+                                    + tooltipSubInfoElement.textContent.replace(" Next damage: ", "");
+                            }
+                            else if (tooltipSubInfoElement.textContent.startsWith(" Turns asleep: ")) {
+                                tooltipSubInfoElement.textContent = translateMenu(" Turns asleep: ")
+                                    + tooltipSubInfoElement.textContent.replace(" Turns asleep: ", "");
                             }
                         }
                     }
