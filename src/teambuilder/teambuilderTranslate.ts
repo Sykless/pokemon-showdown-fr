@@ -17,8 +17,6 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 // Translate non-text node with TreeWalker in order to not trigger observer
 // Conjuger les objets
 // One-gender only (Boréas-Totem)
-// Import/Export
-// Paste in clipbloard
 
 // HIDDEN TEXT
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
@@ -179,6 +177,11 @@ function onMutation(mutations: MutationRecord[])
 					else if (elementClasses.contains("detailsform"))
 					{
 						updatePokemonDetailsForm(newElement);
+					}
+					// Clipboard element has been regenerated
+					else if (elementClasses.contains("teambuilder-clipboard-container"))
+					{
+						updateClipboardElement(newElement);
 					}
 					else
 					{
@@ -748,32 +751,8 @@ function updatePokemonInfo(teamchartElement: Element | null)
 		var liComponent = liNode as HTMLLIElement;
 
 		// Clipboard (No way to differenciate with the teams element, so we check the first child)
-		if ((liComponent.firstChild as Element).className == "teambuilder-clipboard-container")
-		{
-			liComponent.firstChild?.childNodes.forEach(function (clipboardNode) {
-				var clipboardElement = clipboardNode as Element;
-
-				// Clipboard title
-				if (clipboardElement.className == "teambuilder-clipboard-title" && clipboardElement.textContent) {
-					clipboardElement.textContent = translateMenu(clipboardElement.textContent.slice(0,-1)) + " :";
-				}
-				// Clipboard clear button
-				else if (clipboardElement.className == "teambuilder-clipboard-buttons") {
-					clipboardElement.childNodes.forEach(function (clipboardButtonNode){
-						var clipboardButtonElement = clipboardButtonNode;
-
-						if (clipboardButtonElement.lastChild?.textContent) {
-							clipboardButtonElement.lastChild.textContent = translateMenu(clipboardButtonElement.lastChild.textContent);
-						}
-					})
-				}
-				// Clipboard copied content
-				else if (clipboardElement.className == "teambuilder-clipboard-data") {
-					clipboardElement.childNodes.forEach(function(clipboardResult) {
-						updateClipboardResult(clipboardResult as Element);
-					})
-				}
-			})
+		if ((liComponent.firstChild as Element).className == "teambuilder-clipboard-container") {
+			updateClipboardElement(liComponent.firstChild as Element);
 		}
 		// Button menu (No way to differenciate with the teams element, so we check the first child)
 		else if ((liComponent.firstChild as Element).tagName == "BUTTON")
@@ -1007,6 +986,34 @@ function updatePokemonInfo(teamchartElement: Element | null)
 			})
 		}
 
+	})
+}
+
+function updateClipboardElement(clipboardMainElement: Element)
+{
+	clipboardMainElement.childNodes.forEach(function (clipboardNode) {
+		var clipboardElement = clipboardNode as Element;
+
+		// Clipboard title
+		if (clipboardElement.className == "teambuilder-clipboard-title" && clipboardElement.textContent) {
+			clipboardElement.textContent = translateMenu(clipboardElement.textContent.slice(0,-1)) + " :";
+		}
+		// Clipboard clear button
+		else if (clipboardElement.className == "teambuilder-clipboard-buttons") {
+			clipboardElement.childNodes.forEach(function (clipboardButtonNode){
+				var clipboardButtonElement = clipboardButtonNode;
+
+				if (clipboardButtonElement.lastChild?.textContent) {
+					clipboardButtonElement.lastChild.textContent = translateMenu(clipboardButtonElement.lastChild.textContent);
+				}
+			})
+		}
+		// Clipboard copied content
+		else if (clipboardElement.className == "teambuilder-clipboard-data") {
+			clipboardElement.childNodes.forEach(function(clipboardResult) {
+				updateClipboardResult(clipboardResult as Element);
+			})
+		}
 	})
 }
 

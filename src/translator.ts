@@ -170,6 +170,7 @@ RegexValidatorMap.set(/- (.*)'s item (.*) is not in the list of allowed items\./
 RegexValidatorMap.set(/- (.*)'s move (.*) is not in the list of allowed moves\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'est pas dans la liste des capacités autorisées.");
 RegexValidatorMap.set(/- (.*)'s ability (.*) is not in the list of allowed abilities\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'est pas dans la liste des talents autorisés.");
 RegexValidatorMap.set(/- (.*)'s nature (.*) is not in the list of allowed abilities\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'est pas dans la liste des natures autorisées.");
+RegexValidatorMap.set(/The room "(.*)" does not exist\.\\n\\nThe battle you're looking for has expired\. Battles expire after 15 minutes of inactivity unless they're saved\.\\nIn the future, remember to click "Save replay" to save a replay permanently\./, "Le salon {ROOM} n'existe pas.\n\nLe match que tu recherches a expiré. Les matchs expirent après 15 minutes d'activité à moins qu'ils soient sauvegardés.\nA l'avenir, clique sur \"Sauvegarder le replay\" pour sauvegarder un replay de manière permanente.");
 
 // TRAINER
 RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le match entre {TRAINER} et {TRAINER} a commencé !");
@@ -4029,10 +4030,10 @@ export const HeadersDico: { [englishName: string]: string; } = {
 export const MenuDico: { [englishName: string]: string; } = {
     
 	// Greetings menu
-	"Hi": "Bonjour",
+	"Hi": "Bonjour !",
 	"Did you have a good day?": "Comment était ta journée ?",
 	" Yes, my day was pretty good": " Plutôt cool !",
-	" No, it wasn't great": " C'était bof",
+	" No, it wasn't great": " Pas géniale",
 	"Cool! I just added some pretty cool teambuilder features, so I'm pretty happy, too. Did you know you can drag and drop teams to different format-folders? You can also drag and drop them to and from your computer (works best in Chrome).": "Cool ! Je viens d'ajouter des fonctionnalités de teambuilding assez sympa, donc je suis aussi plutôt content ! Est-ce que tu savais que tu pouvais glisser déposer tes équipes dans les différents dossiers de formats ? Tu peux aussi glisser déposer vers et depuis ton ordinateur (Fonctionne mieux dans Chrome).",
     "Aww, that's too bad. :( I hope playing on Pokémon Showdown today can help cheer you up!": "Oh, c'est dommage. :( J'espère que jouer sur Pokémon Showdown pourra te réconforter !",
 	" Wait, who are you? Talking to a teambuilder is weird.": " Attends, t'es qui ? C'est assez bizarre de parler à un teambuilder",
@@ -4110,6 +4111,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" New Box": " Nouvelle Boîte",
 	" Add Pokémon": " Ajouter un Pokémon",
 	" Clear clipboard": " Vider presse-papiers",
+	" Paste!": " Coller !",
 	" List": " Liste",
 	" Teams not in any folders": " Équipes dans aucun dossier",
 	" Team": " Équipe",
