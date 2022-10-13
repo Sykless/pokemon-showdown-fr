@@ -7,11 +7,12 @@ const NATURE = 5;
 const STAT = 6;
 const EFFECT = 7;
 const WEATHER = 8
-const HEADER = 9;
-const MENU = 10;
-const FILTER = 11;
-const VALIDATOR = 12;
-const LOGMESSAGE = 13;
+const MOVEEFFECT = 9
+const HEADER = 10;
+const MENU = 11;
+const FILTER = 12;
+const VALIDATOR = 13;
+const LOGMESSAGE = 14;
 
 
 export const RegexValidatorMap = new Map();
@@ -170,7 +171,8 @@ RegexValidatorMap.set(/- (.*)'s item (.*) is not in the list of allowed items\./
 RegexValidatorMap.set(/- (.*)'s move (.*) is not in the list of allowed moves\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'est pas dans la liste des capacités autorisées.");
 RegexValidatorMap.set(/- (.*)'s ability (.*) is not in the list of allowed abilities\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'est pas dans la liste des talents autorisés.");
 RegexValidatorMap.set(/- (.*)'s nature (.*) is not in the list of allowed abilities\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'est pas dans la liste des natures autorisées.");
-RegexValidatorMap.set(/The room "(.*)" does not exist\.\\n\\nThe battle you're looking for has expired\. Battles expire after 15 minutes of inactivity unless they're saved\.\\nIn the future, remember to click "Save replay" to save a replay permanently\./, "Le salon {ROOM} n'existe pas.\n\nLe match que tu recherches a expiré. Les matchs expirent après 15 minutes d'activité à moins qu'ils soient sauvegardés.\nA l'avenir, clique sur \"Sauvegarder le replay\" pour sauvegarder un replay de manière permanente.");
+RegexValidatorMap.set(/The room "(.*)" does not exist\./, "Le salon {ROOM} n'existe pas.");
+RegexValidatorMap.set(/The user '(.*)' was not found\./, "L'utilisateur '{TRAINER}' n'a pas été trouvé.");
 
 // TRAINER
 RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le match entre {TRAINER} et {TRAINER} a commencé !");
@@ -252,7 +254,9 @@ RegexLogMessagesMap.set(/(.*)'s (.*) won't go any lower!/, "{SWAP_1_STATS} du {S
 RegexLogMessagesMap.set(/Go! (.*) \(/, "En avant ! {POKEMON} (");
 RegexLogMessagesMap.set(/(.*) will be sent out first\./, "{POKEMON} sera envoyé en premier.");
 RegexLogMessagesMap.set(/(.*) will switch in, replacing (.*)\./, "{POKEMON_1} va être envoyé et remplacera {POKEMON_2}.");
-RegexLogMessagesMap.set(/(.*) will use (.*)\./, "{POKEMON} va utiliser {MOVE}.");
+RegexLogMessagesMap.set(/(.*) will use (.*) at your (.*)\./, "{POKEMON_1} va utiliser {MOVE} sur votre {POKEMON_2}.");
+RegexLogMessagesMap.set(/(.*) will use (.*) at (.*)\./, "{POKEMON_1} va utiliser {MOVE} sur {POKEMON_2}.");
+RegexLogMessagesMap.set(/(.*) will use (.*)\./, "{POKEMON_1} va utiliser {MOVE}.");
 RegexLogMessagesMap.set(/(.*) will Dynamax, then use (.*)\./, "{POKEMON} va Dynamaxer, puis utiliser {MOVE}.");
 RegexLogMessagesMap.set(/(.*) sent out (.*) \(/, "{TRAINER} a envoyé {POKEMON} (");
 RegexLogMessagesMap.set(/(.*) sent out /, "{TRAINER} a envoyé ");
@@ -3985,6 +3989,43 @@ export const WeatherDicos: { [englishName: string]: string; } = {
 	"Wonder Room": "Zone Étrange"
 }
 
+export const MoveEffectDicos: { [englishName: string]: string; } = {
+	
+	"The user thaws out if it is frozen.": "L'utilisateur est dégelé.",
+	"Not blocked by Protect ": "Pas bloqué par Abri ",
+	"(and Detect, King's Shield, Spiky Shield)": "(ni Détection, Bouclier Royal, Pico-Défense)",
+	"Bypasses Substitute ": "Passe au travers des clones ",
+	"(but does not break it)": "(mais ne les brise pas)",
+	"Nearly always moves first ": "Agit presque toujours en premier ",
+	"Nearly always moves last ": "Agit presque toujours en dernier ",
+	"Usually moves first ": "Agit souvent en premier ",
+	"◎ Hits all foes.": "◎ Touche tous les adversaires.",
+	"◎ Hits both foes.": "◎ Touche les deux adversaires.",
+	"◎ Hits both foes and ally.": "◎ Touche les deux adversaires et l'allié.",
+	"◎ Hits adjacent foes and allies.": "◎ Touche les adversaires et alliés adjacents.",
+	"◎ Hits adjacent foes.": "◎ Touche les adversaires adjacents.",
+	"◎ Can target distant Pokémon in Triples.": "◎ Peut toucher les Pokémon éloignés en combat Trio.",
+	"◎ Can target any foe in Free-For-All.": "◎ Peut toucher n'importe quel adversaire en Free-For-All.",
+	"✓ Not bounceable ": "✓ Pas renvoyable ",
+	"✓ Contact ": "✓ Contact ",
+	"✓ Sound ": "✓ Son ",
+	"✓ Powder ": "✓ Poudre ",
+	"✓ Fist ": "✓ Poing ",
+	"✓ Pulse ": "✓ Aura ",
+	"✓ Bite ": "✓ Morsure ",
+	"✓ Recoil ": "✓ Recul ",
+	"✓ Bullet-like ": "✓ Projectile ",
+	"(can't be bounced by Magic Coat/Bounce)": "(ne peut pas être renvoyé par Reflet Magik/Miroir Magik)",
+	"(triggers Iron Barbs, Spiky Shield, etc)": "(déclenche Épine de Fer, Pico-Défense, etc)",
+	"(doesn't affect Soundproof pokemon)": "(n'affecte pas les Pokémon avec Anti-Bruit)",
+	"(doesn't affect Grass, Overcoat, Safety Goggles)": "(n'affecte pas les Pokémon de type Plante, avec Envelocape ou les Lunettes Filtre)",
+	"(boosted by Iron Fist)": "(boosté par Poing de Fer)",
+	"(boosted by Mega Launcher)": "(boosté par Méga Blaster)",
+	"(boosted by Strong Jaw)": "(boosté par Prognathe)",
+	"(boosted by Reckless)": "(boosté par Téméraire)",
+	"(doesn't affect Bulletproof pokemon)": "(n'affecte pas les Pokémon avec Pare-Balles)",
+}
+
 export const HeadersDico: { [englishName: string]: string; } = {
 	"Uber": "Uber",
 	"OU": "OU",
@@ -4280,6 +4321,10 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"'s team:": "Équipe de ",
 	"Attack": "Attaquer",
 	"Switch": "Switcher",
+	"Accuracy: ": "Précision : ",
+	"can't miss": "ne peut pas rater",
+	"Base power: ": "Puissance de base : ",
+	"(priority ": "(priorité ",
 	"Home": "Accueil",
 	"Request Help": "Demande d'aide",
 	"Battles": "Matchs",
@@ -4549,6 +4594,8 @@ export const ValidatorDico: { [englishName: string]: string; } = {
 	"- Ultra-Necrozma doit commencer le combat en forme Aurore ou Couchant en tenant une Ultranécrozélite. Merci de préciser quelle forme il doit adopter.",
 	"- Zygarde-Complete must start the battle as Zygarde or Zygarde-10% with Power Construct. Please specify which Zygarde it should start as.": "- Zygarde-Parfait doit commencer le combat en forme 10% ou 50% avec Rassemblement. Merci de préciser quelle forme il doit adopter.",
 	"- Battle Bond Greninja must be male.": "- Amphinobi avec Synergie doit être mâle.",
+	"The battle you're looking for has expired. Battles expire after 15 minutes of inactivity unless they're saved.": "Le match que tu recherches a expiré. Les matchs expirent après 15 minutes d'activité à moins qu'ils soient sauvegardés.",
+	"In the future, remember to click \"Save replay\" to save a replay permanently.": "A l'avenir, clique sur \"Sauvegarder le replay\" pour sauvegarder un replay de manière permanente.",
 }
 
 export const LogMessagesDico:  { [englishName: string]: string; } = {
@@ -4741,11 +4788,11 @@ export const CosmeticForms: Array<string> = [
 ]
 
 const MainDico: Array<{ [englishName: string]: string; }>  = [
-	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, EffectsDico, WeatherDicos, HeadersDico, MenuDico, FiltersDico, ValidatorDico, LogMessagesDico
+	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, EffectsDico, WeatherDicos, MoveEffectDicos, HeadersDico, MenuDico, FiltersDico, ValidatorDico, LogMessagesDico
 ]
 
 const LogTranslationType: Array<string> = [
-	"pokémon", "ability", "move", "item", "type", "nature", "stat", "effect", "weather", "header", "menu", "filter", "validator", "logmessage"
+	"pokémon", "ability", "move", "item", "type", "nature", "stat", "effect", "weather", "moveeffect", "header", "menu", "filter", "validator", "logmessage"
 ]
 
 function translateToFrench(englishWord: string, translationType: number)
@@ -4842,6 +4889,10 @@ export function translateWeather(englishWeather: string) {
 	return translateToFrench(englishWeather, WEATHER);
 }
 
+export function translateMoveEffect(englishMoveEffect: string) {
+	return translateToFrench(englishMoveEffect, MOVEEFFECT);
+}
+
 export function translateHeader(englishHeader: string) {
 	return translateToFrench(englishHeader, HEADER);
 }
@@ -4898,6 +4949,10 @@ export function translateEffectToEnglish(frenchEffect: string) {
 
 export function translateWeatherToEnglish(frenchWeather: string) {
 	return translateToEnglish(frenchWeather, WEATHER);
+}
+
+export function translateMoveEffectToEnglish(frenchMoveEffect: string) {
+	return translateToEnglish(frenchMoveEffect, MOVEEFFECT);
 }
 
 export function translateHeaderToEnglish(frenchHeader: string) {
@@ -4958,6 +5013,10 @@ export function isValidFrenchWeather(frenchWeather: string) {
 	return translateToEnglish(frenchWeather, WEATHER) != frenchWeather;
 }
 
+export function isValidFrenchMoveEffect(frenchMoveEffect: string) {
+	return translateToEnglish(frenchMoveEffect, MOVEEFFECT) != frenchMoveEffect;
+}
+
 export function isValidFrenchHeader(frenchHeader: string) {
 	return translateToEnglish(frenchHeader, HEADER) != frenchHeader;
 }
@@ -5014,6 +5073,10 @@ export function isValidEnglishEffect(englishEffect: string) {
 
 export function isValidEnglishWeather(englishWeather: string) {
 	return WeatherDicos[englishWeather];
+}
+
+export function isValidEnglishMoveEffect(englishMoveEffect: string) {
+	return MoveEffectDicos[englishMoveEffect];
 }
 
 export function isValidEnglishHeader(englishHeader: string) {
