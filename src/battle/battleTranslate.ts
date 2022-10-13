@@ -1,4 +1,4 @@
-import { isValidEnglishAbility, isValidEnglishLogMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateLogMessage, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexMessage, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico } from "../translator";
+import { isValidEnglishAbility, isValidEnglishLogMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateLogMessage, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexMessage, translateRegexBattleMessage } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 import { RegexLogMessagesMap }  from "../translator"; 
 
@@ -367,104 +367,11 @@ function updatePokemonTooltip(tooltip: Element)
 
 function updateMoveTooltip(tooltip: Element)
 {
-    var moveName = "";
-    var priorityMove = false;
-
     tooltip.childNodes.forEach(function (tooltipNode) {
         var tooltipElement = tooltipNode as Element;
 
-        // Move name and type
-        if (tooltipElement.tagName == "H2") {
-            tooltipElement.childNodes.forEach(function (moveHeaderNode) {
-                var moveHeader = moveHeaderNode as Element;
-
-                // Raw text element : move name
-                if (!moveHeader.tagName && moveHeader.textContent?.trim()) {
-                    moveName = moveHeader.textContent;
-                    moveHeader.textContent = translateMove(moveHeader.textContent);
-                }
-                // Move type
-                else if (moveHeader.tagName == "IMG") {
-                    updatePokemonTypeSprite(moveHeader as HTMLImageElement);
-                }
-            })
-        }
-        // Everything else : accuracy, power, description
-        else if (tooltipElement.tagName == "P")
-        {
-            // Move base description
-            if (tooltipElement.className == "section")
-            {
-                tooltipElement.childNodes.forEach(function (sectionNode) {
-                    var sectionElement = sectionNode as Element;
-
-                    if (sectionElement.textContent)
-                    {
-                        // Priority move : section element is the priority label
-                        if (isValidEnglishMoveEffect(sectionElement.textContent)) {
-                            sectionElement.textContent = translateMoveEffect(sectionElement.textContent);
-                        }
-                        // Priority value
-                        else if (sectionElement.textContent.startsWith("(priority "))
-                        {
-                            priorityMove = true;
-                            sectionElement.textContent = translateMenu("(priority ")
-                                + sectionElement.textContent.replace("(priority ", "");
-                        }
-                        // Not a priority move : section element is the move description
-                        else if (sectionElement.textContent != ".") {
-                            // In hardcore mode, display short desc
-                            var frenchDesc = app.curRoom?.battle?.hardcoreMode ? 
-                                MovesShortDescDico[moveName] : MovesLongDescDico[moveName];
-                            
-                            if (frenchDesc) {
-                                sectionElement.textContent = frenchDesc;
-                            }
-                        }
-                    }
-
-                    
-                })
-            }
-            // Move tags (priority, sound, etc)
-            else if (tooltipElement.className == "movetag") {
-                tooltipElement.childNodes.forEach(function (moveTagNode) {
-                    var moveTag = moveTagNode as Element;
-
-                    // Each element is a description
-                    if (moveTag.textContent && (!moveTag.tagName || moveTag.tagName == "SMALL")) {
-                        moveTag.textContent = translateMoveEffect(moveTag.textContent);
-                    }
-                })
-            }
-            // Other (no classname) : accuracy, power OR description if priorityMove
-            else if (!tooltipElement.className && tooltipElement.textContent)
-            {
-                // Priority move : empty classname element is the move description
-                if (priorityMove) {
-                    // In hardcore mode, display short desc
-                    var frenchDesc = app.curRoom?.battle?.hardcoreMode ? 
-                        MovesShortDescDico[moveName] : MovesLongDescDico[moveName];
-                    
-                    if (frenchDesc) {
-                        tooltipElement.textContent = frenchDesc;
-                    }
-                }
-                // Empty class element could also be a move tag (zone effect)
-                else if (isValidEnglishMoveEffect(tooltipElement.textContent)) {
-                    tooltipElement.textContent = translateMoveEffect(tooltipElement.textContent);
-                }
-                // Accuracy, translate title and potential label (can't miss, etc)
-                else if (tooltipElement.textContent.startsWith("Accuracy: ")) {
-                    tooltipElement.textContent = translateMenu("Accuracy: ")
-                        + translateMenu(tooltipElement.textContent.replace("Accuracy: ", ""));
-                }
-                // Base Power, translate title and potential label
-                else if (tooltipElement.textContent.startsWith("Base power: ")) {
-                    tooltipElement.textContent = translateMenu("Base power: ")
-                        + translateMenu(tooltipElement.textContent.replace("Base power: ", ""));
-                }
-            }
+        if (tooltipElement.tagName == "P" && tooltipElement.className == "section" && tooltipElement.textContent) {
+            // tooltipElement.textContent = ""
         }
     })
 }
@@ -1092,7 +999,7 @@ function getCurrentDisplayedInfo(infoTitle: string)
 function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
 {
 	// Check that the alt attribute is a valid type
-    if (isValidEnglishType(spriteImage.alt) && !spriteImage.src.includes("French_Type")) {
+    if (isValidEnglishType(spriteImage.alt)) {
         // Use the french type sprite
         spriteImage.src = SpriteURL + "French_Type_" + spriteImage.alt + ".png"
     }
