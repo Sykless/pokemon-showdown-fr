@@ -266,7 +266,7 @@ RegexLogMessagesMap.set(/(.*) was dragged out!/, "{POKEMON} est traîné de forc
 RegexLogMessagesMap.set(/(.*) went back to (.*)!/, "{POKEMON} revient vers {TRAINER} !");
 RegexLogMessagesMap.set(/(.*) fainted!/, "{POKEMON} est K.O. !");
 RegexLogMessagesMap.set(/(.*) avoided the attack!/, "{POKEMON} évite l'attaque !");
-RegexLogMessagesMap.set(/(.*) used /, "{POKEMON} a utilisé ");
+RegexLogMessagesMap.set(/(.*) used /, "{POKEMON} utilise ");
 RegexLogMessagesMap.set(/\((.*) lost (.*) of its health!\)/, "({POKEMON} a perdu {PERCENTAGE} de ses points de vie !)");
 RegexLogMessagesMap.set(/(.*)'s HP is full!/, "Les PV de {POKEMON} sont au max !");
 RegexLogMessagesMap.set(/\[(.*)'s (.*)\]/, "[{SWAP_1_ABILITY} de {SWAP_0_POKEMON}]");
