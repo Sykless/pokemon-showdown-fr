@@ -1335,7 +1335,7 @@ function updatePokemonType(typesElement: Element)
 
 function updatePokemonTypeSprite(spriteImage: HTMLImageElement)
 {
-	if (spriteImage.tagName == "IMG")
+	if (spriteImage.tagName == "IMG" && !spriteImage.src.includes("French_Type"))
 	{
 		spriteImage.alt = spriteImage.alt.replace("???", "Unknown");
 
