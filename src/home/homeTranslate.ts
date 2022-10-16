@@ -1,4 +1,4 @@
-import { isValidEnglishMenu, MenuDico, translateMenu, translatePokemonTeam, translateRegexBattleMessage, translateRegexValidatorMessage } from "../translator";
+import { isValidEnglishMenu, MenuDico, MovesLongDescDico, translateMenu, translateMove, translatePokemonTeam, translateRegexBattleMessage, translateRegexValidatorMessage } from "../translator";
 
 console.log("HomeTranslate successfully loaded !");
 
@@ -81,8 +81,12 @@ function onMutation(mutations: MutationRecord[])
                 // Find element by class
                 if (newElement.classList && !translatedElement)
                 {
+                    // Ladder room has been opened
+                    if (newElement.classList.contains("ladder")) {
+                        translateLadderRoomPage(newElement);
+                    }
                     // Tier has been updated
-                    if (newElement.classList.contains("teamselect"))
+                    else if (newElement.classList.contains("teamselect"))
                     {
                         // Translate team name
                         updatePokemonTeamName(newElement);
@@ -199,7 +203,23 @@ function onMutation(mutations: MutationRecord[])
                         updateActiveBattleElement(newElement);
                     }
                 }
-			}
+
+                // Default behavior
+                if (!translatedElement)
+                {
+                    if (newElement.textContent == "Loading...")
+                        console.log("tagName : " + newElement.firstElementChild?.tagName + " " + newElement.childElementCount);
+
+                    // Could be an isolated button without style
+                    if (newElement.tagName == "BUTTON"
+                        && newElement.textContent
+                        && newElement.childNodes.length == 1 && newElement.firstElementChild?.tagName == undefined)
+                    {
+                        // Translate as regular menu element
+                        newElement.textContent = translateMenu(newElement.textContent);
+                    }
+                }
+            }
 		}
 	}
 }
@@ -375,6 +395,68 @@ function translateBattlesRoomPage(roomElement: Element)
                 roomContent.textContent = translateMenu(roomContent.textContent);
             }
         })
+    })
+}
+
+function translateLadderRoomPage(ladderRoom: Element)
+{
+    ladderRoom.childNodes.forEach(function (ladderNode) {
+        var ladderElement = ladderNode as Element;
+
+        // Don't translate tier names
+        if (ladderElement.tagName != "UL") {
+            ladderElement.childNodes.forEach(function (ladderContentNode) {
+                var ladderContent = ladderContentNode as Element;
+
+                // Raw elements or links : just translate the labels
+                if (ladderContent.textContent && (!ladderContent.tagName || ["A", "EM"].includes(ladderContent.tagName))) {
+                    ladderContent.textContent = translateMenu(ladderContent.textContent);
+                }
+                // Input element : translate the placeholder
+                if (ladderContent.tagName == "INPUT") {
+                    var inputElement = ladderContent as HTMLInputElement;
+
+                    if (inputElement.placeholder) {
+                        inputElement.placeholder = translateMenu(inputElement.placeholder);
+                    }
+                }
+                // Table element : player list, only translate the first element (columns names)
+                if (ladderContent.tagName == "TBODY") {
+                    var trFirstElement = ladderContent.firstChild as Element;
+
+                    if (trFirstElement.tagName == "TR") {
+                        trFirstElement.childNodes.forEach(function (thNode) {
+                            var thElement = thNode as Element;
+                            var thContentElement = thElement.firstElementChild;
+
+                            // Abbr element, translate title
+                            if (thContentElement) {
+                                var titleElement = thContentElement.getAttribute("title");
+
+                                if (titleElement) {
+                                    thContentElement.setAttribute("title", translateMenu(titleElement))
+                                }
+                            }
+                            // Raw text element, translate it label
+                            else if (thElement.textContent) {
+                                thElement.textContent = translateMenu(thElement.textContent);
+                            }
+                        })
+                    }
+                }
+                // Button : search for raw text elements
+                else if (ladderContent.tagName == "BUTTON") {
+                    ladderContent.childNodes.forEach(function (buttonContentNode) {
+                        var buttonContent = buttonContentNode as Element;
+
+                        // Raw text element
+                        if (buttonContent.textContent && !buttonContent.tagName) {
+                            buttonContent.textContent = translateMenu(buttonContent.textContent);
+                        }
+                    })
+                }
+            })
+        }
     })
 }
 
