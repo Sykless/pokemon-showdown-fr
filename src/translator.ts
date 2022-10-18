@@ -3986,7 +3986,11 @@ export const WeatherDicos: { [englishName: string]: string; } = {
 	"Trick Room": "Distorsion",
 	"Mud Sport": "Lance-Boue",
 	"Water Sport": "Tourniquet",
-	"Wonder Room": "Zone Étrange"
+	"Wonder Room": "Zone Étrange",
+
+	// Default
+	"(no conditions)": "(pas d'effet)",
+	"(no weather)": "(pas de météo)"
 }
 
 export const MoveEffectDicos: { [englishName: string]: string; } = {
@@ -4246,6 +4250,20 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Bulky Physical Sweeper": "Sweeper Physique Bulky",
 	"Possible abilities": "Talents possibles",
 	"Bulky Special Sweeper": "Sweeper Spécial Bulky",
+	// "Sw/Sh Singles": "Sw/Sh Solo",
+	// "Sw/Sh Doubles": "Sw/Sh Duo",
+	// "OM of the Month": "OM du Mois",
+	// "Challengeable OMs": "OMs défiS",
+	// "Past Gens OU": "OU des Gens précédentes",
+	// "US/UM Singles": "US/UM Solo",
+	// "US/UM Doubles": "US/UM Duo",
+	// "OR/AS Singles": "OR/AS Solo",
+	// "OR/AS Doubles/Triples": "OR/AS Duo/Trio",
+	// "B2/W2 Singles": "B2/W2 Solo",
+	// "B2/W2 Doubles": "B2/W2 Duo",
+	// "DPP Singles": "DPP Solo",
+	// "DPP Doubles": "DPP Duo",
+	// "Past Generations": "Générations précédentes",
 	"HP": "PV",
 	"Atk ": "Atq ",
 	" / Def ": " / Déf ",
@@ -4315,6 +4333,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" All physical moves become special, and vice versa": "Les capacités physiques deviennent spéciales, et inversement",
 	"How will you start the battle?": "Comment commencerez-vous le match ?",
 	"Choose Lead": "Choisir un Lead",
+	"Turn ": "Tour ",
 	"Waiting for opponent...": "En attente de l'adversaire...",
 	"Cancel": "Annuler",
 	" What will ": "Que va faire ",
@@ -5305,6 +5324,17 @@ export function translateRegex(messageString: string, translationType: number)
 	}
 	
 	return [];
+}
+
+export function translateRawElement(rawElement: Element)
+{
+    // Only one child, and this child is a raw text element
+    if (rawElement.textContent
+        && rawElement.childNodes.length == 1 && rawElement.firstElementChild?.tagName == undefined)
+    {
+        // Translate as regular menu element
+        rawElement.textContent = translateMenu(rawElement.textContent);
+    }
 }
 
 function isFirstWord(word: string, sentence: string) {

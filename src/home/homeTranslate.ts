@@ -207,16 +207,9 @@ function onMutation(mutations: MutationRecord[])
                 // Default behavior
                 if (!translatedElement)
                 {
-                    if (newElement.textContent == "Loading...")
-                        console.log("tagName : " + newElement.firstElementChild?.tagName + " " + newElement.childElementCount);
-
                     // Could be an isolated button without style
-                    if (newElement.tagName == "BUTTON"
-                        && newElement.textContent
-                        && newElement.childNodes.length == 1 && newElement.firstElementChild?.tagName == undefined)
-                    {
-                        // Translate as regular menu element
-                        newElement.textContent = translateMenu(newElement.textContent);
+                    if (newElement.tagName == "BUTTON") {
+                        translateRawElement(newElement);
                     }
                 }
             }

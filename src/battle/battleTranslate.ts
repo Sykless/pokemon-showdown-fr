@@ -1,4 +1,4 @@
-import { isValidEnglishAbility, isValidEnglishLogMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateLogMessage, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexMessage, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico } from "../translator";
+import { isValidEnglishAbility, isValidEnglishLogMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateLogMessage, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexMessage, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, translateRawElement } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 import { RegexLogMessagesMap }  from "../translator"; 
 
@@ -68,15 +68,22 @@ function onMutation(mutations: MutationRecord[])
                     {
                         var tooltip = newElement.firstChild as Element;
 
+                        // Pokémon tooltip
                         if (tooltip.classList.contains("tooltip-pokemon") || tooltip.classList.contains("tooltip-activepokemon")
                             || tooltip.classList.contains("tooltip-switchpokemon")  || tooltip.classList.contains("tooltip-allypokemon"))
                         {
                             updatePokemonTooltip(tooltip);
                         }
+                        // Move tooltip
                         else if (tooltip.classList.contains("tooltip-move") || tooltip.classList.contains("tooltip-zmove")
                             || tooltip.classList.contains("tooltip-maxmove"))
                         {
                             updateMoveTooltip(tooltip);
+                        }
+                        // Field tooltip
+                        else if (tooltip.classList.contains("tooltip-field"))
+                        {
+                            updateFieldTooltip(tooltip);
                         }
                     }
                     else if (elementClasses.contains("switch-controls"))
@@ -137,6 +144,11 @@ function onMutation(mutations: MutationRecord[])
                     else if (elementClasses.contains("chat"))
                     {
                         updateCommand(newElement);
+                    }
+                    // Turn counter
+                    else if (elementClasses.contains("turn"))
+                    {
+                        updateTurnCounter(newElement);
                     }
                     else {
                         // No translation found
@@ -469,6 +481,37 @@ function updateMoveTooltip(tooltip: Element)
     })
 }
 
+function updateFieldTooltip(tooltip: Element)
+{
+    tooltip.childNodes.forEach(function (tooltipNode) {
+        tooltipNode.childNodes.forEach(function (tooltipContentNode) {
+            var tooltipContent = tooltipContentNode as Element;
+
+            // Side weather
+            if (tooltipContent.tagName == "TBODY") {
+                tooltipContent.childNodes.forEach(function (trNode) {
+                    trNode.childNodes.forEach(function (tdNode) {
+                        tdNode.childNodes.forEach(function (pNode) {
+                            pNode.childNodes.forEach(function (weatherNode) {
+                                var weatherElement = weatherNode as Element;
+
+                                // Deep insane <table> element : translate every non-trainer (strong) element
+                                if (weatherElement.tagName != "STRONG") {
+                                    updateWeatherName(weatherElement)
+                                }
+                            })
+                        })
+                    })
+                })
+            }
+            // Generic weather
+            else {
+                updateWeatherName(tooltipContent)
+            }
+        })
+    })
+}
+
 function updateSwitchControls(switchControls: Element)
 {
     switchControls.childNodes.forEach(function (bottomOptionNode) {
@@ -720,50 +763,52 @@ function updateWeather(newElement: Element)
 {
     console.log("Raw weather element : " + newElement.outerHTML);
 
-    newElement.childNodes.forEach(function (weatherNodes) {
-        var weatherElement = weatherNodes as Element;
-
-        if (weatherElement.textContent)
-        {
-            // Rayquaza cancels weather, in that case the whole sentence is in one tag
-            if (weatherElement.tagName == "S") {
-                var weatherSplit =  weatherElement.textContent.split(" (");
-
-                // Both the weather name and its duration
-                if (weatherSplit.length > 1) {
-                    weatherElement.textContent = translateWeather(weatherSplit[0]) + " ("
-                        + weatherSplit[1].replace(" or ", " ou ").replace("turn", "tour") + ")";
-                }
-
-                // Infinite effects - just the weather name
-                else {
-                    weatherElement.textContent = translateWeather(weatherElement.textContent);
-                }
-            }
-            // Remaining turns element, just translate the english bits
-            else if (weatherElement.tagName == "SMALL") {
-                weatherElement.textContent = weatherElement.textContent.replace(" or ", " ou ").replace("turn","tour");
-            }
-            // Every remaining non-line break element is a weather name
-            else if (weatherElement.tagName != "BR")
-            {
-                // Ally or ennemy side
-                if (weatherElement.textContent.includes("Foe's ")){
-                    weatherElement.textContent = translateWeather(weatherElement.textContent.slice(6,-1)) + " adverse ";
-                }
-                // If effect has a duration
-                else if (weatherElement.textContent.slice(-1) == " ") {
-                    weatherElement.textContent = translateWeather(weatherElement.textContent.slice(0,-1)) + " ";
-                }
-                // Effet is infinite
-                else {
-                    weatherElement.textContent = translateWeather(weatherElement.textContent);
-                }
-            }
-        }
+    newElement.childNodes.forEach(function (weatherNode) {
+        updateWeatherName(weatherNode as Element)
     })
 
     console.log("Updated weather element : " + newElement.outerHTML);
+}
+
+function updateWeatherName(weatherElement: Element)
+{
+    if (weatherElement.textContent)
+    {
+        // Rayquaza cancels weather, in that case the whole sentence is in one tag
+        if (weatherElement.tagName == "S") {
+            var weatherSplit =  weatherElement.textContent.split(" (");
+
+            // Both the weather name and its duration
+            if (weatherSplit.length > 1) {
+                weatherElement.textContent = translateWeather(weatherSplit[0]) + " ("
+                    + weatherSplit[1].replace(" or ", " ou ").replace("turn", "tour") + ")";
+            }
+            // Infinite effects - just the weather name
+            else {
+                weatherElement.textContent = translateWeather(weatherElement.textContent);
+            }
+        }
+        // Remaining turns element, just translate the english bits
+        else if (weatherElement.tagName == "SMALL") {
+            weatherElement.textContent = weatherElement.textContent.replace(" or ", " ou ").replace("turn","tour");
+        }
+        // Every remaining non-line break element is a weather name
+        else if (weatherElement.tagName != "BR")
+        {
+            // Ally or ennemy side
+            if (weatherElement.textContent.includes("Foe's ")){
+                weatherElement.textContent = translateWeather(weatherElement.textContent.slice(6,-1)) + " adverse ";
+            }
+            // If effect has a duration
+            else if (weatherElement.textContent.slice(-1) == " ") {
+                weatherElement.textContent = translateWeather(weatherElement.textContent.slice(0,-1)) + " ";
+            }
+            // Effet is infinite
+            else {
+                weatherElement.textContent = translateWeather(weatherElement.textContent);
+            }
+        }
+    }
 }
 
 function updatePokemonHealthBar(pokemonMainElement: Element)
@@ -1066,6 +1111,17 @@ function updateBattleRules(messageElement: Element)
             })
         }
     })
+}
+
+function updateTurnCounter(turnCounterElement: Element)
+{
+    if (turnCounterElement.textContent?.startsWith("Turn ")
+        && turnCounterElement.tagName == "DIV"
+        && turnCounterElement.childElementCount == 0)
+    {
+        // Only translate "Turn"
+        turnCounterElement.textContent = translateMenu("Turn ") + turnCounterElement.textContent.replace("Turn ", "");
+    }
 }
 
 function getCurrentDisplayedInfo(infoTitle: string)
