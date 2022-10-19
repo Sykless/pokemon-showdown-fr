@@ -1,9 +1,9 @@
 {
-  "name": "Showdown Traduction",
-  "version": "0.3",
+  "name": "Pokémon Showdown Traduction",
+  "version": "0.0.1",
   "description": "Translate Pokémon Showdown in french",
   "permissions": [
-    "tabs",
+    "activeTab",
     "scripting"
   ],
   "host_permissions": [
