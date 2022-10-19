@@ -7,6 +7,10 @@ console.log("BattleTranslate successfully loaded !");
 const HP = 0, ABILITY = 1, POSSIBLE_ABILITIES = 2, ITEM = 3, STATS = 4, SPEED = 5, UNKNOWN = 6;
 const LogInfoDisplayed: Array<string> = ["HP", "ABILITY", "POSSIBLE_ABILITIES", "ITEM", "STATS", "SPEED", "UNKNOWN"];
 
+// If a Battle is reloaded, the original code is not counted as a page change
+// So we need to translate it if needed
+translateBattleHomePage();
+
 // The injected script cannot access chrome.runtime.getURL
 // So we need to catch an event from the content script that sends it
 var SpriteURL = "";
@@ -55,6 +59,15 @@ function onMutation(mutations: MutationRecord[])
                 var translatedElement = true;
 
                 console.log(newElement.outerHTML);
+
+                if (newElement.id)
+                {
+                    // New user joined or left
+                    if (newElement.id.match(/^battle-(.*)-userlist-user-(.*)$/))
+                    {
+                        updateUserCountFromUsername(newElement)
+                    }
+                }
 
                 if (elementClasses)
                 {
@@ -144,6 +157,11 @@ function onMutation(mutations: MutationRecord[])
                     else if (elementClasses.contains("chat"))
                     {
                         updateCommand(newElement);
+                    }
+                    // Battle Options button
+                    else if (elementClasses.contains("battle-options"))
+                    {
+                        updateBattleOptionsButton(newElement);
                     }
                     // Turn counter
                     else if (elementClasses.contains("turn"))
@@ -761,13 +779,9 @@ function updateBattleEnded(newElement: Element)
 
 function updateWeather(newElement: Element)
 {
-    console.log("Raw weather element : " + newElement.outerHTML);
-
     newElement.childNodes.forEach(function (weatherNode) {
         updateWeatherName(weatherNode as Element)
     })
-
-    console.log("Updated weather element : " + newElement.outerHTML);
 }
 
 function updateWeatherName(weatherElement: Element)
@@ -875,7 +889,6 @@ function updatePokemonCondition(newElement: Element)
 function updatePokemonResult(newElement: Element)
 {
     var textInfoTag = newElement.firstChild as Element;
-    console.log("raw result element : " + textInfoTag.outerHTML);
 
     if (textInfoTag.tagName == "STRONG" && textInfoTag.textContent) {
         if (newElement.className.includes("abilityresult")){
@@ -901,8 +914,6 @@ function updatePokemonResult(newElement: Element)
             }
         }
     }
-
-    console.log("updated result element : " + textInfoTag.outerHTML);
 }
 
 function updateShowdownMessage(messageElement: Element)
@@ -1083,8 +1094,8 @@ function updateDefaultChatMessage(messageElement: Element)
     // Translate the message
     if (messageElement.textContent) 
     {
-        // Error message or player status
-        if (messageElement.classList.contains("message-error")) {
+        // Error message, player status or raw text
+        if (messageElement.classList.contains("message-error") || messageElement.childElementCount == 0) {
             messageElement.textContent = translateRegexBattleMessage(messageElement.textContent);
         }
         // Player status
@@ -1111,6 +1122,60 @@ function updateBattleRules(messageElement: Element)
             })
         }
     })
+}
+
+function translateBattleHomePage()
+{
+    var battlePage = document.querySelectorAll('*[id^="room-battle-"]');
+
+    if (battlePage.length) {
+        battlePage[0].childNodes.forEach(function (battleNode) {
+            var battleElement = battleNode as Element;
+
+            if (battleElement.classList?.contains("battle-userlist") || battleElement.classList?.contains("battle-log")) {
+                updateBattleElements(battleElement);
+            }
+        }) 
+    }
+}
+
+function updateBattleElements(battleElement: Element)
+{
+    battleElement.childNodes.forEach(function (battleContentNode) {
+        var battleContent = battleContentNode as Element;
+
+        // Users in the room
+        if (battleContent.className == "userlist-count") {
+            var userCount = battleContent.firstElementChild;
+
+            if (userCount?.textContent?.includes(" user")) {
+                userCount.textContent = userCount.textContent.replace(" user", translateMenu(" user"));
+            }
+        }
+        // Battle options button
+        else if (battleContent.className == "battle-options") {
+            updateBattleOptionsButton(battleContent);
+        }
+    })
+}
+
+function updateBattleOptionsButton(battleOptions: Element)
+{
+    var battleOptionsButton = battleOptions.firstElementChild?.firstElementChild as HTMLButtonElement;
+
+    // Translate button label
+    if (battleOptionsButton?.tagName == "BUTTON" && battleOptionsButton.name == "openBattleOptions" && battleOptionsButton.textContent) {
+        battleOptionsButton.textContent = translateMenu(battleOptionsButton.textContent);
+    }
+}
+
+function updateUserCountFromUsername(usernameElement: Element)
+{
+    var parentElement = usernameElement.parentElement;
+
+    if (parentElement?.classList?.contains("battle-userlist")) {
+        updateBattleElements(parentElement);
+    }
 }
 
 function updateTurnCounter(turnCounterElement: Element)
