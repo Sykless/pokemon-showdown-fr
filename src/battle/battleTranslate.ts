@@ -45,6 +45,7 @@ function onMutation(mutations: MutationRecord[])
             && !(mutations[i].target as Element).className?.includes("inner-preempt message-log"))
 		{
 			var newNodes = mutations[i].addedNodes;
+            var oldNodes = mutations[i].removedNodes;
 
 			for (var j = 0, node; (node = newNodes[j]); j++)
 			{
@@ -62,10 +63,10 @@ function onMutation(mutations: MutationRecord[])
 
                 if (newElement.id)
                 {
-                    // New user joined or left
+                    // New user joined
                     if (newElement.id.match(/^battle-(.*)-userlist-user-(.*)$/))
                     {
-                        updateUserCountFromUsername(newElement)
+                        updateUserCountFromUsername(parentElement)
                     }
                 }
 
@@ -202,7 +203,22 @@ function onMutation(mutations: MutationRecord[])
                     }
                 }
 			}
+
+            for (var j = 0, node; (node = oldNodes[j]); j++)
+            {
+                var oldElement = node as Element;
+                var parentElement = mutations[i].target as Element;
+
+                if (oldElement.id)
+                {
+                    // User left
+                    if (oldElement.id.match(/^battle-(.*)-userlist-user-(.*)$/))
+                    {
+                        updateUserCountFromUsername(parentElement)
+                    }
 		}
+	}
+}
 	}
 }
 
@@ -1171,10 +1187,8 @@ function updateBattleOptionsButton(battleOptions: Element)
 
 function updateUserCountFromUsername(usernameElement: Element)
 {
-    var parentElement = usernameElement.parentElement;
-
-    if (parentElement?.classList?.contains("battle-userlist")) {
-        updateBattleElements(parentElement);
+    if (usernameElement.classList?.contains("battle-userlist")) {
+        updateBattleElements(usernameElement);
     }
 }
 
