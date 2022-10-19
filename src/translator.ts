@@ -3706,6 +3706,10 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"None": "Aucun"
 }
 
+export const AliasDico:  { [englishName: string]: string; } = {
+	"Greninja-Ash": "Sachanobi"
+}
+
 export const TypesDico: { [englishName: string]: string; } = {
 	"(automatic type)": "(Type automatique)",
     "Bug": "Insecte",

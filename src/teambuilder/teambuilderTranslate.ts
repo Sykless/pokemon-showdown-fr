@@ -1,4 +1,4 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, MovesShortDescDico, ItemsShortDescDico, AbilitiesShortDescDico, ItemsLongDescDico } from '../translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, MovesShortDescDico, ItemsShortDescDico, AbilitiesShortDescDico, ItemsLongDescDico, AliasDico } from '../translator';
 	
 import { isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
 
@@ -47,7 +47,7 @@ const FRENCH = 0;
 const ENGLISH = 1;
 const SEARCH_TYPE = 2;
 
-// If Teambuilder is loaded, the original code is not counted as a page change
+// If Teambuilder is reloaded, the original code is not counted as a page change
 // So we need to translate it if needed
 translateTeambuilderHomePage();
 
@@ -58,10 +58,6 @@ var SpriteURL = "";
 window.addEventListener('RecieveContent', function(evt: any) {
 	SpriteURL = evt.detail;
 });
-
-// Create FrenchNamesDico dictionary, containing every french to english translation alphabetically sorted
-const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico];
-const FrenchNamesDico = populateFrenchDico();
 
 // When Teambuilder first loads, update the BattleSearchIndex
 updateBattleSearchIndex();
@@ -695,8 +691,6 @@ function updateTeamWrapper(mainElement: Element)
 							}
 						})
 					}
-
-					console.log(importElement.outerHTML);
 				})
 			}
 			// Top teambar with Pokémon names
@@ -1664,7 +1658,6 @@ function updateStatForm(statFormNode: Element)
 				});
 			}
 		}
-
 	})
 }
 
@@ -1971,6 +1964,9 @@ function reorderBattleTeambuilderTable()
 
 function updateBattleSearchIndex()
 {
+	// Create FrenchNamesDico dictionary, containing every french to english translation alphabetically sorted
+	const FrenchNamesDico = populateFrenchDico();
+
 	var newBattleSearchIndex = [];
 	var newBattleSearchIndexOffset = [];
 	var newBattleSearchIndexSize = BattleSearchIndex.length + FrenchNamesDico.length;
@@ -1994,6 +1990,11 @@ function updateBattleSearchIndex()
 		else if (englishIndex == BattleSearchIndex.length || BattleSearchIndex[englishIndex][0] > FrenchNamesDico[frenchIndex][FRENCH])
 		{
 			let englishID = binarySearch(FrenchNamesDico[frenchIndex][ENGLISH]);
+
+			if (FrenchNamesDico[frenchIndex][FRENCH] == "forcemystique") {
+				console.log(FrenchNamesDico[frenchIndex]);
+				console.log(englishID);
+			}
 
 			newBattleSearchIndex.push([FrenchNamesDico[frenchIndex][FRENCH],FrenchNamesDico[frenchIndex][SEARCH_TYPE],englishID,0])
 			newBattleSearchIndexOffset.push('');
@@ -2023,8 +2024,10 @@ function updateBattleSearchIndex()
 
 function populateFrenchDico()
 {
+	const ShowdownTradDictionnaries: Array<{ [englishName: string]: string; }> = [PokemonDico, AliasDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico];
+
 	let NamesTranslation: Array<any> = [];
-	let searchTypeGetter: Array<string> = ["pokemon", "ability", "move", "item", "type"];
+	let searchTypeGetter: Array<string> = ["pokemon", "pokemon", "ability", "move", "item", "type"];
 
 	for (var i = 0 ; i < searchTypeGetter.length ; i++)
 	{
