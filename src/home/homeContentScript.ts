@@ -8,12 +8,6 @@ s.onload = function() {
 	window.dispatchEvent(event);
 };
 
-chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    if (msg.text === 'isHomeContentScriptLoaded') {
-      sendResponse({status: "yes"});
-    }
-});
-
 console.log("homeContentScript loaded");
 
 (document.head || document.documentElement).appendChild(s);

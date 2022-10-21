@@ -4,7 +4,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
    mode: "production",
    entry: {
-      background: path.resolve(__dirname, "..", "src", "background.ts"),
       translator: path.resolve(__dirname, "..", "src", "translator.ts"),
       homeContentScript: path.resolve(__dirname, "..", "src/home", "homeContentScript.ts"),
       homeTranslate: path.resolve(__dirname, "..", "src/home", "homeTranslate.ts"),

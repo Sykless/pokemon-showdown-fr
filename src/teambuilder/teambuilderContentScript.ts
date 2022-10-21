@@ -8,12 +8,6 @@ s.onload = function() {
 	window.dispatchEvent(event);
 };
 
-chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    if (msg.text === 'isTeambuilderContentScriptLoaded') {
-      sendResponse({status: "yes"});
-    }
-});
-
 console.log("teambuilderContentScript loaded");
 
 (document.head || document.documentElement).appendChild(s);

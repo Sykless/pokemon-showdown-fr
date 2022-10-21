@@ -8,12 +8,6 @@ s.onload = function() {
 	window.dispatchEvent(event);
 };
 
-chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    if (msg.text === 'isBattleContentScriptLoaded') {
-      sendResponse({status: "yes"});
-    }
-});
-
 console.log("battleContentScript loaded");
 
 (document.head || document.documentElement).appendChild(s);

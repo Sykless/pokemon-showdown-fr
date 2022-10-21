@@ -1,20 +1,18 @@
 {
-  "name": "Pokémon Showdown Traduction",
-  "version": "0.0.1",
-  "description": "Translate Pokémon Showdown in french",
-  "permissions": [
-    "activeTab",
-    "scripting"
-  ],
-  "host_permissions": [
-    "https://play.pokemonshowdown.com/"
-  ],
+  "name": "Pokémon Showdown FR",
+  "version": "0.1",
+  "description": "Pokémon Showdown traduit intégralement en français !",
   "icons": {
     "128": "icon128.png"
   },
-  "background": {
-    "service_worker": "background.js"
-  },
+  "content_scripts": [{
+    "js": [
+      "homeContentScript.js", 
+      "teambuilderContentScript.js",
+      "battleContentScript.js"],
+    "run_at": "document_end",
+    "matches": ["https://play.pokemonshowdown.com/*"]
+  }], 
   "web_accessible_resources": [{
     "resources": [
       "homeTranslate.js",
