@@ -1398,8 +1398,7 @@ function updateHeader(headerElement: Element)
 	}
 	else if (!headerElement.classList.contains("result"))
 	{
-		console.log("Unknown header element");
-		console.log(headerElement)
+		// console.log("Unknown header element : " + headerElement.outerHTML);
 	}
 }
 
@@ -1479,8 +1478,7 @@ function updateMoveAbilityFilter(resultElement: Element)
 	}
 	else if (!resultElement.classList.contains("result"))
 	{
-		console.log("Unknown filter element in results");
-		console.log(resultElement)
+		// console.log("Unknown filter element in results : " + resultElement.outerHTML);
 	}
 }
 
@@ -1512,8 +1510,7 @@ function updateFilterElement(filterNode: Element)
 		filterButtonTag.textContent = translateMenu(filterButtonTag.textContent);
 	}
 	else {
-		console.log("Unkown filter element");
-		console.log(filterNode);
+		// console.log("Unkown filter element : " + filterNode.outerHTML);
 	}
 }
 
@@ -1839,8 +1836,7 @@ function getDisplayedDataType(element: Element)
 					displayedDataType = attribute.split("|")[0];
 				}
 				else {
-					console.log("No data-entry present in tag ");
-					console.log(childResult);
+					// console.log("No data-entry present in tag : " + childResult.outerHTML);
 				}
 			}
 			// The result child is a header
@@ -1851,8 +1847,7 @@ function getDisplayedDataType(element: Element)
 	}
 	else
 	{
-		console.log("Unknown result element");
-		console.log(element)
+		// console.log("Unknown result element : " + element.outerHTML);
 	}
 	
 	return displayedDataType;
@@ -1888,8 +1883,6 @@ function translateTeambuilderHomePage()
 
 function reorderBattleTeambuilderTable()
 {
-	console.log(BattleTeambuilderTable);
-
 	// "tiers" object is an array separated by tier names
 	// It is used to sort the Pokémon in each tier, sorted by english name when generated
 	// We need to sort each tier by french name
@@ -1992,11 +1985,6 @@ function updateBattleSearchIndex()
 		else if (englishIndex == BattleSearchIndex.length || BattleSearchIndex[englishIndex][0] > FrenchNamesDico[frenchIndex][FRENCH])
 		{
 			let englishID = binarySearch(FrenchNamesDico[frenchIndex][ENGLISH]);
-
-			if (FrenchNamesDico[frenchIndex][FRENCH] == "forcemystique") {
-				console.log(FrenchNamesDico[frenchIndex]);
-				console.log(englishID);
-			}
 
 			newBattleSearchIndex.push([FrenchNamesDico[frenchIndex][FRENCH],FrenchNamesDico[frenchIndex][SEARCH_TYPE],englishID,0])
 			newBattleSearchIndexOffset.push('');

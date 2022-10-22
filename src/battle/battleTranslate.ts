@@ -73,7 +73,7 @@ function onMutation(mutations: MutationRecord[])
                     // The whole room has been loaded
                     if (elementClasses.contains("innerbattle"))
                     {
-                        console.log("Whole room, rien d'intéressant : " + newElement.outerHTML);
+                        // console.log("Whole room, rien d'intéressant : " + newElement.outerHTML);
                     }
                     // Tooltip has been opened
                     else if (elementClasses.contains("tooltipinner"))
@@ -147,7 +147,7 @@ function onMutation(mutations: MutationRecord[])
                     // Various battle chat messages
                     else if (elementClasses.contains("battle-log-add"))
                     {
-                        console.log("battle-log-add : " + newElement.outerHTML)
+                        // console.log("battle-log-add : " + newElement.outerHTML)
                         // This room is expired
                         // Connecting...
                         // <form><button name="login">Join chat</button></form>
@@ -951,10 +951,6 @@ function updateShowdownMessage(messageElement: Element)
                 // Specific case : trainer's team
                 else if (messagePart.textContent.endsWith("'s team:")) {
                     messagePart.textContent = translateMenu("'s team:") + messagePart.textContent.replace("'s team:", "") + " :";
-                }
-                // Could be a trainer name, we don't update it
-                else {
-                    console.log("Unknown info in strong tag : " + messagePart.outerHTML);
                 }
             }
             // <em> tag : Pokémon team
