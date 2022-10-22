@@ -17,6 +17,8 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 // Translate non-text node with TreeWalker in order to not trigger observer
 // Conjuger les objets
 // One-gender only (Boréas-Totem)
+// For -> mysticwater ???
+// Specific to Tapu Koko (item)
 
 // HIDDEN TEXT
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
@@ -98,7 +100,7 @@ function onMutation(mutations: MutationRecord[])
 				var parentElement = mutations[i].target as Element;
 				var elementClasses = newElement.classList;
 
-				// console.log(newElement);
+				// console.log(newElement.outerHTML);
 
 				// Teambuilder home : teams list
 				// Teampane element is only updated on page init, so we need to check the children mutations

@@ -1,11 +1,9 @@
-import { isValidEnglishAbility, isValidEnglishLogMessage, isValidEnglishItem, isValidEnglishMenu, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateLogMessage, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexMessage, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, translateRawElement } from "../translator";
+import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
-import { RegexLogMessagesMap }  from "../translator"; 
 
 console.log("BattleTranslate successfully loaded !");
 
 const HP = 0, ABILITY = 1, POSSIBLE_ABILITIES = 2, ITEM = 3, STATS = 4, SPEED = 5, UNKNOWN = 6;
-const LogInfoDisplayed: Array<string> = ["HP", "ABILITY", "POSSIBLE_ABILITIES", "ITEM", "STATS", "SPEED", "UNKNOWN"];
 
 // If a Battle is reloaded, the original code is not counted as a page change
 // So we need to translate it if needed
@@ -59,7 +57,7 @@ function onMutation(mutations: MutationRecord[])
                 // so instead we add a boolean that changes when no match is found
                 var translatedElement = true;
 
-                console.log(newElement.outerHTML);
+                //console.log(newElement.outerHTML);
 
                 if (newElement.id)
                 {
@@ -216,9 +214,9 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updateUserCountFromUsername(parentElement)
                     }
+                }
+            }
 		}
-	}
-}
 	}
 }
 
@@ -987,9 +985,7 @@ function updateCommand(messageElement: Element)
     if (isChatMessage(messageElement))
     {
         messageElement.childNodes.forEach(function (chatNode) {
-            var chatElement = chatNode as Element;+
-
-            console.log(chatElement.outerHTML);
+            var chatElement = chatNode as Element;
 
             if (chatElement.tagName == "EM" && chatElement.textContent && /!.* <".*">/.test(chatElement.textContent)) {
                 // '"<>"' is a tag indicating that we can remove the message
