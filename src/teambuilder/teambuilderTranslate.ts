@@ -1,4 +1,4 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, MovesShortDescDico, ItemsShortDescDico, AbilitiesShortDescDico, ItemsLongDescDico, AliasDico } from '../translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, MovesShortDescDico, ItemsShortDescDico, AbilitiesShortDescDico, ItemsLongDescDico, AliasDico, translateRawElement } from '../translator';
 	
 import { isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
 
@@ -151,7 +151,6 @@ function onMutation(mutations: MutationRecord[])
 							// Update every new result
 							updateResultTag(newElement);
 						}
-						
 					}
 					// Pokémon info has been updated
 					else if (elementClasses.contains("statrow-head"))
@@ -185,8 +184,10 @@ function onMutation(mutations: MutationRecord[])
 					{
 						updateClipboardElement(newElement);
 					}
-					else
+					// Default : check if the element could be a raw text button
+					else if (newElement.tagName == "BUTTON")
 					{
+						translateRawElement(newElement);
 						// console.log("Non-processed nodes : " + newElement.outerHTML);
 					}
 				}

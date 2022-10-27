@@ -4487,6 +4487,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"The headquarters for all TV & Film discussion! Entertainment awaits.": "Le QG des discussions sur la TV ou les films !",
 
 	// Popup
+	"Change sprite": "Changer de sprite",
 	" Change name": " Changer de nom",
 	" Log out": " Déconnexion",
 	"Change avatar": "Changement d'avatar",
