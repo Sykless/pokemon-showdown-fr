@@ -4594,6 +4594,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" Ignore nicknames": " Ignorer les surnoms",
 	" Automatically start timer": " Démarrer le Timer automatiquement",
 	" Open new battles on the right side": " Ouvrir les nouveaux matchs sur le côté droit",
+	"Pick a variant or ": "Choisir une variante ou ",
 	"Couldn't connect to server!": "Impossible de se connecter au serveur !",
 	"The Wii U does not support secure connections.": "La Wii U ne supporte pas les connexions sécurisées",
 	"Connect insecurely": "Connexion non sécurisée",

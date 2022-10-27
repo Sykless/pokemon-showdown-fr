@@ -159,6 +159,10 @@ function onMutation(mutations: MutationRecord[])
 						// When the stat block is updated, the element "Remaining EVs" is reset (if present)
 						// So we need to re-translate it, but we don't need to update the whole StatForm component
 						updateRemainingEVElement(document.querySelector(".graphcol"))
+						
+						// When a cosmetic form is selected, the stat block is updated (for some reason)
+						// So we need to translate the cosmetic form
+						updateInputPokemonName();
 					}
 					// Pokémon stats/nature interface has been loaded
 					else if (elementClasses.contains("statform"))
@@ -1774,6 +1778,19 @@ function updateSetImportElement(setElement: Element)
 				smallContent.textContent = translateMenu(smallContent.textContent);
 			}
 		})
+	}
+}
+
+function updateInputPokemonName()
+{
+	var inputElements = document.getElementsByName("pokemon");
+
+	if (inputElements.length > 0) {
+		var pokemonNameInput = inputElements[0] as HTMLInputElement;
+		
+		if (pokemonNameInput.value) {
+			pokemonNameInput.value = translatePokemonName(pokemonNameInput.value);
+		}
 	}
 }
 
