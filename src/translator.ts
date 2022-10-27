@@ -680,6 +680,7 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Wartortle": "Carabaffe",
 	"Blastoise": "Tortank",
 	"Blastoise-Mega": "Tortank-Méga",
+	"Blastoise-Gmax": "Tortank-Gmax",
 	"Caterpie": "Chenipan",
 	"Metapod": "Chrysacier",
 	"Butterfree": "Papilusion",
