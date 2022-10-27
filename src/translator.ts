@@ -531,7 +531,7 @@ RegexLogMessagesMap.set(/(.*) maxed its Attack!/, "{POKEMON} monte son Attaque a
 RegexLogMessagesMap.set(/(.*) shuddered!/, "{POKEMON} est tout tremblant !");
 RegexLogMessagesMap.set(/(.*) is protected by an aromatic veil!/, "{POKEMON} est protégé par Aroma-Voile !");
 RegexLogMessagesMap.set(/(.*) has two Abilities!/, "{POKEMON} a deux Talents !");
-RegexLogMessagesMap.set(/(.*) reversed all other Pok\u00E9mon's auras!/, "{POKEMON} inverse toutes les auras !");
+RegexLogMessagesMap.set(/(.*) reversed all other Pokémon's auras!/, "{POKEMON} inverse toutes les auras !");
 RegexLogMessagesMap.set(/(.*) is tormented!/, "{POKEMON} a le sommeil agité !");
 RegexLogMessagesMap.set(/(.*) became fully charged due to its bond with its Trainer!/, "{POKEMON} sent la force de la Synergie !");
 RegexLogMessagesMap.set(/(.*) became Ash-Greninja!/, "{POKEMON} se transforme en Sachanobi !");
@@ -569,7 +569,7 @@ RegexLogMessagesMap.set(/(.*) endured the hit!/, "{POKEMON} encaisse les coups !
 RegexLogMessagesMap.set(/(.*) is anchored in place with its suction cups!/, "{POKEMON} s'accroche avec ses ventouses !");
 RegexLogMessagesMap.set(/(.*) can't fall asleep due to a veil of sweetness!/, "Le Gluco-Voile empêche {POKEMON} de dormir !");
 RegexLogMessagesMap.set(/(.*) shared its (.*) with (.*)!/, "{POKEMON_1} donne l'objet {ITEM} à {POKEMON_2} !"); 
-RegexLogMessagesMap.set(/(.*) can't be hit by attacks from its ally Pok\u00E9mon!/, "{POKEMON} ne peut pas être attaqué par ses alliés !");
+RegexLogMessagesMap.set(/(.*) can't be hit by attacks from its ally Pokémon!/, "{POKEMON} ne peut pas être attaqué par ses alliés !");
 RegexLogMessagesMap.set(/(.*) is radiating a bursting aura!/, "{POKEMON} dégage une aura électrique instable !");
 RegexLogMessagesMap.set(/(.*) traced (.*)'s (.*)!/, "{SWAP_0_POKEMON_1} a calqué le Talent {SWAP_2_ABILITY} du {SWAP_1_POKEMON_2} !");
 RegexLogMessagesMap.set(/(.*) is loafing around!/, "{POKEMON} paresse !");
@@ -628,7 +628,7 @@ RegexLogMessagesMap.set(/(.*) returned its decreased stats to normal using its Z
 RegexLogMessagesMap.set(/(.*)'s stat changes were inverted!/, "Les changements de stats du {POKEMON} sont inversés !");
 RegexLogMessagesMap.set(/(.*) is unaffected!/, "{POKEMON} n'est pas affecté !");
 RegexLogMessagesMap.set(/(.*)'s attack missed!/, "L'attaque du {POKEMON} a échoué !");
-RegexLogMessagesMap.set(/The Pok\u00E9mon was hit (.*) times!/, "Touché {NUMBER} fois !");
+RegexLogMessagesMap.set(/The Pokémon was hit (.*) times!/, "Touché {NUMBER} fois !");
 RegexLogMessagesMap.set(/(.*) had its energy drained!/, "L'énergie du {POKEMON} est drainée !");
 RegexLogMessagesMap.set(/(.*) flinched and couldn't move!/, "{POKEMON} a la trouille ! Il ne peut plus attaquer !");
 RegexLogMessagesMap.set(/(.*) will restore its replacement's HP using its Z-Power!/, "{POKEMON}");
@@ -4653,7 +4653,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"No one will be able to run away during the next turn!": "Il sera impossible de fuir au tour suivant !",
 	"Gravity intensified!": "La Gravité est intensifiée !",
 	"Gravity returned to normal!": "La Gravité est revenue à la normale !",
-	"It created a bizarre area in which Pok\u00E9mon's held items lose their effects!": "L'effet des objets tenus est neutralisé !",
+	"It created a bizarre area in which Pokémon's held items lose their effects!": "L'effet des objets tenus est neutralisé !",
 	"Magic Room wore off, and held items' effects returned to normal!": "L'effet des objets tenus est rétabli !",
 	"The twisted dimensions returned to normal!": "Les dimensions faussées reviennent à la normale !",
 	"Electricity's power was weakened!": "La puissance des capacités de type Électrik est diminuée !",
@@ -4682,7 +4682,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"The heavy rain has lifted!": "La pluie battante s'est arrêtée…",
 	"There is no relief from this heavy rain!": "Impossible de dissiper une telle pluie !",
 	"The Fire-type attack fizzled out in the heavy rain!": "La pluie battante empêche toute attaque de type Feu !",
-	"Mysterious strong winds are protecting Flying-type Pok\u00E9mon!": "Un vent mystérieux enveloppe les Pokémon de type Vol !",
+	"Mysterious strong winds are protecting Flying-type Pokémon!": "Un vent mystérieux enveloppe les Pokémon de type Vol !",
 	"The mysterious strong winds have dissipated!": "Le vent mystérieux s'est dissipé…",
 	"The mysterious strong winds weakened the attack!": "Le vent mystérieux affaiblit l'attaque !",
 	"The mysterious strong winds blow on regardless!": "Impossible de ramener l'atmosphère à la normale !",
@@ -4698,7 +4698,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Automatic center!": "Réinitialisation !",
 	"But there was no target...": "Mais il n'y a pas de cible ! ",
 	"It's a one-hit KO!": "K.O. en un coup !",
-	"The Pok\u00E9mon was hit 1 time!": "Touché 1 fois !",
+	"The Pokémon was hit 1 time!": "Touché 1 fois !",
 	"But there was no PP left for the move!": "Mais il n'y a plus de PP pour cette capacité !",
 	"The move was blocked by the power of Dynamax!": "La puissance du Dynamax a bloqué l'attaque !",
 	" won the battle!": " remporte le match !",
@@ -4719,11 +4719,11 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Everyone is caught up in the happy atmosphere!": "L'ambiance est euphorique !",
 	"A bell chimed!": "Un grelot sonne !",
 	"Coins were scattered everywhere!": "Une pluie de pièces !",
-	"All Pok\u00E9mon that heard the song will faint in three turns!": "Tous les Pokémon ayant entendu le Requiem seront K.O. après trois tours.",
+	"All Pokémon that heard the song will faint in three turns!": "Tous les Pokémon ayant entendu le Requiem seront K.O. après trois tours.",
 	"All STATUS changes are eliminated!": "Les changements de STATUT ont tous été annulés !",
 	"All stat changes were eliminated!": "Les changements de stats ont tous été annulés !",
 	"The battlers shared their pain!": "Les adversaires partagent leurs PV !",
-	"Both Pok\u00E9mon will faint in three turns!": "Les deux Pokémon seront K.O. dans trois tours !",
+	"Both Pokémon will faint in three turns!": "Les deux Pokémon seront K.O. dans trois tours !",
 	"You sense the presence of many!": "Vous sentez la présence d'un grand nombre d'individus !",
 	"Shields Down deactivated!": "Le Bouclier-Carcan n'est plus actif !",
 	"Shields Down activated!": "Le Bouclier-Carcan est actif !",
@@ -4731,7 +4731,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Changed to Shield Forme!": "Passage en Forme Parade !",
 	"Zen Mode triggered!": "Mode Transe !",
 	"Zen Mode ended!": "Mode Normal !",
-	"When the flame touched the powder on the Pok\u00E9mon, it exploded!": "La Nuée de Poudre entre en réaction avec la flamme et explose !",
+	"When the flame touched the powder on the Pokémon, it exploded!": "La Nuée de Poudre entre en réaction avec la flamme et explose !",
 	"Its disguise served it as a decoy!": "Le déguisement absorbe l'attaque !",
 	"But it failed!": "Mais cela échoue !",
 	"All players are inactive.": "Tous les joueurs sont inactifs.",
