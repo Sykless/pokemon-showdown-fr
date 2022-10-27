@@ -753,6 +753,10 @@ function updatePopup(popupElement: Element)
             updateGenericPopup(popupElement);
         }
     }
+    else if (firstChild?.tagName == "DIV")
+    {
+        updateGenericPopup(popupElement);
+    }
 }
 
 function updateUserOptionsPopup(popupElement: Element)
