@@ -423,6 +423,8 @@ RegexLogMessagesMap.set(/(.*)'s Aurora Veil wore off!/, "Voile Aurore n'a plus d
 RegexLogMessagesMap.set(/(.*)'s type became the same as (.*)'s type!/, "{POKEMON_1} prend le type du {POKEMON_2} !");
 RegexLogMessagesMap.set(/(.*) copied (.*)'s (.*) Ability!/, "{SWAP_0_POKEMON_1} copie le talent {SWAP_2_ABILITY} du {SWAP_1_POKEMON_1} !");
 RegexLogMessagesMap.set(/\((.*) loses Flying type this turn\.\)/, "({POKEMON} perd le type Vol pour ce tour.)");
+RegexLogMessagesMap.set(/\((.*) did not hit because the target is fainted\.\)/, "({MOVE} n'a pas touché car la cible est K.O.)");
+RegexLogMessagesMap.set(/\((.*) did not hit because the target is the user\.\)/, "({MOVE} n'a pas touché car la cible est le lanceur)");
 RegexLogMessagesMap.set(/(.*) cloaked itself in a mystical veil!/, "{TEAM} est recouverte par un voile mystérieux !");
 RegexLogMessagesMap.set(/(.*) is no longer protected by Safeguard!/, "{TEAM} n'est plus protégée par le voile mystérieux !");
 RegexLogMessagesMap.set(/(.*) is protected by Safeguard!/, "{POKEMON} est protégé par la capacité Rune Protect !");
