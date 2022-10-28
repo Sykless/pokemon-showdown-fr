@@ -186,7 +186,7 @@ RegexLogMessagesMap.set(/(.*) and (.*) left/, "{TRAINER} et {TRAINER} sont parti
 RegexLogMessagesMap.set(/(.*) and (.*) joined/, "{TRAINER_1} et {TRAINER_2} ont rejoint la partie");
 RegexLogMessagesMap.set(/(.*) left/, "{TRAINER} est parti");
 RegexLogMessagesMap.set(/(.*) joined/, "{TRAINER} a rejoint la partie");
-RegexLogMessagesMap.set(/(.*) lost due to inactivity\./, "{TRAINER} a perdu pour cause inactivité.");
+RegexLogMessagesMap.set(/(.*) lost due to inactivity\./, "{TRAINER} a perdu pour cause d'inactivité.");
 RegexLogMessagesMap.set(/(.*)'s rating: (.*) → /, "Classement de {TRAINER} : {NUMBER} → ");
 RegexLogMessagesMap.set(/\((.*) for losing\)/, "({NUMBER} en perdant)");
 RegexLogMessagesMap.set(/\((.*) for winning\)/, "({NUMBER} en gagnant)");
