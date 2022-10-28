@@ -3784,6 +3784,7 @@ export const StatsDico: { [englishName: string]: string; } = {
 	"Speed": "Vitesse",
 	"Spe": "Vit",
 	"Accuracy": "Précision",
+	"accuracy": "Précision",
 	"Evasion": "Esquive",
 	"evasiveness": "Esquive",
 	"Spc": "Spé"
