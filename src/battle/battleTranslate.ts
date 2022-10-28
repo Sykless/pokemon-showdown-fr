@@ -277,11 +277,11 @@ function updatePokemonTooltip(tooltip: Element)
                     if (pokemonInfo.textContent)
                     {
                         // If the next element is not a line break, a space has been added at the end of the name
-                        if ((pokemonInfo.nextSibling as Element).tagName != "BR"){
-                            pokemonInfo.textContent = translatePokemonName(pokemonInfo.textContent.slice(0,-1)) + " ";
+                        if ((pokemonInfo.nextSibling as Element).tagName != "BR") {
+                            pokemonInfo.textContent = translatePokemonBattleName(pokemonInfo.textContent.slice(0,-1)) + " ";
                         }
                         else {
-                            pokemonInfo.textContent = translatePokemonName(pokemonInfo.textContent);
+                            pokemonInfo.textContent = translatePokemonBattleName(pokemonInfo.textContent);
                         }
                     }
                 }
@@ -935,6 +935,18 @@ function updatePokemonResult(newElement: Element)
     }
 }
 
+function translatePokemonBattleName(pokemonName: string)
+{
+    // Alternate form could be hidden in team preview (Urshifu for exemple)
+    if (pokemonName.endsWith("-*")) {
+        return translatePokemonName(pokemonName.slice(0,-2)) + "-*"
+    }
+    // Regular Pokémon name
+    else {
+        return translatePokemonName(pokemonName);
+    }
+}
+
 function updateShowdownMessage(messageElement: Element)
 {
     messageElement.childNodes.forEach(function (messagePartNode) {
@@ -966,7 +978,7 @@ function updateShowdownMessage(messageElement: Element)
                 // Translate each Pokémon name
                 for (var i = 0 ; i < splittedTeam.length ; i++)
                 {
-                    translatedTeam += translatePokemonName(splittedTeam[i])
+                    translatedTeam += translatePokemonBattleName(splittedTeam[i])
                         + (i < splittedTeam.length - 1 ? " / " : "");
                 }
 
