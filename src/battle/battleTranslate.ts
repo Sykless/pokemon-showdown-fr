@@ -1127,6 +1127,16 @@ function updateDefaultChatMessage(messageElement: Element)
         else if (messageElement.childElementCount == 1 && messageElement.firstElementChild?.tagName == "SMALL" && messageElement.firstElementChild.textContent) {
             messageElement.firstElementChild.textContent = translateRegexBattleMessage(messageElement.firstElementChild.textContent);
         }
+        // Default (Rating) : Translate raw text element
+        else {
+            messageElement.childNodes.forEach(function (chatNode) {
+                var charElement = chatNode as Element;
+
+                if (charElement.textContent && !charElement.tagName) {
+                    charElement.textContent = translateRegexBattleMessage(charElement.textContent);
+    }
+            })
+}
     }
 }
 
@@ -1209,6 +1219,19 @@ function updateTurnCounter(turnCounterElement: Element)
     {
         // Only translate "Turn"
         turnCounterElement.textContent = translateMenu("Turn ") + turnCounterElement.textContent.replace("Turn ", "");
+    }
+}
+
+function updateRatedBattle(ratedBattleElement: Element)
+{
+    var ratedTextElement = ratedBattleElement.firstElementChild;
+
+    if (ratedTextElement?.textContent
+        && ratedTextElement.tagName == "STRONG"
+        && ratedTextElement.childElementCount == 0)
+    {
+        // Translate strong child
+        ratedTextElement.textContent = translateMenu(ratedTextElement.textContent);
     }
 }
 
