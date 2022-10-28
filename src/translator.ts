@@ -4755,7 +4755,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Nicknames no longer ignored.": "Les surnoms ne sont plus ignorés.",
 	"Hardcore mode ON: Information not available in-game is now hidden.": "Mode Hardcore activé : Les informations non présentes dans le jeu sont maintenant cachées.",
 	"Hardcore mode OFF: Information not available in-game is now shown.": "Mode Hardcore désactivé : Les informations non présentes dans le jeu sont maintenant affichées.",
-	"Ladder isn't responding, score probably updated but might not have (Request timeout).": "Le Ladder ne répond pas, le score s'est peut-être mis à jour, mais peut-être pas (Timeout de la requête).",
+	"Ladder isn't responding, score probably updated but might not have (Request timeout).": "Le Ladder ne répond pas, le score est probablement à jour, mais peut ne pas l'être (temps de réponse dépassé).",
 	"Ladder updating...": "Mise à jour du Ladder...",
 	"[Invalid choice] There's nothing to cancel": "[Choix invalide] Il n'y a rien à annuler",
 	"Challenge cancelled because they changed their username.": "Défi annulé car l'adversaire a changé son pseudo.",
