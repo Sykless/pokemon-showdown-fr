@@ -619,10 +619,10 @@ RegexLogMessagesMap.set(/(.*) restored its HP using its Z-Power!/, "{POKEMON} ut
 RegexLogMessagesMap.set(/The (.*) raised (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} augmente {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
 RegexLogMessagesMap.set(/The (.*) sharply raised (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} augmente beaucoup {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
 RegexLogMessagesMap.set(/The (.*) drastically raised (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} augmente énormément {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
-RegexLogMessagesMap.set(/(.*) boosted its (.*) using its Z-Power!/, "{POKEMON} {STATS}");
-RegexLogMessagesMap.set(/(.*) boosted its (.*) sharply using its Z-Power!/, "{POKEMON} {STATS}");
-RegexLogMessagesMap.set(/(.*) boosted its (.*) drastically using its Z-Power!/, "{POKEMON} {STATS}");
-RegexLogMessagesMap.set(/(.*) boosted its stats using its Z-Power!/, "{POKEMON}");
+RegexLogMessagesMap.set(/(.*) boosted its (.*) using its Z-Power!/, "{POKEMON} utilise la Force Z pour augmenter {SELF_STATS} !");
+RegexLogMessagesMap.set(/(.*) boosted its (.*) sharply using its Z-Power!/, "{POKEMON} utilise la Force Z pour beaucoup augmenter {SELF_STATS} !");
+RegexLogMessagesMap.set(/(.*) boosted its (.*) drastically using its Z-Power!/, "{POKEMON} utilise la Force Z pour augmenter énormément {SELF_STATS} !");
+RegexLogMessagesMap.set(/(.*) boosted its stats using its Z-Power!/, "{POKEMON} utilise la Force Z pour augmenter ses stats !");
 RegexLogMessagesMap.set(/The (.*) lowered (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} baisse {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
 RegexLogMessagesMap.set(/The (.*) harshly lowered (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} baisse beaucoup {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
 RegexLogMessagesMap.set(/The (.*) lowered drastically (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} baisse énormément {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
@@ -631,14 +631,14 @@ RegexLogMessagesMap.set(/(.*) switched all changes to its Attack and Sp. Atk wit
 RegexLogMessagesMap.set(/(.*) switched all changes to its Defense and Sp. Def with its target!/, "{POKEMON} intervertit les changements de Défense et de Défense Spéciale avec ceux de sa cible !");
 RegexLogMessagesMap.set(/(.*) copied (.*)'s stat changes!/, "{POKEMON_1} copie les changements de stats du {POKEMON_2} !");
 RegexLogMessagesMap.set(/(.*)'s stat changes were removed!/, "Les stats du {POKEMON} sont revenues à la normale !");
-RegexLogMessagesMap.set(/(.*) returned its decreased stats to normal using its Z-Power!/, "{POKEMON}");
+RegexLogMessagesMap.set(/(.*) returned its decreased stats to normal using its Z-Power!/, "{POKEMON} utilise la Force Z pour annuler ses baisses de stats !");
 RegexLogMessagesMap.set(/(.*)'s stat changes were inverted!/, "Les changements de stats du {POKEMON} sont inversés !");
 RegexLogMessagesMap.set(/(.*) is unaffected!/, "{POKEMON} n'est pas affecté !");
 RegexLogMessagesMap.set(/(.*)'s attack missed!/, "L'attaque du {POKEMON} a échoué !");
 RegexLogMessagesMap.set(/The Pokémon was hit (.*) times!/, "Touché {NUMBER} fois !");
 RegexLogMessagesMap.set(/(.*) had its energy drained!/, "L'énergie du {POKEMON} est drainée !");
 RegexLogMessagesMap.set(/(.*) flinched and couldn't move!/, "{POKEMON} a la trouille ! Il ne peut plus attaquer !");
-RegexLogMessagesMap.set(/(.*) will restore its replacement's HP using its Z-Power!/, "{POKEMON}");
+RegexLogMessagesMap.set(/(.*) will restore its replacement's HP using its Z-Power!/, "{POKEMON} utilise la Force Z pour soigner un allié qui entrera sur le terrain !");
 RegexLogMessagesMap.set(/(.*) must recharge!/, "Le contrecoup empêche {POKEMON} de bouger !");
 RegexLogMessagesMap.set(/(.*) was damaged by the recoil!/, "{POKEMON} est blessé par le contrecoup !");
 RegexLogMessagesMap.set(/(.*)'s stats were not lowered!/, "Les stats du {POKEMON} ne baissent pas !");
@@ -4330,6 +4330,12 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" The first moveslots have their types changed to match the Pokémon's types": " Les premières capacités ont leur type changé pour correspondre aux types du Pokémon",
 	" Pokémon gain the boosts they would gain from evolving again": " Les Pokémon gagnent les boosts qu'il gagneraient s'ils évoluaient",
 	" All physical moves become special, and vice versa": "Les capacités physiques deviennent spéciales, et inversement",
+	"Restores negative stat stages to 0": "Annule tous les changements de stats",
+	"Crit ratio +2": "Taux de coup critiques +2",
+	"Restores HP 100%": "Restaure tous les PVs",
+	"Restores HP 100% if user is Ghost type, otherwise Attack +1": "Restaure tous les PVs si le lanceur est de type Spectre, sinon Attaque +1",
+	"Redirects opposing attacks to user": "Les capacités des ennemis ciblent le lanceur",
+	"Restores replacement's HP 100%": "Restaure tous les PVs du Pokémon envoyé",
 	"How will you start the battle?": "Comment commencerez-vous le match ?",
 	"Choose Lead": "Choisir un Lead",
 	"Turn ": "Tour ",
@@ -4342,7 +4348,10 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"'s team:": "Équipe de ",
 	"Attack": "Attaquer",
 	"Switch": "Switcher",
+	" Mega Evolution": " Méga-Évolution",
+	" Z-Power": " Force Z",
 	"Accuracy: ": "Précision : ",
+	"Z-Effect: ": "Effet Z : ",
 	"can't miss": "ne peut pas rater",
 	"Base power: ": "Puissance de base : ",
 	"(priority ": "(priorité ",
@@ -5225,8 +5234,6 @@ export function translateRegexMessage(originalString: string, translationType: n
             var englishMessage = translated[0].source.split("(.*)");
             var variablesToTranslate = translated[1].match(/{(.*?)}/g);
 
-            console.log(englishMessage);
-
             // If a SWAP parameter is present in the template variable, order them by swap id
             if (variablesToTranslate[0].includes("SWAP")) 
 			{
@@ -5249,8 +5256,6 @@ export function translateRegexMessage(originalString: string, translationType: n
                 // Get english variable from the original string
                 var variableName = originalString.slice((i == 0 && englishMessage[i] == "" ? 0 : originalString.indexOf(englishMessage[i]) + englishMessage[i].length),
                                                               (englishMessage[i + 1] == "" ? originalString.length : originalString.indexOf(englishMessage[i + 1])));
-
-                console.log(variableName);
 
                 // Replace the template variable by the translated value
                 if (variablesToTranslate[i].includes("{POKEMON"))
@@ -5299,17 +5304,36 @@ export function translateRegexMessage(originalString: string, translationType: n
 				}
 				else if (variablesToTranslate[i] == "{STATS}") {
 					if (["Attack", "Sp. Atk", "evasiveness"].includes(variableName)) {
-						translated[1] = translated[1].replace("{STATS}", "L'" + translateStat(variableName));
+						translated[1] = translated[1].replace(
+							"{STATS}",
+							(isFirstWord("{STATS}", translated[1]) ? "L'" : "l'") + translateStat(variableName)
+						);
 					}
 					else {
-						translated[1] = translated[1].replace("{STATS}", "La " + translateStat(variableName));
+						translated[1] = translated[1].replace(
+							"{STATS}",
+							(isFirstWord("{STATS}", translated[1]) ? "La " : "la ") + translateStat(variableName)
+						);
 					}
 				}
+				else if (variablesToTranslate[i] == "{SELF_STATS}") {
+					if (["Attack", "Sp. Atk", "evasiveness"].includes(variableName)) {
+						translated[1] = translated[1].replace("{SELF_STATS}", "son " + translateStat(variableName));
+					}
+					else {
+						translated[1] = translated[1].replace("{SELF_STATS}", "sa " + translateStat(variableName));
+					}
+				}
+				else if (variablesToTranslate[i] == "{MOVE}") {
+					if (variableName.startsWith("Z-")) {
+						translated[1] = translated[1].replace("{MOVE}", translateMove(variableName.slice(2)) + " Z");
+					}
+					else {
+						translated[1] = translated[1].replace("{MOVE}", translateMove(variableName));
+					}
+                }
                 else if (variablesToTranslate[i] == "{ABILITY}") {
                     translated[1] = translated[1].replace("{ABILITY}", translateAbility(variableName));
-                }
-                else if (variablesToTranslate[i] == "{MOVE}") {
-                    translated[1] = translated[1].replace("{MOVE}", translateMove(variableName));
                 }
 				else if (variablesToTranslate[i] == "{ITEM}") {
                     translated[1] = translated[1].replace("{ITEM}", translateItem(variableName));

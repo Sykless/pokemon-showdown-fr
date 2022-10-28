@@ -1,4 +1,4 @@
-import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico } from "../translator";
+import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, isValidEnglishMenu } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 
 console.log("BattleTranslate successfully loaded !");
@@ -434,9 +434,18 @@ function updateMoveTooltip(tooltip: Element)
                 var moveHeader = moveHeaderNode as Element;
 
                 // Raw text element : move name
-                if (!moveHeader.tagName && moveHeader.textContent?.trim()) {
-                    moveName = moveHeader.textContent;
-                    moveHeader.textContent = translateMove(moveHeader.textContent);
+                if (!moveHeader.tagName && moveHeader.textContent?.trim())
+                {
+                    // Get original move if Z-Move
+                    if (moveHeader.textContent.startsWith("Z-")) {
+                        moveName = moveHeader.textContent.slice(2);
+                    }
+                    // Regular move
+                    else {
+                        moveName = moveHeader.textContent;
+                    }
+                    
+                    moveHeader.textContent = translateBattleMove(moveHeader.textContent);
                 }
                 // Move type
                 else if (moveHeader.tagName == "IMG") {
@@ -516,6 +525,32 @@ function updateMoveTooltip(tooltip: Element)
                 else if (tooltipElement.textContent.startsWith("Base power: ")) {
                     tooltipElement.textContent = translateMenu("Base power: ")
                         + translateMenu(tooltipElement.textContent.replace("Base power: ", ""));
+                }
+                // Z-Effect, translate title and label
+                else if (tooltipElement.textContent.startsWith("Z-Effect: ")) {
+                    var zEffect = tooltipElement.textContent.replace("Z-Effect: ", "");
+                    var zTranslatedEffect = "";
+
+                    // Predetermined Z-Effect
+                    if (isValidEnglishMenu(zEffect)) {
+                        zTranslatedEffect = translateMenu(zEffect);
+                    }
+                    // Stats boost
+                    else if (zEffect.includes("+")) {
+                        var statsBoosts = zEffect.split(", ");
+
+                        for (var i = 0 ; i < statsBoosts.length ; i++) {
+                            zTranslatedEffect += translateStat(statsBoosts[i].slice(0,-3)) // Boosted Stat
+                                + statsBoosts[i].slice(-3) // Boost value
+                                + (i < statsBoosts.length - 1 ? ", " : "") // Comma, if needed
+                        }
+                    }
+                    // Default : keep the Z-Effect in english
+                    else {
+                        zTranslatedEffect = zEffect;
+                    }
+
+                    tooltipElement.textContent = translateMenu("Z-Effect: ") + zTranslatedEffect;
                 }
             }
         }
@@ -660,8 +695,17 @@ function updateControlPanel(newElement: Element)
                         else if (moveButtonElement.tagName == "BUTTON") {
                             updateMove(moveButtonElement)
                         }
-                        
-                        
+                        // Gen mechanic (Mega Evolution, Z-Move, Dynamax)
+                        else if (moveButtonElement.tagName == "LABEL" && moveButtonElement.className == "megaevo") {
+                            moveButtonElement.childNodes.forEach(function (mechanicNode) {
+                                var mechanicElement = mechanicNode as Element;
+
+                                // Only translate raw text element
+                                if (mechanicElement.textContent && !mechanicElement.tagName) {
+                                    mechanicElement.textContent = translateMenu(mechanicElement.textContent);
+                                }
+                            })
+                        }
                     })
                 }
             })
@@ -727,7 +771,7 @@ function updateMove(moveMainNode: Node)
             }
             // Move
             else if (moveButton.tagName != "BR") {
-                moveButton.textContent = translateMove(moveButton.textContent);
+                moveButton.textContent = translateBattleMove(moveButton.textContent);
             }
         }
     })
@@ -951,6 +995,30 @@ function translatePokemonBattleName(pokemonName: string)
     }
 }
 
+function translateBattleMove(moveName: string)
+{
+    // Could be a Z-move
+    if (moveName.startsWith("Z-")) {
+        return translateMove(moveName.slice(2)) + " Z"
+    }
+    // Regular Pokémon name
+    else {
+        return translateMove(moveName);
+    }
+}
+
+function isValidEnglishBattleMove(moveName: string)
+{
+    // Could be a Z-move
+    if (moveName.startsWith("Z-")) {
+        return isValidEnglishMove(moveName.slice(2))
+    }
+    // Regular Pokémon name
+    else {
+        return isValidEnglishMove(moveName);
+    }
+}
+
 function updateShowdownMessage(messageElement: Element)
 {
     messageElement.childNodes.forEach(function (messagePartNode) {
@@ -966,8 +1034,8 @@ function updateShowdownMessage(messageElement: Element)
                     messagePart.textContent = translatePokemonName(messagePart.textContent);
                 }
                 // Move used
-                else if (isValidEnglishMove(messagePart.textContent)) {
-                    messagePart.textContent = translateMove(messagePart.textContent);
+                else if (isValidEnglishBattleMove(messagePart.textContent)) {
+                    messagePart.textContent = translateBattleMove(messagePart.textContent);
                 }
                 // Specific case : trainer's team
                 else if (messagePart.textContent.endsWith("'s team:")) {
