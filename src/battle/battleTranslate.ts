@@ -229,7 +229,13 @@ function isBattleOpen()
 {
     // Get all battle rooms
 	var teambuilderElement = document.querySelectorAll('[id^=room-battle-]');
+    var replayElement = document.querySelectorAll('.replay-wrapper')
+
     var battleOpen = false;
+
+    if (replayElement.length > 0) {
+        return true;
+    }
 
     teambuilderElement.forEach(function (battleRoomNode) {
         var battleRoomElement = battleRoomNode as Element;
@@ -1007,7 +1013,7 @@ function updateCommand(messageElement: Element)
         })
     }
     // Not a message, check if the message could be a command result
-    else if (app.curRoom.chatHistory.lines?.length > 0)
+    else if (app.curRoom?.chatHistory?.lines?.length > 0)
     {
         // Commands are processed on the back-end, so we can't modify the data in order to add french names
         // We could intercept the webSocket message but it seems a bit too hacky
