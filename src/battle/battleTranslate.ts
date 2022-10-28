@@ -922,7 +922,7 @@ function updatePokemonResult(newElement: Element)
         else
         {
             // Most likely in EffectDico
-            if (isValidEnglishEffect(textInfoTag.textContent)) {
+            if (isValidEnglishEffect(textInfoTag.textContent.replace(" ", " "))) {
                 textInfoTag.textContent = translateEffect(textInfoTag.textContent.replace(" ", " "));
             }
             // If not, the result could be a stolen/recycled item
