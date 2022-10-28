@@ -167,6 +167,11 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updateTurnCounter(newElement);
                     }
+                    // Turn counter
+                    else if (elementClasses.contains("rated"))
+                    {
+                        updateRatedBattle(newElement);
+                    }
                     else {
                         // No translation found
                         translatedElement = false;

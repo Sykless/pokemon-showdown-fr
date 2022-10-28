@@ -178,14 +178,18 @@ RegexValidatorMap.set(/The user '(.*)' was not found\./, "L'utilisateur '{TRAINE
 RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le match entre {TRAINER} et {TRAINER} a commencé !");
 RegexLogMessagesMap.set(/Tie between (.*) and (.*)!/, "Égalité entre {TRAINER} et {TRAINER} !");
 RegexLogMessagesMap.set(/(.*) forfeited\./, "{TRAINER} a déclaré forfait.");
-RegexLogMessagesMap.set(/(.*) disconnected and has (.*) seconds to reconnect!\./, "{TRAINER} est déconnecté et a {NUMBER} secondes pour se reconnecter !.");
+RegexLogMessagesMap.set(/(.*) disconnected and has (.*) seconds to reconnect!/, "{TRAINER} est déconnecté et a {NUMBER} secondes pour se reconnecter !");
+RegexLogMessagesMap.set(/(.*) has (.*) seconds to reconnect!/, "{TRAINER} a {NUMBER} secondes pour se reconnecter !");
 RegexLogMessagesMap.set(/(.*) reconnected and has (.*) seconds left/, "{TRAINER} n'a plus que {NUMBER} secondes.");
 RegexLogMessagesMap.set(/(.*) has (.*) seconds left\./, "{TRAINER} n'a plus que {NUMBER} secondes.");
 RegexLogMessagesMap.set(/(.*) and (.*) left/, "{TRAINER} et {TRAINER} sont partis");
 RegexLogMessagesMap.set(/(.*) and (.*) joined/, "{TRAINER_1} et {TRAINER_2} ont rejoint la partie");
 RegexLogMessagesMap.set(/(.*) left/, "{TRAINER} est parti");
 RegexLogMessagesMap.set(/(.*) joined/, "{TRAINER} a rejoint la partie");
-RegexLogMessagesMap.set(/(.*) lost due to inactivity./, "{TRAINER} a perdu pour cause inactivité.");
+RegexLogMessagesMap.set(/(.*) lost due to inactivity\./, "{TRAINER} a perdu pour cause inactivité.");
+RegexLogMessagesMap.set(/(.*)'s rating: (.*) → /, "Classement de {TRAINER} : {NUMBER} → ");
+RegexLogMessagesMap.set(/\((.*) for losing\)/, "({NUMBER} en perdant)");
+RegexLogMessagesMap.set(/\((.*) for winning\)/, "({NUMBER} en gagnant)");
 RegexLogMessagesMap.set(/Turn (.*)/, "Tour {NUMBER}");
 RegexLogMessagesMap.set(/User (.*) not found\./, "L'utilisateur {TRAINER} n'existe pas.");
 RegexLogMessagesMap.set(/Battle timer is ON: inactive players will automatically lose when time's up. \(requested by (.*)\)/, "Le Timer est activé : les joueurs inactifs perdront automatiquement quand le temps sera écoulé (demandé par {TRAINER})");
@@ -393,6 +397,7 @@ RegexLogMessagesMap.set(/(.*) is overflowing with space power!/, "La puissance d
 RegexLogMessagesMap.set(/Waggling a finger let it use (.*)!/, "Grâce à Métronome, le Pokémon lance {MOVE} !");
 RegexLogMessagesMap.set(/(.*) learned (.*)!/, "{POKEMON} apprend {MOVE} !");
 RegexLogMessagesMap.set(/\((.*) cut its own HP to power up its move!\)/, "({POKEMON} sacrifie des PV pour améliorer son attaque !)");
+RegexLogMessagesMap.set(/\((.*) only works your first turn out\.\)/, "({MOVE} ne fonctionne que le premier tour.)");
 RegexLogMessagesMap.set(/(.*) became shrouded in mist!/, "{TEAM} s'entoure de Brume !");
 RegexLogMessagesMap.set(/(.*) is no longer protected by mist!/, "La Brume autour de {TEAM} s'est dissipée !");
 RegexLogMessagesMap.set(/(.*) is protected by the mist!"/, "{POKEMON} est protégé par la Brume !");
@@ -4406,6 +4411,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" is a different rating system. It has rating and deviation values.": " est un système de classement différent. Il affiche les valeurs du rang et de l'écart.",
 	"Note that win/loss should not be used to estimate skill, since who you play against is much more important than how many times you win or lose. Our other stats like Elo and GXE are much better for estimating skill.": 
 	"Attention : une victoire ou une défaite ne suffit pas pour estimer du niveau d'une personne : le joueur contre qui tu joues est beaucoup plus important que le nombre de victoires ou de défaites. Les autres stats comme l'Elo ou le GXE sont de bien meilleurs indicateurs du niveau d'un joueur.",
+	"Rated battle": "Match classé",
 
 	// Chat rooms
 	" users)": " utilisateurs)",
@@ -4747,6 +4753,8 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Nicknames no longer ignored.": "Les surnoms ne sont plus ignorés.",
 	"Hardcore mode ON: Information not available in-game is now hidden.": "Mode Hardcore activé : Les informations non présentes dans le jeu sont maintenant cachées.",
 	"Hardcore mode OFF: Information not available in-game is now shown.": "Mode Hardcore désactivé : Les informations non présentes dans le jeu sont maintenant affichées.",
+	"Ladder isn't responding, score probably updated but might not have (Request timeout).": "Le Ladder ne répond pas, le score s'est peut-être mis à jour, mais peut-être pas (Timeout de la requête).",
+	"Ladder updating...": "Mise à jour du Ladder...",
 	"[Invalid choice] There's nothing to cancel": "[Choix invalide] Il n'y a rien à annuler",
 	"Challenge cancelled because they changed their username.": "Défi annulé car l'adversaire a changé son pseudo.",
 	"Go! ": "En avant ! ",
