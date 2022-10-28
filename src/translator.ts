@@ -94,8 +94,8 @@ RegexValidatorMap.set(/- (.*)'s gender must be (.*) because it has a move only a
 RegexValidatorMap.set(/- (.*)'s gender must be (.*)\./, "- {NICKNAME} doit être {GENDER}.");
 RegexValidatorMap.set(/- (.*) must have a (.*) nature because it has a move only available from an event \- Mints are only available starting gen 8\./, "- {NICKNAME} doit avoir une nature {NATURE} car il possède une capacité événementielle - Les Aromates ne sont pas disponibles avant la Génération 8.");
 RegexValidatorMap.set(/- (.*) must have a (.*) nature \- Mints are only available starting gen 8\./, "- {NICKNAME} doit avoir une nature {NATURE} - Les Aromates ne sont pas disponibles avant la Génération 8.");
-RegexValidatorMap.set(/- (.*) must have (.*) (.*) IVs because it has a move only available from an event\./, "- {NICKNAME} doit {NUMBER} IVs en {STATS} car il possède une capacité événementielle.");
-RegexValidatorMap.set(/- (.*) must have (.*) (.*) IVs\./, "- {NICKNAME} doit {NUMBER} IVs en {STATS}.");
+RegexValidatorMap.set(/- (.*) must have (.*) (.*) IVs because it has a move only available from an event\./, "- {NICKNAME} doit avoir {NUMBER} IVs en {STATS} car il possède une capacité événementielle.");
+RegexValidatorMap.set(/- (.*) must have (.*) (.*) IVs\./, "- {NICKNAME} doit avoir {NUMBER} IVs en {STATS}.");
 RegexValidatorMap.set(/- (.*) can only have Hidden Power (.*) because it has a move only available from an event\./, "- {NICKNAME} ne peut avoir qu'une Puissance Cachée de type {TYPE} car il possède une capacité événementielle.");
 RegexValidatorMap.set(/- (.*) can only have Hidden Power (.*)\./, "- {NICKNAME} ne peut avoir qu'une Puissance Cachée de type {TYPE}.");
 RegexValidatorMap.set(/- (.*) can't use Hidden Power Fighting because it must have at least three perfect IVs\./, "- {NICKNAME} ne peut pas avoir Puissance Cachée Combat car il doit avoir au moins trois IVs parfaits.");
@@ -137,7 +137,7 @@ RegexValidatorMap.set(/- (.*) needs to know the move (.*) to be in its (.*) form
 RegexValidatorMap.set(/- (.*) needs to know a Fairy-type move to evolve, so it can only know 3 other moves from (.*)\./, "- {NICKNAME} doit connaître une capacité de type Fée pour évoluer, il ne peut donc connaître que 3 capacités supplémentaires de {POKEMON}.");
 RegexValidatorMap.set(/- (.*) needs to know (.*) to evolve, so it can only know 3 other moves from (.*)\./, "- {NICKNAME} doit connaître {MOVE} pour évoluer, il ne peut donc connaître que 3 capacités supplémentaires de {POKEMON}.");
 RegexValidatorMap.set(/- (.*) has a hidden ability - it can't have moves only learned before gen 5\./, "- {NICKNAME} a un Talent Caché, il ne peut pas utiliser de capacités apprises seulement dans les générations < 5.");
-RegexValidatorMap.set(/- (.*)'s event\/egg moves are from an evolution, and are incompatible with its moves from (.*)\./, "- {NICKNAME} a des capacités exclusives aux générations < {NUMBER}, et sont incompatibles avec les capacités de {POKEMON}.");
+RegexValidatorMap.set(/- (.*)'s event\/egg moves are from an evolution, and are incompatible with its moves from (.*)\./, "- Les capacités oeuf événementielles de {NICKNAME} provienent d'une évolution, et sont incompatibles avec ses capacités de {POKEMON}.");
 RegexValidatorMap.set(/- (.*) has moves from before Gen (.*), which are incompatible with its moves from (.*)\./, "- Les capacités événementielles/oeuf de {NICKNAME} viennent d'une évolution, et sont incompatibles avec les capacités de {POKEMON}.");
 RegexValidatorMap.set(/- (.*) can't learn any moves at all.\./, "- {NICKNAME} ne peut pas apprendre aucune capacité.");
 RegexValidatorMap.set(/- (.*)'s move (.*) can't be Sketched\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être Gribouillée.");
@@ -550,7 +550,7 @@ RegexLogMessagesMap.set(/(.*) is radiating a fairy aura!/, "{POKEMON} dégage un
 RegexLogMessagesMap.set(/The power of (.*)'s Fire-type moves rose!/, "{POKEMON} augmente la puissance de ses capacités de type Feu !");
 RegexLogMessagesMap.set(/(.*) surrounded itself with a veil of petals!/, "{POKEMON} est protégé par le Flora-Voile !");
 RegexLogMessagesMap.set(/(.*)'s (.*) was revealed!/, "La capacité {SWAP_1_MOVE} du {SWAP_0_POKEMON} a été détectée !");
-RegexLogMessagesMap.set(/(.*)'s Forewarn alerted it to (.*)!/, "{POKEMON}"); // TOFIND : Prédiction en cas d'égalité
+RegexLogMessagesMap.set(/(.*)'s Forewarn alerted it to (.*)!/, "Prédiction du {POKEMON} le prévient de {MOVE} !");
 RegexLogMessagesMap.set(/(.*) frisked (.*) and found its (.*)!/, "{POKEMON_1} fouille {POKEMON_2} et trouve son objet {ITEM} !"); 
 RegexLogMessagesMap.set(/(.*) frisked its target and found one (.*)!/, "{POKEMON} fouille sa cible et trouve un {ITEM} !");
 RegexLogMessagesMap.set(/(.*) harvested one (.*)!/, "{POKEMON} a récolté une {ITEM} !");
