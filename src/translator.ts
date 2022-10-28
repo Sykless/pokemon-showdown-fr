@@ -4676,7 +4676,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"(The sandstorm is raging.)": "(La tempête de sable fait rage.)",
 	"The sunlight turned harsh!": "Les rayons du soleil brillent !",
 	"The harsh sunlight faded.": "Les rayons du soleil s'affaiblissent !",
-	"(The sunlight is strong.)": "Les rayons du soleil brilllent !",
+	"(The sunlight is strong.)": "Les rayons du soleil brillent !",
 	"It started to rain!": "Il commence à pleuvoir !",
 	"The rain stopped.": "La pluie s'est arrêtée !",
 	"(Rain continues to fall.)": "(La pluie continue de tomber.)",
