@@ -57,7 +57,7 @@ function onMutation(mutations: MutationRecord[])
                 // so instead we add a boolean that changes when no match is found
                 var translatedElement = true;
 
-                //console.log(newElement.outerHTML);
+                console.log(newElement.outerHTML);
 
                 if (newElement.id)
                 {
@@ -1140,9 +1140,9 @@ function updateDefaultChatMessage(messageElement: Element)
 
                 if (charElement.textContent && !charElement.tagName) {
                     charElement.textContent = translateRegexBattleMessage(charElement.textContent);
-    }
+                }
             })
-}
+        }
     }
 }
 
