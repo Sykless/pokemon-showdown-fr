@@ -477,8 +477,6 @@ function updateMoveTooltip(tooltip: Element)
                             }
                         }
                     }
-
-                    
                 })
             }
             // Move tags (priority, sound, etc)

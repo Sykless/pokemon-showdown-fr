@@ -177,6 +177,7 @@ function onMutation(mutations: MutationRecord[])
 					// Pokémon details page (Level, Gender, etc) has been loaded
 					else if (elementClasses.contains("detailsform"))
 					{
+						updatePokemonInfo(null);
 						updatePokemonDetailsForm(newElement);
 					}
 					// Clipboard element has been regenerated
@@ -1699,14 +1700,8 @@ function updatePokemonDetailsForm(resultElement: Element)
 				{
 					if (detailsNode.textContent)
 					{
-						if ("Dmax Level:" == detailsNode.textContent) {
-							// The regular translation is too long
-							detailsNode.textContent = "Niv. Dmax :"
-						}
-						else {
-							// Labels have a ":" character at the end, so we remove it and put it back again
-							detailsNode.textContent = translateMenu(detailsNode.textContent.slice(0,-1)) + " :"
-						}
+						// Labels have a ":" character at the end, so we remove it and put it back again
+						detailsNode.textContent = translateMenu(detailsNode.textContent.slice(0,-1)) + " :"
 					}
 				}
 				else if (detailsElement.tagName == "DIV")
@@ -1717,7 +1712,7 @@ function updatePokemonDetailsForm(resultElement: Element)
 
 						if (detailsValueElement.tagName == "LABEL")
 						{
-							// Labels are in fact composed of radio button and text, so we still need to iterate on children
+							// Labels are composed of radio button and text, so we still need to iterate on children
 							detailsValue.childNodes.forEach(function (detailsLabel)
 							{
 								// Only translate the text
@@ -1740,6 +1735,10 @@ function updatePokemonDetailsForm(resultElement: Element)
 									detailsSelect.options[i].text = translateType(detailsSelect.options[i].text);
 								}
 							}
+						}
+						// Regular text content (Genderless gender)
+						else if (!detailsValueElement.tagName && detailsValueElement.textContent) {
+							detailsValueElement.textContent = " " + translateMenu(detailsValueElement.textContent);
 						}
 					})
 				}
