@@ -364,7 +364,7 @@ RegexLogMessagesMap.set(/(.*) was prevented from healing!/, "{POKEMON} ne peut p
 RegexLogMessagesMap.set(/(.*)'s Heal Block wore off!/, "{POKEMON} peut à nouveau guérir !");
 RegexLogMessagesMap.set(/(.*) can't use (.*) because of Heal Block!/, "{POKEMON} ne peut pas utiliser la capacité {MOVE} à cause d'Anti-Soin !");
 RegexLogMessagesMap.set(/But it failed to affect (.*)!/, "{POKEMON} n'est pas affecté !");
-RegexLogMessagesMap.set(/The healing wish came true for (.*)!/, "Le Voeu Soin est exaucé et profite à {POKEMON}");
+RegexLogMessagesMap.set(/The healing wish came true for (.*)!/, "Le Voeu Soin est exaucé et profite à {POKEMON} !");
 RegexLogMessagesMap.set(/(.*) is ready to help (.*)!/, "{POKEMON_1} est prêt à aider {POKEMON_2} !");
 RegexLogMessagesMap.set(/(.*) became cloaked in freezing air!/, "{POKEMON} est entouré d'un air glacial !");
 RegexLogMessagesMap.set(/(.*) sealed any moves its target shares with it!/, "{POKEMON} bloque les capacités en commun avec l'adversaire !");
