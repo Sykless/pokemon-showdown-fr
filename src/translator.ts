@@ -274,7 +274,7 @@ RegexLogMessagesMap.set(/(.*) used /, "{POKEMON} utilise ");
 RegexLogMessagesMap.set(/\((.*) lost (.*) of its health!\)/, "({POKEMON} a perdu {PERCENTAGE} de ses points de vie !)");
 RegexLogMessagesMap.set(/(.*)'s HP is full!/, "Les PV de {POKEMON} sont au max !");
 RegexLogMessagesMap.set(/\[(.*)'s (.*)\]/, "[{SWAP_1_ABILITY} de {SWAP_0_POKEMON}]");
-RegexLogMessagesMap.set(/"(.*) and (.*) switched places!"/, "{POKEMON_1} et {POKEMON_2} échangent leur place !");
+RegexLogMessagesMap.set(/(.*) and (.*) switched places!/, "{POKEMON_1} et {POKEMON_2} échangent leur place !");
 RegexLogMessagesMap.set(/It's super effective on (.*)!/, "C'est super efficace sur {POKEMON} !");
 RegexLogMessagesMap.set(/It's not very effective on (.*)\./, "Ce n'est pas très efficace sur {POKEMON}...");
 RegexLogMessagesMap.set(/A critical hit on (.*)!/, "Coup critique infligé à {POKEMON} !");
@@ -328,7 +328,7 @@ RegexLogMessagesMap.set(/The sea of fire around (.*) disappeared!/, "La mer de f
 RegexLogMessagesMap.set(/(.*) was hurt by the sea of fire!/, "{POKEMON} est plongé dans un océan de feu !");
 RegexLogMessagesMap.set(/(.*) became trapped in the fiery vortex!/, "{POKEMON} est piégé dans le tourbillon de feu !");
 RegexLogMessagesMap.set(/The bursting flame hit (.*)!/, "{POKEMON} est arrosé d'une gerbe de flammes !");
-RegexLogMessagesMap.set(/(.*) flung its (.*)!/, "{POKEMON} lance son objet (.*) !");
+RegexLogMessagesMap.set(/(.*) flung its (.*)!/, "{POKEMON} lance son objet {ITEM} !");
 RegexLogMessagesMap.set(/(.*) flew up high!/, "{POKEMON} s'envole !");
 RegexLogMessagesMap.set(/(.*) is getting pumped!/, "{POKEMON} se gonfle !");
 RegexLogMessagesMap.set(/(.*) used the (.*) to get pumped!/, "{POKEMON} est plein d'énergie grâce à {ITEM} !");

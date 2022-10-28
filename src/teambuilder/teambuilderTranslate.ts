@@ -188,7 +188,6 @@ function onMutation(mutations: MutationRecord[])
 					else if (newElement.tagName == "BUTTON")
 					{
 						translateRawElement(newElement);
-						// console.log("Non-processed nodes : " + newElement.outerHTML);
 					}
 				}
 			}
