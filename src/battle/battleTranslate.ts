@@ -468,8 +468,8 @@ function updateMoveTooltip(tooltip: Element)
                         }
                         // Not a priority move : section element is the move description
                         else if (sectionElement.textContent != ".") {
-                            // In hardcore mode, display short desc
-                            var frenchDesc = app.curRoom?.battle?.hardcoreMode ? 
+                            // In hardcore mode or if there's no long desc, display short desc
+                            var frenchDesc = app.curRoom?.battle?.hardcoreMode || !MovesLongDescDico[moveName] ? 
                                 MovesShortDescDico[moveName] : MovesLongDescDico[moveName];
                             
                             if (frenchDesc) {
