@@ -311,8 +311,8 @@ RegexLogMessagesMap.set(/The pointed stones disappeared from around (.*)!/, "Les
 RegexLogMessagesMap.set(/(.*) was seeded!/, "{POKEMON} est infecté !");
 RegexLogMessagesMap.set(/(.*)'s health is sapped by Leech Seed!/, "Vampigraine draine l'énergie du {POKEMON} !");
 RegexLogMessagesMap.set(/(.*) was freed from Leech Seed!/, "{POKEMON} est libéré de la capacité Vampigraine !");
-RegexLogMessagesMap.set(/(.*) put in a substitute!/, "{POKEMON} a déjà un clone !");
-RegexLogMessagesMap.set(/(.*) already has a substitute!/, "{POKEMON} crée un clone !");
+RegexLogMessagesMap.set(/(.*) put in a substitute!/, "{POKEMON} crée un clone !");
+RegexLogMessagesMap.set(/(.*) already has a substitute!/, "{POKEMON} a déjà un clone !");
 RegexLogMessagesMap.set(/(.*)'s substitute faded!/, "Le clone du {POKEMON} disparaît...");
 RegexLogMessagesMap.set(/The substitute took damage for (.*)!/, "Le clone prend les dégâts à la place du {POKEMON} !");
 RegexLogMessagesMap.set(/(.*) surrounded itself with a veil of water!/, "{POKEMON} s'entoure d'un voile d'eau !");
