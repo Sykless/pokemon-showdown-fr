@@ -627,7 +627,7 @@ RegexLogMessagesMap.set(/The (.*) lowered drastically (.*)'s (.*)!/, "L'objet {S
 RegexLogMessagesMap.set(/(.*) switched stat changes with its target!/, "{POKEMON} intervertit ses changements de stats avec ceux de sa cible !");
 RegexLogMessagesMap.set(/(.*) switched all changes to its Attack and Sp. Atk with its target!/, "{POKEMON} intervertit les changements d'Attaque et d'Attaque Spéciale avec ceux de sa cible !");
 RegexLogMessagesMap.set(/(.*) switched all changes to its Defense and Sp. Def with its target!/, "{POKEMON} intervertit les changements de Défense et de Défense Spéciale avec ceux de sa cible !");
-RegexLogMessagesMap.set(/(.*) copied (.*)'s stat changes!\)/, "{POKEMON_1} copie les changements de stats du {POKEMON_2} !");
+RegexLogMessagesMap.set(/(.*) copied (.*)'s stat changes!/, "{POKEMON_1} copie les changements de stats du {POKEMON_2} !");
 RegexLogMessagesMap.set(/(.*)'s stat changes were removed!/, "Les stats du {POKEMON} sont revenues à la normale !");
 RegexLogMessagesMap.set(/(.*) returned its decreased stats to normal using its Z-Power!/, "{POKEMON}");
 RegexLogMessagesMap.set(/(.*)'s stat changes were inverted!/, "Les changements de stats du {POKEMON} sont inversés !");
