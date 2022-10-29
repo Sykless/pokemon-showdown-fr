@@ -344,74 +344,82 @@ function updatePokemonTooltip(tooltip: Element)
                         // Translate status
                         tooltipSubInfoElement.textContent = translateEffect(tooltipSubInfoElement.textContent)
                     }
-                    // Info value
-                    else
+                    // Estimated speed
+                    else if (currentDisplayedInfo == SPEED) {
+                        tooltipSubInfoElement.textContent = tooltipSubInfoElement.textContent.replace(" to "," à ");
+                    }
+                    // Possible Ability
+                    else if (currentDisplayedInfo == POSSIBLE_ABILITIES)
                     {
-                        // Estimated speed
-                        if (currentDisplayedInfo == SPEED) {
-                            tooltipSubInfoElement.textContent = tooltipSubInfoElement.textContent.replace(" to "," à ");
-                        }
-                        // Possible Ability
-                        else if (currentDisplayedInfo == POSSIBLE_ABILITIES)
-                        {
-                            var possibleAbilities = tooltipSubInfoElement.textContent.split(",");
-                            var translatedAbilities = "";
+                        var possibleAbilities = tooltipSubInfoElement.textContent.split(",");
+                        var translatedAbilities = "";
 
-                            // Remove the space at the beggining of each ability, translate it and reformat it
-                            for (var i = 0 ; i < possibleAbilities.length ; i++) {
-                                translatedAbilities += " " + translateAbility(possibleAbilities[i].slice(1))
-                                translatedAbilities += i == possibleAbilities.length - 1 ? "" : ",";
-                            }
-
-                            tooltipSubInfoElement.textContent = translatedAbilities;
+                        // Remove the space at the beggining of each ability, translate it and reformat it
+                        for (var i = 0 ; i < possibleAbilities.length ; i++) {
+                            translatedAbilities += " " + translateAbility(possibleAbilities[i].slice(1))
+                            translatedAbilities += i == possibleAbilities.length - 1 ? "" : ",";
                         }
-                        // Ability
-                        else if (currentDisplayedInfo == ABILITY)
+
+                        tooltipSubInfoElement.textContent = translatedAbilities;
+                    }
+                    // Ability
+                    else if (currentDisplayedInfo == ABILITY)
+                    {
+                        if (tooltipSubInfoElement.textContent.includes(" / ")) {
+                            // Remove all styling, translate the ability and reformat it
+                            tooltipSubInfoElement.textContent = " " + translateAbility(tooltipSubInfoElement.textContent
+                                .replace(" / ","")
+                                .slice(1)) + " / ";
+                        }
+                        else
                         {
-                            if (tooltipSubInfoElement.textContent.includes(" / ")) {
-                                // Remove all styling, translate the ability and reformat it
-                                tooltipSubInfoElement.textContent = " " + translateAbility(tooltipSubInfoElement.textContent
-                                    .replace(" / ","")
-                                    .slice(1)) + " / ";
-                            }
-                            else
+                            // Just remove the space
+                            tooltipSubInfoElement.textContent = " " + translateAbility(tooltipSubInfoElement.textContent.slice(1))
+                        }
+                    }
+                    // Item
+                    else if (currentDisplayedInfo == ITEM)
+                    {
+                        if (tooltipSubInfoElement.textContent.includes(" (")) {
+                            var itemInfos = tooltipSubInfoElement.textContent.split(" (");
+                            var itemEffect = itemInfos[1].split("was ");
+
+                            if (itemEffect.length > 1)
                             {
-                                // Just remove the space
-                                tooltipSubInfoElement.textContent = " " + translateAbility(tooltipSubInfoElement.textContent.slice(1))
-                            }
-                        }
-                        // Item
-                        else if (currentDisplayedInfo == ITEM)
-                        {
-                            if (tooltipSubInfoElement.textContent.includes(" (")) {
-                                var itemInfos = tooltipSubInfoElement.textContent.split(" (");
-                                var itemEffect = itemInfos[1].split(" was ");
-
-                                if (itemEffect.length > 1) {
+                                // Old item
+                                if (itemEffect[0] == "") {
                                     tooltipSubInfoElement.textContent = " " + translateItem(itemInfos[0].slice(1))
-                                    + " (" + translateItem(itemEffect[0]) + " a été " + translateMenu(itemEffect[1].slice(0,-1)) + ")"
+                                        + " (était " + translateItem(itemEffect[1].slice(0,-1)) + ")"
                                 }
+                                // Old item + effect
                                 else {
                                     tooltipSubInfoElement.textContent = " " + translateItem(itemInfos[0].slice(1))
-                                    + " (" + translateMenu(itemEffect[0].slice(0,-1)) + ")";
+                                        + " (" + translateItem(itemEffect[0]) + " a été " + translateMenu(itemEffect[1].slice(0,-1)) + ")";
                                 }
                             }
                             else {
-                                tooltipSubInfoElement.textContent = " " + translateItem(tooltipSubInfoElement.textContent.slice(1));
+                                tooltipSubInfoElement.textContent = " " + translateItem(itemInfos[0].slice(1))
+                                + " (" + translateMenu(itemEffect[0].slice(0,-1)) + ")";
                             }
                         }
-                        // Stats, don't translate values - however status specific cases could be present
-                        else if (currentDisplayedInfo == STATS)
-                        {
-                            // Deal with specific cases
-                            if (tooltipSubInfoElement.textContent.startsWith(" Next damage: ")) {
-                                tooltipSubInfoElement.textContent = translateMenu(" Next damage: ")
-                                    + tooltipSubInfoElement.textContent.replace(" Next damage: ", "");
-                            }
-                            else if (tooltipSubInfoElement.textContent.startsWith(" Turns asleep: ")) {
-                                tooltipSubInfoElement.textContent = translateMenu(" Turns asleep: ")
-                                    + tooltipSubInfoElement.textContent.replace(" Turns asleep: ", "");
-                            }
+                        else {
+                            tooltipSubInfoElement.textContent = " " + translateItem(tooltipSubInfoElement.textContent.slice(1));
+                        }
+                    }
+                    // HP, don't translate values - however status specific cases could be present
+                    else if (currentDisplayedInfo == HP)
+                    {
+                        // Deal with specific cases
+                        if (tooltipSubInfoElement.textContent.startsWith(" Next damage: ")) {
+                            tooltipSubInfoElement.textContent = translateMenu(" Next damage: ")
+                                + tooltipSubInfoElement.textContent.replace(" Next damage: ", "");
+                        }
+                        else if (tooltipSubInfoElement.textContent.startsWith(" Turns asleep: ")) {
+                            tooltipSubInfoElement.textContent = translateMenu(" Turns asleep: ")
+                                + tooltipSubInfoElement.textContent.replace(" Turns asleep: ", "");
+                        }
+                        else if (tooltipSubInfoElement.textContent == " (fainted)") {
+                            tooltipSubInfoElement.textContent = translateMenu(" (fainted)");
                         }
                     }
                 }
@@ -1327,7 +1335,7 @@ function updateRatedBattle(ratedBattleElement: Element)
 function getCurrentDisplayedInfo(infoTitle: string)
 {
     if (infoTitle.includes("HP")) {
-        return STATS;
+        return HP;
     }
     else if (infoTitle.includes("Ability")) {
         return ABILITY;
