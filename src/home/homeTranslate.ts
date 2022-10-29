@@ -1,4 +1,4 @@
-import { isValidEnglishMenu, MenuDico, translateMenu, translatePokemonTeam, translateRawElement, translateRegexBattleMessage, translateRegexValidatorMessage } from "../translator";
+import { isValidEnglishMenu, MenuDico, translateMenu, translatePokemonTeam, translateRawElement, translateRegexBattleMessage, translateRegexPopupMessage } from "../translator";
 
 console.log("HomeTranslate successfully loaded !");
 
@@ -971,24 +971,24 @@ function updateValidatePopup(pElement: Element)
             if (isValidEnglishMenu(popupElement.textContent)) {
                 popupElement.textContent = translateMenu(popupElement.textContent);
             }
-            // Unknown menu message : most likely the team validator
+            // Unknown menu message : most likely the team popupmessage
             else {
-                var translatedValidator = "";
+                var translatedPopupMessage = "";
                 var teamValidation = popupElement.textContent.split("\n");
 
                 // Translate every teamValidation element
                 for (var i = 0 ; i < teamValidation.length ; i++)
                 {
                     if (teamValidation[i]) {
-                        translatedValidator += translateRegexValidatorMessage(teamValidation[i])
+                        translatedPopupMessage += translateRegexPopupMessage(teamValidation[i])
                     }
 
                     if (i < teamValidation.length - 1) {
-                        translatedValidator += "\n";
+                        translatedPopupMessage += "\n";
                     }
                 }
 
-                popupElement.textContent = translatedValidator;
+                popupElement.textContent = translatedPopupMessage;
             }
         }
     })
