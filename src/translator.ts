@@ -4011,6 +4011,7 @@ export const WeatherDico: { [englishName: string]: string; } = {
 export const BoostEffectDico: { [englishName: string]: string; } = {
 	"Terrain Pulse boost": "boost de Champlification",
 	"Terrain boost": "boost du Champ",
+	"no Terrain": "pas de Champ",
 	"Misty Terrain + grounded target": "Champ Brumeux + cible au sol",
 	"Grassy Terrain + grounded target": "Champ Herbu + cible au sol",
 	"Expanding Force + Psychic Terrain boost": "Vaste Pouvoir + boost du Champ Psychique",
@@ -4025,7 +4026,17 @@ export const BoostEffectDico: { [englishName: string]: string; } = {
 	"Smelling Salts + Paralysis": "Stimulant + Paralysie",
 	"Venoshock + Poison": "Choc Venin + Poison",
 	"Wake-Up Slap + Sleep": "Réveil Forcé + Sommeil",
+	"Rain Dance": "Pluie",
+	"Sunny Day": "Soleil",
 	"Burn": "Brûlure",
+	"Poison type": "Type Poison",
+	"not Ice-type": "pas de type Glace",
+	"approximate": "approximation",
+	"blocked by target's Dynamax": "bloqué par le Dynamax de la cible",
+	"fails if target's Speed is higher": "échoue si la Vitesse de la cible est supérieure",
+	"fails if target's level is higher": "échoue si le niveau de la cible est supérieur",
+	"FAILS: target's level is higher": "ÉCHOUE : le niveau de la cible est inférieur",
+	"+1% per level above target": "+1% par niveau supérieur à celui de la cible"
 }
 
 export const MoveEffectDico: { [englishName: string]: string; } = {

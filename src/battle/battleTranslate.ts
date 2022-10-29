@@ -526,8 +526,36 @@ function updateMoveTooltip(tooltip: Element)
                 }
                 // Accuracy, translate title and potential label (can't miss, etc)
                 else if (tooltipElement.textContent.startsWith("Accuracy: ")) {
-                    tooltipElement.textContent = translateMenu("Accuracy: ")
-                        + translateMenu(tooltipElement.textContent.replace("Accuracy: ", ""));
+                    var baseAccuracy = tooltipElement.textContent.replace("Accuracy: ", "");
+                    var baseAccuracyEffect = baseAccuracy.split(" (");
+
+                    if (baseAccuracyEffect.length > 1)
+                    {
+                        var boostEffect = baseAccuracyEffect[1].split("× from " );
+
+                        // Boost value provided
+                        if (boostEffect.length > 1)
+                        {
+                            var translatedBoostEffect = translatePossibleBoostOrigin(boostEffect[1].slice(0,-1)) // Remove parenthesis at the end
+
+                            tooltipElement.textContent = translateMenu("Accuracy: ") // Accuracy label
+                                + translateMenu(baseAccuracyEffect[0]) // Accuracy value (could also be a label - can't miss)
+                                + " (×" + boostEffect[0] + " grâce à " // Boost value
+                                + translatedBoostEffect + ")"; // Boost effect
+                        }
+                        // No boost value, only the boost effect
+                        else {
+                            var translatedBoostEffect = translatePossibleBoostOrigin(baseAccuracyEffect[1].slice(0,-1)) // Remove parenthesis at the end
+
+                            tooltipElement.textContent = translateMenu("Accuracy: ") // Accuracy label
+                                + translateMenu(baseAccuracyEffect[0]) // Accuracy value (could also be a label - can't miss)
+                                + " (" + translatedBoostEffect + ")"; // Boost effect
+                        }
+                    }
+                    else {
+                        tooltipElement.textContent = translateMenu("Accuracy: ") // Accuracy label
+                            + translateMenu(baseAccuracy); // Accuracy value (could also be a label - can't miss)
+                    }
                 }
                 // Base Power, translate title and potential label
                 else if (tooltipElement.textContent.startsWith("Base power: ")) {
@@ -537,37 +565,24 @@ function updateMoveTooltip(tooltip: Element)
                     if (basePowerEffect.length > 1)
                     {
                         var boostEffect = basePowerEffect[1].split("× from " );
-                        var translatedBoostEffect = "";
 
+                        // Boost value provided
                         if (boostEffect.length > 1)
                         {
-                            var boostOrigin = boostEffect[1].slice(0,-1) // Remove parenthesis at the end
-
-                            if (isValidEnglishBoostEffect(boostOrigin)) {
-                                translatedBoostEffect = translateBoostEffect(boostOrigin);
-                            }
-                            else if (isValidEnglishItem(boostOrigin)) {
-                                translatedBoostEffect = translateItem(boostOrigin);
-                            }
-                            else if (isValidEnglishAbility(boostOrigin)) {
-                                translatedBoostEffect = translateAbility(boostOrigin);
-                            }
-                            else if (isValidEnglishWeather(boostOrigin)) {
-                                translatedBoostEffect = translateWeather(boostOrigin);
-                            }
-                            // Default : keep english translation
-                            else {
-                                translatedBoostEffect = boostOrigin;
-                            }
+                            var translatedBoostEffect = translatePossibleBoostOrigin(boostEffect[1].slice(0,-1)) // Remove parenthesis at the end
 
                             tooltipElement.textContent = translateMenu("Base power: ") // Base power label
                                 + basePowerEffect[0] // Base power value
-                                + " (" + boostEffect[0] + "× grâce à " // Boost value
-                                + translatedBoostEffect + ")"
+                                + " (×" + boostEffect[0] + " grâce à " // Boost value
+                                + translatedBoostEffect + ")" // Boost effect
                         }
+                        // No boost value, only the boost effect
                         else {
+                            var translatedBoostEffect = translatePossibleBoostOrigin(basePowerEffect[1].slice(0,-1)) // Remove parenthesis at the end
+
                             tooltipElement.textContent = translateMenu("Base power: ") // Base power label
-                                + basePower // Base power value
+                                + basePowerEffect[0] // Base power value
+                                + " (" + translatedBoostEffect + ")" // Boost effect
                         }
                     }
                     else {
@@ -1046,6 +1061,31 @@ function updatePokemonResult(newElement: Element)
                 console.log("Unknown result " + newElement.outerHTML)
             }
         }
+    }
+}
+
+function translateBoost(powerValue: string)
+{
+
+}
+
+function translatePossibleBoostOrigin(boostOrigin: string)
+{
+    if (isValidEnglishBoostEffect(boostOrigin)) {
+        return translateBoostEffect(boostOrigin);
+    }
+    else if (isValidEnglishItem(boostOrigin)) {
+        return translateItem(boostOrigin);
+    }
+    else if (isValidEnglishAbility(boostOrigin)) {
+        return translateAbility(boostOrigin);
+    }
+    else if (isValidEnglishWeather(boostOrigin)) {
+        return translateWeather(boostOrigin);
+    }
+    // Default : keep english translation
+    else {
+        return boostOrigin;
     }
 }
 
