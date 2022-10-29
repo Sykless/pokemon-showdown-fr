@@ -518,7 +518,7 @@ RegexLogMessagesMap.set(/(.*) is afflicted by the curse!/, "{POKEMON} est touch�
 RegexLogMessagesMap.set(/(.*) is hoping to take its attacker down with it!/, "{POKEMON} veut emmener son ennemi au tapis !");
 RegexLogMessagesMap.set(/(.*) took its attacker down with it!/, "{POKEMON} emmène son adversaire au tapis !");
 RegexLogMessagesMap.set(/(.*) burrowed its way under the ground!/, "{POKEMON} se cache dans le sol !");
-RegexLogMessagesMap.set(/(.*)'s (.*) was disabled!/, "La capacité {SWAP_0_MOVE} du {SWAP_1_POKEMON} est mise sous entrave !");
+RegexLogMessagesMap.set(/(.*)'s (.*) was disabled!/, "La capacité {SWAP_1_MOVE} du {SWAP_0_POKEMON} est mise sous entrave !");
 RegexLogMessagesMap.set(/(.*)'s move is no longer disabled!/, "La capacité du {POKEMON} n'est plus sous entrave !");
 RegexLogMessagesMap.set(/(.*) hid underwater!/, "{POKEMON} se cache sous l'eau !");
 RegexLogMessagesMap.set(/(.*) chose Doom Desire as its destiny!/, "{POKEMON} souhaite le déclenchement de la capacité Voeu Destructeur !");
