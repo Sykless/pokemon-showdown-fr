@@ -1615,6 +1615,7 @@ function updateStatForm(statFormNode: Element)
 					if (natureSelect.tagName == "SELECT")
 					{
 						var natureNumber = natureSelect.options.length - 1;
+						var selectedNature = natureSelect.value;
 
 						for (var i = natureNumber ; i >= 0 ; i--)
 						{
@@ -1645,9 +1646,13 @@ function updateStatForm(statFormNode: Element)
 						// Alphabetically sort the french natures
 						frenchNaturesList.sort();
 
+						// Create new Option element with translated nature
 						for (var i = 0 ; i < frenchNaturesList.length ; i++) {
 							natureSelect.options[i] = new Option(frenchNaturesList[i][0], frenchNaturesList[i][1]);;
 						}
+
+						// Set selected option
+						natureSelect.value = selectedNature;
 					}
 				})
 			}
