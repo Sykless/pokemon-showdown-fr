@@ -695,13 +695,13 @@ function updateControlPanel(newElement: Element)
                         else if (moveButtonElement.tagName == "BUTTON") {
                             updateMove(moveButtonElement)
                         }
-                        // Gen mechanic (Mega Evolution, Z-Move, Dynamax)
-                        else if (moveButtonElement.tagName == "LABEL" && moveButtonElement.className == "megaevo") {
+                        // Gen mechanic (Mega Evolution, Z-Move, Dynamax) or message
+                        else if (["LABEL", "EM"].includes(moveButtonElement.tagName)) {
                             moveButtonElement.childNodes.forEach(function (mechanicNode) {
                                 var mechanicElement = mechanicNode as Element;
 
-                                // Only translate raw text element
-                                if (mechanicElement.textContent && !mechanicElement.tagName) {
+                                // Only translate raw or strong text element
+                                if (mechanicElement.textContent && (!mechanicElement.tagName || mechanicElement.tagName == "STRONG")) {
                                     mechanicElement.textContent = translateMenu(mechanicElement.textContent);
                                 }
                             })
@@ -724,15 +724,32 @@ function updateControlPanel(newElement: Element)
                 }
                 else if (switchOption.className == "switchmenu")
                 {
-                    switchOption.childNodes.forEach(function (pokemonMainNode) {
-                        pokemonMainNode.childNodes.forEach(function (pokemonButtonNode) {
-                            var pokemonButton = pokemonButtonNode as Element;
+                    switchOption.childNodes.forEach(function (switchNode)
+                    {
+                        var switchElement = switchNode as Element;
 
-                            // The only non-span element is the Pokémon name
-                            if (pokemonButton.tagName != "SPAN" && pokemonButton.textContent) {
-                                pokemonButton.textContent = translatePokemonName(pokemonButton.textContent);
-                            }
-                        })
+                        // Switch option
+                        if (switchElement.tagName == "BUTTON") {
+                            switchElement.childNodes.forEach(function (pokemonButtonNode) {
+                                var pokemonButton = pokemonButtonNode as Element;
+    
+                                // The only non-span element is the Pokémon name
+                                if (pokemonButton.tagName != "SPAN" && pokemonButton.textContent) {
+                                    pokemonButton.textContent = translatePokemonName(pokemonButton.textContent);
+                                }
+                            })
+                        }
+                        // Trapped message
+                        else if (switchElement.tagName == "EM") {
+                            switchElement.childNodes.forEach(function (switchMessageNode) {
+                                var switchMessage = switchMessageNode as Element;
+
+                                // Only translate raw or strong text element
+                                if (switchMessage.textContent && (!switchMessage.tagName || switchMessage.tagName == "STRONG")) {
+                                    switchMessage.textContent = translateMenu(switchMessage.textContent);
+                                }
+                            })
+                        }
                     })
                 }
             })

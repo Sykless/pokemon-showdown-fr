@@ -173,6 +173,7 @@ RegexValidatorMap.set(/- (.*)'s ability (.*) is not in the list of allowed abili
 RegexValidatorMap.set(/- (.*)'s nature (.*) is not in the list of allowed abilities\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'est pas dans la liste des natures autorisées.");
 RegexValidatorMap.set(/The room "(.*)" does not exist\./, "Le salon {ROOM} n'existe pas.");
 RegexValidatorMap.set(/The user '(.*)' was not found\./, "L'utilisateur '{TRAINER}' n'a pas été trouvé.");
+RegexValidatorMap.set(/You are trapped and cannot select (.*)!/, "Tu es piégé, tu ne peux pas sélectionner {POKEMON} !");
 
 // TRAINER
 RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le match entre {TRAINER} et {TRAINER} a commencé !");
@@ -4351,6 +4352,12 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Switch": "Switcher",
 	" Mega Evolution": " Méga-Évolution",
 	" Z-Power": " Force Z",
+	" Ultra Burst": " Ultra-Explosion",
+	"You ": "Tu as ",
+	"might": "peut-être",
+	" have some moves disabled, so you won't be able to cancel an attack!": " des capacités entravées, tu ne pourras pas annuler une attaque !",
+	" be trapped, so you won\'t be able to cancel a switch!": " été piégé, tu ne pourras donc pas annuler un switch !",
+	"You are trapped and cannot switch!": "Tu es piégé et tu ne peux pas switcher !",
 	"Accuracy: ": "Précision : ",
 	"Z-Effect: ": "Effet Z : ",
 	"can't miss": "ne peut pas rater",
