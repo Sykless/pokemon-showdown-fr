@@ -1,4 +1,4 @@
-import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, isValidEnglishMenu } from "../translator";
+import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, isValidEnglishMenu, isValidEnglishAbility, isValidEnglishWeather, isValidEnglishBoostEffect, translateBoostEffect } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 
 console.log("BattleTranslate successfully loaded !");
@@ -394,7 +394,7 @@ function updatePokemonTooltip(tooltip: Element)
                                 // Old item + effect
                                 else {
                                     tooltipSubInfoElement.textContent = " " + translateItem(itemInfos[0].slice(1))
-                                        + " (" + translateItem(itemEffect[0]) + " a été " + translateMenu(itemEffect[1].slice(0,-1)) + ")";
+                                        + " (" + translateItem(itemEffect[0].slice(0,-1)) + " a été " + translateMenu(itemEffect[1].slice(0,-1)) + ")";
                                 }
                             }
                             else {
@@ -531,8 +531,49 @@ function updateMoveTooltip(tooltip: Element)
                 }
                 // Base Power, translate title and potential label
                 else if (tooltipElement.textContent.startsWith("Base power: ")) {
-                    tooltipElement.textContent = translateMenu("Base power: ")
-                        + translateMenu(tooltipElement.textContent.replace("Base power: ", ""));
+                    var basePower = tooltipElement.textContent.replace("Base power: ", "");
+                    var basePowerEffect = basePower.split(" (");
+
+                    if (basePowerEffect.length > 1)
+                    {
+                        var boostEffect = basePowerEffect[1].split("× from " );
+                        var translatedBoostEffect = "";
+
+                        if (boostEffect.length > 1)
+                        {
+                            var boostOrigin = boostEffect[1].slice(0,-1) // Remove parenthesis at the end
+
+                            if (isValidEnglishBoostEffect(boostOrigin)) {
+                                translatedBoostEffect = translateBoostEffect(boostOrigin);
+                            }
+                            else if (isValidEnglishItem(boostOrigin)) {
+                                translatedBoostEffect = translateItem(boostOrigin);
+                            }
+                            else if (isValidEnglishAbility(boostOrigin)) {
+                                translatedBoostEffect = translateAbility(boostOrigin);
+                            }
+                            else if (isValidEnglishWeather(boostOrigin)) {
+                                translatedBoostEffect = translateWeather(boostOrigin);
+                            }
+                            // Default : keep english translation
+                            else {
+                                translatedBoostEffect = boostOrigin;
+                            }
+
+                            tooltipElement.textContent = translateMenu("Base power: ") // Base power label
+                                + basePowerEffect[0] // Base power value
+                                + " (" + boostEffect[0] + "× grâce à " // Boost value
+                                + translatedBoostEffect + ")"
+                        }
+                        else {
+                            tooltipElement.textContent = translateMenu("Base power: ") // Base power label
+                                + basePower // Base power value
+                        }
+                    }
+                    else {
+                        tooltipElement.textContent = translateMenu("Base power: ") // Base power label
+                            + basePower // Base power value
+                    }
                 }
                 // Z-Effect, translate title and label
                 else if (tooltipElement.textContent.startsWith("Z-Effect: ")) {

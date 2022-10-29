@@ -7,12 +7,13 @@ const NATURE = 5;
 const STAT = 6;
 const EFFECT = 7;
 const WEATHER = 8
-const MOVEEFFECT = 9
-const HEADER = 10;
-const MENU = 11;
-const FILTER = 12;
-const POPUPMESSAGE = 13;
-const LOGMESSAGE = 14;
+const BOOSTEFFECT = 9;
+const MOVEEFFECT = 10;
+const HEADER = 11;
+const MENU = 12;
+const FILTER = 13;
+const POPUPMESSAGE = 14;
+const LOGMESSAGE = 15;
 
 
 export const RegexPopupMessagesMap = new Map();
@@ -3966,7 +3967,7 @@ export const EffectsDico: { [englishName: string]: string; } = {
 	"Restored": "Restauré",
 }
 
-export const WeatherDicos: { [englishName: string]: string; } = {
+export const WeatherDico: { [englishName: string]: string; } = {
 	// Weathers
 	"Sun": "Soleil",
 	"Rain": "Pluie",
@@ -4007,7 +4008,27 @@ export const WeatherDicos: { [englishName: string]: string; } = {
 	"(no weather)": "(pas de météo)"
 }
 
-export const MoveEffectDicos: { [englishName: string]: string; } = {
+export const BoostEffectDico: { [englishName: string]: string; } = {
+	"Terrain Pulse boost": "boost de Champlification",
+	"Terrain boost": "boost du Champ",
+	"Misty Terrain + grounded target": "Champ Brumeux + cible au sol",
+	"Grassy Terrain + grounded target": "Champ Herbu + cible au sol",
+	"Expanding Force + Psychic Terrain boost": "Vaste Pouvoir + boost du Champ Psychique",
+	"Misty Explosion + Misty Terrain boost": "Explo-Brume + boost du Champ Brumeux",
+	"Rising Voltage + Electric Terrain boost": "Monte-Tension + Champ Électrifié",
+	"Fairy Aura + Aura Break": "Aura Féérique + Aura Inversée",
+	"Dark Aura + Aura Break": "Aura Ténébreuse + Aura Inversée",
+	"Acrobatics + no item": "Acrobatie + pas d'objet",
+	"Brine + target below half HP": "Saumure + cible en dessous de 50% PV",
+	"Facade + status": "Façade + statut",
+	"Hex + status": "Châtiment + statut",
+	"Smelling Salts + Paralysis": "Stimulant + Paralysie",
+	"Venoshock + Poison": "Choc Venin + Poison",
+	"Wake-Up Slap + Sleep": "Réveil Forcé + Sommeil",
+	"Burn": "Brûlure",
+}
+
+export const MoveEffectDico: { [englishName: string]: string; } = {
 	
 	"The user thaws out if it is frozen.": "L'utilisateur est dégelé.",
 	"Not blocked by Protect ": "Pas bloqué par Abri ",
@@ -4878,11 +4899,11 @@ export const CosmeticForms: Array<string> = [
 ]
 
 const MainDico: Array<{ [englishName: string]: string; }>  = [
-	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, EffectsDico, WeatherDicos, MoveEffectDicos, HeadersDico, MenuDico, FiltersDico, PopupMessagesDico, LogMessagesDico
+	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, EffectsDico, WeatherDico, BoostEffectDico, MoveEffectDico, HeadersDico, MenuDico, FiltersDico, PopupMessagesDico, LogMessagesDico
 ]
 
 const LogTranslationType: Array<string> = [
-	"pokémon", "ability", "move", "item", "type", "nature", "stat", "effect", "weather", "moveeffect", "header", "menu", "filter", "popupmessage", "logmessage"
+	"pokémon", "ability", "move", "item", "type", "nature", "stat", "effect", "weather", "boosteffect", "moveeffect", "header", "menu", "filter", "popupmessage", "logmessage"
 ]
 
 function translateToFrench(englishWord: string, translationType: number)
@@ -4979,6 +5000,10 @@ export function translateWeather(englishWeather: string) {
 	return translateToFrench(englishWeather, WEATHER);
 }
 
+export function translateBoostEffect(englishBoostEffect: string) {
+	return translateToFrench(englishBoostEffect, BOOSTEFFECT);
+}
+
 export function translateMoveEffect(englishMoveEffect: string) {
 	return translateToFrench(englishMoveEffect, MOVEEFFECT);
 }
@@ -5039,6 +5064,10 @@ export function translateEffectToEnglish(frenchEffect: string) {
 
 export function translateWeatherToEnglish(frenchWeather: string) {
 	return translateToEnglish(frenchWeather, WEATHER);
+}
+
+export function translateBoostEffectToEnglish(frenchBoostEffect: string) {
+	return translateToEnglish(frenchBoostEffect, BOOSTEFFECT);
 }
 
 export function translateMoveEffectToEnglish(frenchMoveEffect: string) {
@@ -5111,6 +5140,10 @@ export function isValidFrenchHeader(frenchHeader: string) {
 	return translateToEnglish(frenchHeader, HEADER) != frenchHeader;
 }
 
+export function isValidFrenchBoostEffect(frenchBoostEffect: string) {
+	return translateToEnglish(frenchBoostEffect, BOOSTEFFECT) != frenchBoostEffect;
+}
+
 export function isValidFrenchMenu(frenchMenu: string) {
 	return translateToEnglish(frenchMenu, MENU) != frenchMenu;
 }
@@ -5162,11 +5195,15 @@ export function isValidEnglishEffect(englishEffect: string) {
 }
 
 export function isValidEnglishWeather(englishWeather: string) {
-	return WeatherDicos[englishWeather];
+	return WeatherDico[englishWeather];
+}
+
+export function isValidEnglishBoostEffect(englishBoostEffect: string) {
+	return BoostEffectDico[englishBoostEffect];
 }
 
 export function isValidEnglishMoveEffect(englishMoveEffect: string) {
-	return MoveEffectDicos[englishMoveEffect];
+	return MoveEffectDico[englishMoveEffect];
 }
 
 export function isValidEnglishHeader(englishHeader: string) {
