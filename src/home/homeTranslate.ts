@@ -467,12 +467,14 @@ function translateShowdownTopbar(topBarElement: Element)
                 liNode.childNodes.forEach(function (aNode)
                 {
                     // <a> nodes can contain text or images, we just want to translate the text
-                    var menuElement = aNode.firstChild as Element;
+                    aNode.childNodes.forEach(function (menuNode) {
+                        var menuElement = menuNode as Element;
 
-                    // Raw test content
-                    if (menuElement?.textContent && !menuElement.tagName) {
-                        menuElement.textContent = translateMenu(menuElement.textContent);
-                    }
+                        // Raw text content
+                        if (menuElement?.textContent && !menuElement.tagName) {
+                            menuElement.textContent = translateMenu(menuElement.textContent);
+                        }
+                    })
                 })
             })
         })
