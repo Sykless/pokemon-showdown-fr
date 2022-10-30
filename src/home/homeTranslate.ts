@@ -1,5 +1,8 @@
 import { isValidEnglishMenu, MenuDico, translateMenu, translatePokemonTeam, translateRawElement, translateRegexBattleMessage, translateRegexPopupMessage } from "../translator";
 
+import { PLAY_SHOWDOWN_HOST, REPLAYS_SHOWDOWN_HOST } from "../translator";
+
+
 console.log("HomeTranslate successfully loaded !");
 
 // Create a MutationObserver element in order to track every page change
@@ -12,8 +15,14 @@ observer.observe(document, {
 });
 
 // MutationObserver only process new nodes, so we need to translate the original HTML code
-translateHomePage();
-translateRoomPage(null);
+if (window.location.host == PLAY_SHOWDOWN_HOST) {
+    translateHomePage();
+    translateRoomPage(null);
+}
+else if (window.location.host == REPLAYS_SHOWDOWN_HOST) {
+    translateReplaysPage();
+}
+
 
 // Everytime a new element is added to the page, onMutation method is called
 function onMutation(mutations: MutationRecord[])
@@ -325,6 +334,137 @@ function translateHomePage()
                 }
             })
         }
+    })
+}
+
+function translateReplaysPage()
+{
+    // Get <home> element
+    var homeElementResults = document.getElementsByTagName("body");
+
+    // There should be only one <home> element, so we only take the first result
+    if (homeElementResults.length > 0) {
+        var homeElement = homeElementResults[0];
+
+        homeElement.childNodes.forEach(function (homeContentNode) {
+            var homeContent = homeContentNode as Element;
+
+            // Top bar, buttons 
+            if (homeContent.className == "pfx-topbar") {
+                translateShowdownTopbar(homeContent);
+            }
+            // Main page
+            else if (homeContent.className == "pfx-panel") {
+                var bodyPanel = homeContent.firstElementChild;
+
+                if (bodyPanel?.classList?.contains("pfx-body")) {
+                    bodyPanel.childNodes.forEach(function (mainContentNode) {
+                        var mainContent = mainContentNode as Element;
+
+                        // Menu label, just translate it
+                        if (mainContent.tagName == "H1" && mainContent.textContent) {
+                            mainContent.textContent = translateMenu(mainContent.textContent);
+                        }
+                        // Text content, iterate over children in order to find text elements
+                        else if (mainContent.tagName == "P") {
+                            mainContent.childNodes.forEach(function (textNode) {
+                                var textElement = textNode as Element;
+
+                                // Raw text content (just need to remove tabulations and linebreaks because the label is hardcoded this way)
+                                if (!textElement.tagName && textElement.textContent) {
+                                    textElement.textContent = translateMenu(textElement.textContent);
+                                }
+                            })
+                        }
+                        // Search elements, iterate over children in order to translate labels and input placeholders
+                        else if (mainContent.tagName == "FORM")
+                        {
+                            // <form> elements have only one <p> child
+                            var searchElement = mainContent.firstElementChild;
+
+                            if (searchElement?.tagName == "P") {
+                                searchElement.childNodes.forEach(function (searchNode) {
+                                    searchNode.childNodes.forEach(function (searchContentNode) {
+                                        var searchContent = searchContentNode as Element;
+
+                                        // Search label, translate it
+                                        if (searchContent.tagName == "STRONG" && searchContent.textContent) {
+                                            searchContent.textContent = translateMenu(searchContent.textContent);
+                                        }
+                                        // Search bar, translate placeholder
+                                        else if (searchContent.tagName == "INPUT") {
+                                            var inputElement = searchContent as HTMLInputElement;
+
+                                            if (inputElement.placeholder) {
+                                                inputElement.placeholder = translateMenu(inputElement.placeholder);
+                                            }
+                                        }
+                                    })
+                                })
+                            }
+                        }
+                        // Replays list, only translate menu labels
+                        // (replays are defined by a format, a description, and the players in the match, we don't want to translate either of those)
+                        else if (mainContent.tagName == "UL") {
+                            mainContent.childNodes.forEach(function (replayNode) {
+                                var replayElement = replayNode as Element;
+
+                                // Menu label, just translate it
+                                if (replayElement.tagName == "H3" && replayElement.textContent)
+                                {
+                                    // Recent replays label
+                                    if (replayElement.textContent.endsWith(" ago")) {
+                                        var recentReplays = replayElement.textContent.split(" ");
+
+                                        // Only translate the label if two spaces are present
+                                        if (recentReplays.length == 3) {
+                                            replayElement.textContent = "Il y a "
+                                                + recentReplays[0] + " " // Duration
+                                                + translateMenu(recentReplays[1]) // minute[s] - hours[s] - day[s]
+                                        }
+                                    }
+                                    // Regular menu label
+                                    else {
+                                        replayElement.textContent = translateMenu(replayElement.textContent);
+                                    }
+                                }
+                                // Replay content, only translate buttons
+                                else if (replayElement.tagName == "LI") {
+                                    var buttonElement = replayElement.firstElementChild;
+
+                                    if (buttonElement?.tagName == "BUTTON" && buttonElement.textContent) {
+                                        buttonElement.textContent = translateMenu(buttonElement.textContent);
+                                    }
+                                }
+                            })
+                        }
+                    })
+                }
+            }
+        })
+    }
+}
+
+function translateShowdownTopbar(topBarElement: Element)
+{
+    // There should be only one header element, still looping on each result just in case
+    topBarElement.childNodes.forEach(function (headerNode) {
+        headerNode.childNodes.forEach(function (ulNode)
+        {
+            // Each <ul> element contains <li> elements
+            ulNode.childNodes.forEach(function (liNode){
+                liNode.childNodes.forEach(function (aNode)
+                {
+                    // <a> nodes can contain text or images, we just want to translate the text
+                    var menuElement = aNode.firstChild as Element;
+
+                    // Raw test content
+                    if (menuElement?.textContent && !menuElement.tagName) {
+                        menuElement.textContent = translateMenu(menuElement.textContent);
+                    }
+                })
+            })
+        })
     })
 }
 

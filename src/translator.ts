@@ -15,6 +15,8 @@ const FILTER = 13;
 const POPUPMESSAGE = 14;
 const LOGMESSAGE = 15;
 
+export const PLAY_SHOWDOWN_HOST = "play.pokemonshowdown.com";
+export const REPLAYS_SHOWDOWN_HOST = "replay.pokemonshowdown.com";
 
 export const RegexPopupMessagesMap = new Map();
 export const RegexLogMessagesMap = new Map();
@@ -189,7 +191,7 @@ RegexLogMessagesMap.set(/(.*) and (.*) joined/, "{TRAINER_1} et {TRAINER_2} ont 
 RegexLogMessagesMap.set(/(.*) left/, "{TRAINER} est parti");
 RegexLogMessagesMap.set(/(.*) joined/, "{TRAINER} a rejoint la partie");
 RegexLogMessagesMap.set(/(.*) lost due to inactivity\./, "{TRAINER} a perdu pour cause d'inactivité.");
-RegexLogMessagesMap.set(/(.*)'s rating: (.*) → /, "Classement de {TRAINER} : {NUMBER} → ");
+RegexLogMessagesMap.set(/(.*)'s rating: (.*) → /, "Elo de {TRAINER} : {NUMBER} → ");
 RegexLogMessagesMap.set(/\((.*) for losing\)/, "({NUMBER} en perdant)");
 RegexLogMessagesMap.set(/\((.*) for winning\)/, "({NUMBER} en gagnant)");
 RegexLogMessagesMap.set(/Turn (.*)/, "Tour {NUMBER}");
@@ -4397,6 +4399,8 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Base power: ": "Puissance de base : ",
 	"(priority ": "(priorité ",
 	"Home": "Accueil",
+	" Home": " Accueil",
+	"Play": "Jouer",
 	"Request Help": "Demande d'aide",
 	"Battles": "Matchs",
 	"Connecting...": "Connexion...",
@@ -4449,6 +4453,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Meloetta is PS's mascot! The Aria forme is about using its voice, and represents our chatrooms.": "Meloetta est la mascotte de PS ! La forme Chant est associée à l'utilisation de la voix, et représente nos salons de discussion.",
 	"Meloetta is PS's mascot! The Pirouette forme is Fighting-type, and represents our battles.": "Meloetta est la mascotte de PS ! La forme Pirouette est de type Combat, et représente les matchs Pokémon.",
 	"Name": "Nom",
+	"Rating: ": "Elo : ",
 	"Elo rating": "Classement Elo",
 	"user's percentage chance of winning a random battle (aka GLIXARE)": "Probabilité de gagner un match aléatoire (aussi appelé GLIXARE)",
 	"Glicko-1 rating system: rating±deviation (provisional if deviation>100)": "Système de classement Glicko-1 : rang ± écart (temporaire si écart > 100)",
@@ -4667,7 +4672,38 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"If this is someone else's account:": "Si c'est le compte de quelqu'un d'autre :",
 	"Choose another name": "Choisir un autre nom",
 	"Log in": "Connexion",
-	"or": "ou"
+	"or": "ou",
+
+	// Replays
+	"Upload replays": "Uploader des replays",
+	"Search replays": "Rechercher des replays",
+	"Featured replays": "Replays mis en avant",
+	"Recent replays": "Replays récents",
+	"\n\t\t\tTo upload a replay, click \"Share\" or use the command ": "Pour uploader un replay, clique sur \"Partager\" ou utilise la commande ",
+	" in a Pokémon Showdown battle!\n\t\t": " dans un match sur Pokémon Showdown !",
+	"Search for user": "Rechercher un utilisateur",
+	"Search by format": "Recherche par format",
+	"Competitive": "Compétitif",
+	"Older": "Plus vieux",
+	"hour": "heure",
+	"hours": "heures",
+	"day": "jour",
+	"days": "jours",
+	"Speed:": "Vitesse :",
+	"Hyperfast": "Hyper rapide",
+	"Fast": "Rapide",
+	"Slow": "Lent",
+	"Really Slow": "Très lent",
+	"Color scheme:": "Thème :",
+	"Music:": "Musique :",
+	" Play": " Lecture",
+	"Play (music off)": "Lecture (musique off)",
+	" Download": " Télécharger",
+	" Reset": " Réinitialiser",
+	" Last turn": " Tour précédent",
+	" Next turn": " Tour suivant",
+	" Go to turn...": " Aller au tour...",
+	" Switch sides": "Changer de côté",
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {

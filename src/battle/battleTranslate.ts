@@ -31,7 +31,7 @@ observer.observe(document, {
 // Everytime a new element is added to the page, onMutation method is called
 function onMutation(mutations: MutationRecord[])
 {
-	// If the Teambuilding tab is not visible, stop the mutation observation
+	// If the Battle tab is not visible, stop the mutation observation
 	if (!isBattleOpen()) {
 		return;
 	}
@@ -74,6 +74,11 @@ function onMutation(mutations: MutationRecord[])
                     if (elementClasses.contains("innerbattle"))
                     {
                         // console.log("Whole room, rien d'intéressant : " + newElement.outerHTML);
+                    }
+                    // Trainer sprite has been loaded
+                    else if (elementClasses.contains("trainer"))
+                    {
+                        updateTrainerElement(newElement);
                     }
                     // Tooltip has been opened
                     else if (elementClasses.contains("tooltipinner"))
@@ -118,6 +123,21 @@ function onMutation(mutations: MutationRecord[])
                         else {
                             updateControlPanel(newElement);
                         }
+                    }
+                    // Replays options button (Speed, Music, etc)
+                    else if (elementClasses.contains("chooser"))
+                    {
+                        updateReplayChooser(newElement)
+                    }
+                    // Replays action button (Play, Go to turn, Download, etc)
+                    else if (elementClasses.contains("replayDownloadButton") || newElement.getAttribute("data-action"))
+                    {
+                        updateActionButton(newElement);
+                    }
+                    // Replays Play buttons
+                    else if (elementClasses.contains("playbutton"))
+                    {
+                        updateReplayPlayButtons(newElement);
                     }
                     // Pokémon name and status
                     else if (elementClasses.contains("statbar"))
@@ -858,6 +878,66 @@ function updateMove(moveMainNode: Node)
     })
 }
 
+function updateTrainerElement(trainerElement: Element)
+{
+    trainerElement.childNodes.forEach(function (trainerContentNode) {
+        var trainerContent = trainerContentNode as HTMLDivElement;
+
+        // Only translate ranking if present
+        if (trainerContent.classList?.contains("trainersprite") && trainerContent.title?.startsWith("Rating: ")) {
+            trainerContent.title = translateMenu("Rating: ") + trainerContent.title.replace("Rating: ", "");
+        }
+    })
+}
+
+function updateReplayChooser(chooserElement: Element)
+{
+    chooserElement.childNodes.forEach(function (chooserContentNode) {
+        var chooserContent = chooserContentNode as Element;
+
+        // Name label
+        if (chooserContent.tagName == "EM" && chooserContent.textContent) {
+            chooserContent.textContent = translateMenu(chooserContent.textContent);
+        }
+        // Action buttons node, iterate on children to translate labels
+        else if (chooserContent.tagName == "DIV") {
+            chooserContent.childNodes.forEach(function (actionButtonNode) {
+                var actionButton = actionButtonNode as Element;
+
+                if (actionButton.tagName == "BUTTON" && actionButton.textContent) {
+                    actionButton.textContent = translateMenu(actionButton.textContent);
+                }
+            })
+        }
+    })
+}
+
+function updateActionButton(actionButtonElement: Element)
+{
+    actionButtonElement.childNodes.forEach(function (actionButtonContentNode) {
+        var actionButtonContent = actionButtonContentNode as Element;
+
+        // Only translate raw text (Action label)
+        if (!actionButtonContent.tagName && actionButtonContent.textContent) {
+            actionButtonContent.textContent = translateMenu(actionButtonContent.textContent);
+        }
+    })
+}
+
+function updateReplayPlayButtons(playButtonElement: Element)
+{
+    playButtonElement.childNodes.forEach(function (playButtonContentNode) {
+        playButtonContentNode.childNodes.forEach(function (buttonNode) {
+            var buttonElement = buttonNode as Element;
+
+            // Only translate raw text (Play label)
+            if (!buttonElement.tagName && buttonElement.textContent) {
+                buttonElement.textContent = translateMenu(buttonElement.textContent);
+            }
+        })
+    })
+}
+
 function updateOpponentWait(newElement: Element)
 {
     // Next action translation
@@ -1062,11 +1142,6 @@ function updatePokemonResult(newElement: Element)
             }
         }
     }
-}
-
-function translateBoost(powerValue: string)
-{
-
 }
 
 function translatePossibleBoostOrigin(boostOrigin: string)
@@ -1341,7 +1416,7 @@ function translateBattleHomePage()
 {
     var battlePage = document.querySelectorAll('*[id^="room-battle-"]');
 
-    if (battlePage.length) {
+    if (battlePage.length > 0) {
         battlePage[0].childNodes.forEach(function (battleNode) {
             var battleElement = battleNode as Element;
 
