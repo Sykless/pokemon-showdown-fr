@@ -16,14 +16,16 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 // Details utilichart
 // Translate non-text node with TreeWalker in order to not trigger observer
 // Conjuger les objets
-// One-gender only (Boréas-Totem)
-// For -> mysticwater ???
 // Specific to Tapu Koko (item)
+// Waiting for players
+// Victoire sans compte
+// Gen 1 miss
+// Rôle des users
+// Restore teams quand pas d'équipe
+// /publicroom
 
 // HIDDEN TEXT
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
-// The battle you're looking for has expired (class ps-overlay)
-// Illegal team when entering a battle
 
 console.log("TeambuilderTranslate successfully loaded !");
 
