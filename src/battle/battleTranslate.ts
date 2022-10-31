@@ -617,26 +617,9 @@ function updateMoveTooltip(tooltip: Element)
 
                     if (baseAccuracyEffect.length > 1)
                     {
-                        var boostEffect = baseAccuracyEffect[1].split("× from " );
-
-                        // Boost value provided
-                        if (boostEffect.length > 1)
-                        {
-                            var translatedBoostEffect = translatePossibleBoostOrigin(boostEffect[1].slice(0,-1)) // Remove parenthesis at the end
-
-                            tooltipElement.textContent = translateMenu("Accuracy: ") // Accuracy label
-                                + translateMenu(baseAccuracyEffect[0]) // Accuracy value (could also be a label - can't miss)
-                                + " (×" + boostEffect[0] + " grâce à " // Boost value
-                                + translatedBoostEffect + ")"; // Boost effect
-                        }
-                        // No boost value, only the boost effect
-                        else {
-                            var translatedBoostEffect = translatePossibleBoostOrigin(baseAccuracyEffect[1].slice(0,-1)) // Remove parenthesis at the end
-
-                            tooltipElement.textContent = translateMenu("Accuracy: ") // Accuracy label
-                                + translateMenu(baseAccuracyEffect[0]) // Accuracy value (could also be a label - can't miss)
-                                + " (" + translatedBoostEffect + ")"; // Boost effect
-                        }
+                        tooltipElement.textContent = translateMenu("Accuracy: ") // Accuracy label
+                            + translateMenu(baseAccuracyEffect[0]) + " (" // Accuracy value (could also be a label - can't miss)
+                            + updateBoostEffect(baseAccuracyEffect); // Translated boost effect
                     }
                     else {
                         tooltipElement.textContent = translateMenu("Accuracy: ") // Accuracy label
@@ -650,26 +633,9 @@ function updateMoveTooltip(tooltip: Element)
 
                     if (basePowerEffect.length > 1)
                     {
-                        var boostEffect = basePowerEffect[1].split("× from " );
-
-                        // Boost value provided
-                        if (boostEffect.length > 1)
-                        {
-                            var translatedBoostEffect = translatePossibleBoostOrigin(boostEffect[1].slice(0,-1)) // Remove parenthesis at the end
-
-                            tooltipElement.textContent = translateMenu("Base power: ") // Base power label
-                                + basePowerEffect[0] // Base power value
-                                + " (×" + boostEffect[0] + " grâce à " // Boost value
-                                + translatedBoostEffect + ")" // Boost effect
-                        }
-                        // No boost value, only the boost effect
-                        else {
-                            var translatedBoostEffect = translatePossibleBoostOrigin(basePowerEffect[1].slice(0,-1)) // Remove parenthesis at the end
-
-                            tooltipElement.textContent = translateMenu("Base power: ") // Base power label
-                                + basePowerEffect[0] // Base power value
-                                + " (" + translatedBoostEffect + ")" // Boost effect
-                        }
+                        tooltipElement.textContent = translateMenu("Base power: ") // Base power label
+                            + basePowerEffect[0] + " (" // Base power value
+                            + updateBoostEffect(basePowerEffect); // Translated boost effect
                     }
                     else {
                         tooltipElement.textContent = translateMenu("Base power: ") // Base power label
@@ -705,6 +671,34 @@ function updateMoveTooltip(tooltip: Element)
             }
         }
     })
+}
+
+function updateBoostEffect(effectArray: String[])
+{
+    var translatedBoosts = "";
+
+    for (var i = 1 ; i < effectArray.length ; i++)
+    {
+        var boostEffect = effectArray[i].split("× from " );
+
+        // Boost value provided
+        if (boostEffect.length > 1)
+        {
+            var translatedBoostEffect = translatePossibleBoostOrigin(boostEffect[1].slice(0,-1)) // Remove parenthesis at the end
+            
+            translatedBoosts += "×" + boostEffect[0] + " grâce à " + translatedBoostEffect + ")" // Boost effect
+                + (i < effectArray.length - 1 ? " (" : ""); // Add parenthesis for next boost if needed
+        }
+        // No boost value, only the boost effect
+        else {
+            var translatedBoostEffect = translatePossibleBoostOrigin(effectArray[i].slice(0,-1)) // Remove parenthesis at the end
+
+            translatedBoosts += translatedBoostEffect + ")" // Boost effect
+                + (i < effectArray.length - 1 ? " (" : ""); // Add parenthesis for next boost if needed
+        }
+    }
+
+    return translatedBoosts;
 }
 
 function updateFieldTooltip(tooltip: Element)

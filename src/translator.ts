@@ -370,6 +370,7 @@ RegexLogMessagesMap.set(/(.*)'s Heal Block wore off!/, "{POKEMON} peut à nouvea
 RegexLogMessagesMap.set(/(.*) can't use (.*) because of Heal Block!/, "{POKEMON} ne peut pas utiliser la capacité {MOVE} à cause d'Anti-Soin !");
 RegexLogMessagesMap.set(/But it failed to affect (.*)!/, "{POKEMON} n'est pas affecté !");
 RegexLogMessagesMap.set(/The healing wish came true for (.*)!/, "Le Voeu Soin est exaucé et profite à {POKEMON} !");
+RegexLogMessagesMap.set(/\((.*)'s BP doubled on grounded target\.\)/, "(La puissance de base de {MOVE} est doublée sur une cible au sol.)");
 RegexLogMessagesMap.set(/(.*) is ready to help (.*)!/, "{POKEMON_1} est prêt à aider {POKEMON_2} !");
 RegexLogMessagesMap.set(/(.*) became cloaked in freezing air!/, "{POKEMON} est entouré d'un air glacial !");
 RegexLogMessagesMap.set(/(.*) sealed any moves its target shares with it!/, "{POKEMON} bloque les capacités en commun avec l'adversaire !");
