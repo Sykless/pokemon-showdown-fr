@@ -536,16 +536,24 @@ function updateCurElement()
 					// Generate the current Pokémon HTML code from its english name
 					var htmlCurElement = app.curRoom.search.renderRow(regularEnglishName, displayedDataType, 0, 0, "", ' class="cur"');
 
-					// Convert generated HTML code to Node
-					var curTemplate = document.createElement('template');
-					curTemplate.innerHTML = htmlCurElement;
-
-					var curNode = curTemplate.content.firstChild;
-
-					if (curNode)
+					// Parse the htmlCurElement in order to safely insert HTML code
+					const parser = new DOMParser();
+					const parsedCur = parser.parseFromString(htmlCurElement, 'text/html');
+					const parsedCurTags = parsedCur.getElementsByTagName('body');
+					
+					// Iterate over body tags (should have only one)
+					for (const tag of parsedCurTags)
 					{
-						updateIllegalElement(curNode.firstChild as Element, regularEnglishName);
-						curParent.appendChild(curNode);
+						var liResultElement = tag.firstElementChild;
+
+						if (liResultElement?.classList?.contains("result") && liResultElement.firstElementChild) {
+							curParent.appendChild(liResultElement.firstElementChild);
+						}
+					}
+
+					// Update the illegal tag if needed
+					if (curParent.firstElementChild) {
+						updateIllegalElement(curParent.firstElementChild, regularEnglishName);
 					}
 				}
 			}
