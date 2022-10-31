@@ -3400,7 +3400,7 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"Level Ball": "Niveau Ball",
 	"Liechi Berry": "Baie Lichii",
 	"Life Orb": "Orbe Vie",
-	"Light Ball": "Ballelumiere",
+	"Light Ball": "Balle Lumière",
 	"Light Clay": "Lumargile",
 	"Lopunnite": "Lockpinite",
 	"Love Ball": "Love Ball",
