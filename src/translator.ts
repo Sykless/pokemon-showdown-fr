@@ -198,6 +198,7 @@ RegexLogMessagesMap.set(/Turn (.*)/, "Tour {NUMBER}");
 RegexLogMessagesMap.set(/User (.*) not found\./, "L'utilisateur {TRAINER} n'existe pas.");
 RegexLogMessagesMap.set(/Battle timer is ON: inactive players will automatically lose when time's up. \(requested by (.*)\)/, "Le Timer est activé : les joueurs inactifs perdront automatiquement quand le temps sera écoulé (demandé par {TRAINER})");
 RegexLogMessagesMap.set(/The timer can't be re-enabled so soon after disabling it \((.*) seconds remaining\)\./, "Le Timer ne peut pas être réactivé aussi tôt après avoir été désactivé ({NUMBER} secondes restantes)");
+RegexLogMessagesMap.set(/(.*) also wants the timer to be on\./, "{TRAINER} veut aussi que le Timer soit activé.");
 
 // HOME PAGE LOG
 RegexLogMessagesMap.set(/(.*) wants to battle!/, "{TRAINER} veut se battre !");
