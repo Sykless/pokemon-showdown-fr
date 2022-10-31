@@ -4705,6 +4705,22 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" Next turn": " Tour suivant",
 	" Go to turn...": " Aller au tour...",
 	" Switch sides": "Changer de côté",
+	" Other replays": " Autres Replays",
+	" More replays": " Plus de Replays",
+	"Rating:": "Elo :",
+	"Uploaded:": "Uploadé :",
+	"Jan": "Janvier",
+	"Feb": "Février",
+	"Mar": "Mars",
+	"Apr": "Avril",
+	"May": "Mai",
+	"Jun": "Juin",
+	"Jul": "Juillet",
+	"Aug": "Août",
+	"Sep": "Septembre",
+	"Oct": "Octobre",
+	"Nov":" Novembre",
+	"Dec": "Décembre",
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {

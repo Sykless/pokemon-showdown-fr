@@ -1,7 +1,5 @@
 import { isValidEnglishMenu, MenuDico, translateMenu, translatePokemonTeam, translateRawElement, translateRegexBattleMessage, translateRegexPopupMessage } from "../translator";
-
 import { PLAY_SHOWDOWN_HOST, REPLAYS_SHOWDOWN_HOST } from "../translator";
-
 
 console.log("HomeTranslate successfully loaded !");
 
@@ -111,6 +109,12 @@ function onMutation(mutations: MutationRecord[])
                     {
                         // Translate whole page
                         translateReplaysHomePage(newElement);
+                    } 
+                    // Replay loading
+                    else if (newElement.classList.contains("pfx-loading"))
+                    {
+                        // Translate loading label
+                        translateReplaysLoading(newElement);
                     } 
                     // Chat message has been received (message-log is a class used for chatrooms, we exclude that)
                     else if (newElement.classList.contains("chat") && !parentElement.classList?.contains("message-log"))
@@ -453,6 +457,10 @@ function translateReplaysHomePage(replaysHomeElement: Element)
                 }
             })
         }
+        // Back to Replays home
+        else if (mainContent.className == "pfx-backbutton") {
+            updateReplaysBackButton(mainContent);
+        }
     })
 }
 
@@ -478,6 +486,18 @@ function translateShowdownTopbar(topBarElement: Element)
                 })
             })
         })
+    })
+}
+
+function translateReplaysLoading(loadingElement: Element)
+{
+    loadingElement.childNodes.forEach(function (loadingContentNode) {
+        var loadingContent = loadingContentNode as Element;
+
+        // Translate <em> text content
+        if (loadingContent.tagName == "EM" && loadingContent.textContent) {
+            loadingContent.textContent = translateMenu(loadingContent.textContent);
+        }
     })
 }
 
@@ -1153,6 +1173,18 @@ function updateVolumeElement(volumeElement: Element)
     if (volumeElement.textContent && ["LABEL", "EM"].includes(volumeElement.tagName)) {
         volumeElement.textContent = translateMenu(volumeElement.textContent);
     }
+}
+
+function updateReplaysBackButton(backButton: Element)
+{
+    backButton.childNodes.forEach(function (buttonContentNode) {
+        var buttonContent = buttonContentNode as Element;
+
+        // Only translate raw text (label)
+        if (!buttonContent.tagName && buttonContent.textContent) {
+            buttonContent.textContent = translateMenu(buttonContent.textContent);
+        }
+    })
 }
 
 function updateActiveBattleElement(activeBattleElement: Element)
