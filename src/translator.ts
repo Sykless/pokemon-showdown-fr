@@ -275,7 +275,6 @@ RegexLogMessagesMap.set(/(.*) was dragged out!/, "{POKEMON} est traîné de forc
 RegexLogMessagesMap.set(/(.*) went back to (.*)!/, "{POKEMON} revient vers {TRAINER} !");
 RegexLogMessagesMap.set(/(.*) fainted!/, "{POKEMON} est KO !");
 RegexLogMessagesMap.set(/(.*) avoided the attack!/, "{POKEMON} évite l'attaque !");
-RegexLogMessagesMap.set(/(.*) used /, "{POKEMON} utilise ");
 RegexLogMessagesMap.set(/\((.*) lost (.*) of its health!\)/, "({POKEMON} a perdu {PERCENTAGE} de ses points de vie !)");
 RegexLogMessagesMap.set(/(.*)'s HP is full!/, "Les PV de {POKEMON} sont au max !");
 RegexLogMessagesMap.set(/\[(.*)'s (.*)\]/, "[{SWAP_1_ABILITY} de {SWAP_0_POKEMON}]");
@@ -675,6 +674,7 @@ RegexLogMessagesMap.set(/\((.*) started!\)/, "({EFFECT} est actif !)");
 RegexLogMessagesMap.set(/\((.*) activated!\)/, "({EFFECT} est activé !)");
 RegexLogMessagesMap.set(/\((.*) ended on (.*)!\)/, "({EFFECT} n'est plus actif sur {TEAM})");
 RegexLogMessagesMap.set(/\((.*) ended!\)/, "({EFFECT} n'est plus actif !)");
+RegexLogMessagesMap.set(/(.*) used /, "{POKEMON} utilise ");
 
 
 export const PokemonDico: { [englishName: string]: string; } = {
@@ -5353,6 +5353,8 @@ export function translateRegexMessage(originalString: string, translationType: n
 
         if (translated.length > 0)
         {
+			console.log("Translated Regex message : " + translated[1]);
+
             var englishMessage = translated[0].source.split("(.*)");
             var variablesToTranslate = translated[1].match(/{(.*?)}/g);
 
