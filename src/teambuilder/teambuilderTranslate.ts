@@ -1,4 +1,4 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, MovesShortDescDico, ItemsShortDescDico, AbilitiesShortDescDico, ItemsLongDescDico, AliasDico } from '../translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, MovesShortDescDico, ItemsShortDescDico, AbilitiesShortDescDico, ItemsLongDescDico, AliasDico, translateRawElement } from '../translator';
 	
 import { isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
 
@@ -16,14 +16,16 @@ import {translatePokemonName, translateAbility, translateMove, translateItem, tr
 // Details utilichart
 // Translate non-text node with TreeWalker in order to not trigger observer
 // Conjuger les objets
-// One-gender only (Boréas-Totem)
-// For -> mysticwater ???
 // Specific to Tapu Koko (item)
+// Waiting for players
+// Victoire sans compte
+// Gen 1 miss
+// Rôle des users
+// Restore teams quand pas d'équipe
+// /publicroom
 
 // HIDDEN TEXT
 // "Couldn't search: You are already searching for a ${formatid} battle." (.popup)
-// The battle you're looking for has expired (class ps-overlay)
-// Illegal team when entering a battle
 
 console.log("TeambuilderTranslate successfully loaded !");
 
@@ -100,7 +102,7 @@ function onMutation(mutations: MutationRecord[])
 				var parentElement = mutations[i].target as Element;
 				var elementClasses = newElement.classList;
 
-				// console.log(newElement.outerHTML);
+				console.log(newElement.outerHTML);
 
 				// Teambuilder home : teams list
 				// Teampane element is only updated on page init, so we need to check the children mutations
@@ -151,7 +153,6 @@ function onMutation(mutations: MutationRecord[])
 							// Update every new result
 							updateResultTag(newElement);
 						}
-						
 					}
 					// Pokémon info has been updated
 					else if (elementClasses.contains("statrow-head"))
@@ -159,6 +160,10 @@ function onMutation(mutations: MutationRecord[])
 						// When the stat block is updated, the element "Remaining EVs" is reset (if present)
 						// So we need to re-translate it, but we don't need to update the whole StatForm component
 						updateRemainingEVElement(document.querySelector(".graphcol"))
+						
+						// When a cosmetic form is selected, the stat block is updated (for some reason)
+						// So we need to translate the cosmetic form
+						updateInputPokemonName();
 					}
 					// Pokémon stats/nature interface has been loaded
 					else if (elementClasses.contains("statform"))
@@ -174,6 +179,7 @@ function onMutation(mutations: MutationRecord[])
 					// Pokémon details page (Level, Gender, etc) has been loaded
 					else if (elementClasses.contains("detailsform"))
 					{
+						updatePokemonInfo(null);
 						updatePokemonDetailsForm(newElement);
 					}
 					// Clipboard element has been regenerated
@@ -181,9 +187,10 @@ function onMutation(mutations: MutationRecord[])
 					{
 						updateClipboardElement(newElement);
 					}
-					else
+					// Default : check if the element could be a raw text button
+					else if (newElement.tagName == "BUTTON")
 					{
-						// console.log("Non-processed nodes : " + newElement.outerHTML);
+						translateRawElement(newElement);
 					}
 				}
 			}
@@ -529,16 +536,24 @@ function updateCurElement()
 					// Generate the current Pokémon HTML code from its english name
 					var htmlCurElement = app.curRoom.search.renderRow(regularEnglishName, displayedDataType, 0, 0, "", ' class="cur"');
 
-					// Convert generated HTML code to Node
-					var curTemplate = document.createElement('template');
-					curTemplate.innerHTML = htmlCurElement;
-
-					var curNode = curTemplate.content.firstChild;
-
-					if (curNode)
+					// Parse the htmlCurElement in order to safely insert HTML code
+					const parser = new DOMParser();
+					const parsedCur = parser.parseFromString(htmlCurElement, 'text/html');
+					const parsedCurTags = parsedCur.getElementsByTagName('body');
+					
+					// Iterate over body tags (should have only one)
+					for (const tag of parsedCurTags)
 					{
-						updateIllegalElement(curNode.firstChild as Element, regularEnglishName);
-						curParent.appendChild(curNode);
+						var liResultElement = tag.firstElementChild;
+
+						if (liResultElement?.classList?.contains("result") && liResultElement.firstElementChild) {
+							curParent.appendChild(liResultElement.firstElementChild);
+						}
+					}
+
+					// Update the illegal tag if needed
+					if (curParent.firstElementChild) {
+						updateIllegalElement(curParent.firstElementChild, regularEnglishName);
 					}
 				}
 			}
@@ -1610,6 +1625,7 @@ function updateStatForm(statFormNode: Element)
 					if (natureSelect.tagName == "SELECT")
 					{
 						var natureNumber = natureSelect.options.length - 1;
+						var selectedNature = natureSelect.value;
 
 						for (var i = natureNumber ; i >= 0 ; i--)
 						{
@@ -1640,9 +1656,13 @@ function updateStatForm(statFormNode: Element)
 						// Alphabetically sort the french natures
 						frenchNaturesList.sort();
 
+						// Create new Option element with translated nature
 						for (var i = 0 ; i < frenchNaturesList.length ; i++) {
 							natureSelect.options[i] = new Option(frenchNaturesList[i][0], frenchNaturesList[i][1]);;
 						}
+
+						// Set selected option
+						natureSelect.value = selectedNature;
 					}
 				})
 			}
@@ -1695,14 +1715,8 @@ function updatePokemonDetailsForm(resultElement: Element)
 				{
 					if (detailsNode.textContent)
 					{
-						if ("Dmax Level:" == detailsNode.textContent) {
-							// The regular translation is too long
-							detailsNode.textContent = "Niv. Dmax :"
-						}
-						else {
-							// Labels have a ":" character at the end, so we remove it and put it back again
-							detailsNode.textContent = translateMenu(detailsNode.textContent.slice(0,-1)) + " :"
-						}
+						// Labels have a ":" character at the end, so we remove it and put it back again
+						detailsNode.textContent = translateMenu(detailsNode.textContent.slice(0,-1)) + " :"
 					}
 				}
 				else if (detailsElement.tagName == "DIV")
@@ -1713,7 +1727,7 @@ function updatePokemonDetailsForm(resultElement: Element)
 
 						if (detailsValueElement.tagName == "LABEL")
 						{
-							// Labels are in fact composed of radio button and text, so we still need to iterate on children
+							// Labels are composed of radio button and text, so we still need to iterate on children
 							detailsValue.childNodes.forEach(function (detailsLabel)
 							{
 								// Only translate the text
@@ -1736,6 +1750,10 @@ function updatePokemonDetailsForm(resultElement: Element)
 									detailsSelect.options[i].text = translateType(detailsSelect.options[i].text);
 								}
 							}
+						}
+						// Regular text content (Genderless gender)
+						else if (!detailsValueElement.tagName && detailsValueElement.textContent) {
+							detailsValueElement.textContent = " " + translateMenu(detailsValueElement.textContent);
 						}
 					})
 				}
@@ -1774,6 +1792,19 @@ function updateSetImportElement(setElement: Element)
 				smallContent.textContent = translateMenu(smallContent.textContent);
 			}
 		})
+	}
+}
+
+function updateInputPokemonName()
+{
+	var inputElements = document.getElementsByName("pokemon");
+
+	if (inputElements.length > 0) {
+		var pokemonNameInput = inputElements[0] as HTMLInputElement;
+		
+		if (pokemonNameInput.value) {
+			pokemonNameInput.value = translatePokemonName(pokemonNameInput.value);
+		}
 	}
 }
 

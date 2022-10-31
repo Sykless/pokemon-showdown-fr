@@ -7,189 +7,198 @@ const NATURE = 5;
 const STAT = 6;
 const EFFECT = 7;
 const WEATHER = 8
-const MOVEEFFECT = 9
-const HEADER = 10;
-const MENU = 11;
-const FILTER = 12;
-const VALIDATOR = 13;
-const LOGMESSAGE = 14;
+const BOOSTEFFECT = 9;
+const MOVEEFFECT = 10;
+const HEADER = 11;
+const MENU = 12;
+const FILTER = 13;
+const POPUPMESSAGE = 14;
+const LOGMESSAGE = 15;
 
+export const PLAY_SHOWDOWN_HOST = "play.pokemonshowdown.com";
+export const REPLAYS_SHOWDOWN_HOST = "replay.pokemonshowdown.com";
 
-export const RegexValidatorMap = new Map();
+export const RegexPopupMessagesMap = new Map();
 export const RegexLogMessagesMap = new Map();
 
-// TEAM VALIDATOR
-RegexValidatorMap.set(/Your team is valid for (.*)\./, "Ton équipe est valide pour {FORMAT}.");
-RegexValidatorMap.set(/The format (.*) was not found\./, "Le format {FORMAT} n'existe pas.");
-RegexValidatorMap.set(/- (.*) has no moves \(it must have at least one to be usable\)\./, "- {NICKNAME} n'a pas de capacités (il doit avoir au moins une capacité pour être utilisable).");
-RegexValidatorMap.set(/- (.*) has exactly 0 EVs \- did you forget to EV it\? \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\./, "- {NICKNAME} a exactement 0 EV - as-tu oublié de lui donner des EVs ? (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
-RegexValidatorMap.set(/- (.*) has exactly (.*) EVs, but this format does not restrict you to 510 EVs \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\./, "- {NICKNAME} a exactement {NUMBER} EVs, mais ce format ne restreint pas à 510 EVs (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
-RegexValidatorMap.set(/- (.*) is level 50, but this format allows level (.*) Pokémon\. \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\./,  "- {NICKNAME} est niveau 50, mais ce format autorise les Pokémon de niveau {NUMBER} (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
-RegexValidatorMap.set(/- (.*)'s item (.*) does not exist in Gen (.*)\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
-RegexValidatorMap.set(/- (.*)'s move (.*) does not exist in Gen (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
-RegexValidatorMap.set(/- (.*)'s ability (.*) does not exist in Gen (.*)\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
-RegexValidatorMap.set(/- (.*)'s nature (.*) does not exist in Gen (.*)\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
-RegexValidatorMap.set(/- (.*)'s item (.*) does not exist in this game\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
-RegexValidatorMap.set(/- (.*)'s move (.*) does not exist in this game\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
-RegexValidatorMap.set(/- (.*)'s ability (.*) does not exist in this game\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
-RegexValidatorMap.set(/- (.*)'s nature (.*) does not exist in this game\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
-RegexValidatorMap.set(/- (.*) does not exist in this game\./, "- {NICKNAME} n'existe pas dans ce jeu.");
-RegexValidatorMap.set(/- (.*) does not exist in Gen (.*)\./, "- {NICKNAME} n'existe pas en Génération {NUMBER}.");
-RegexValidatorMap.set(/- (.*) does not exist in this game, only in Let's Go Pikachu\/Eevee\./, "- {NICKNAME} n'existe pas dans ce jeu, seulement dans Let's Go Pikachu/Évoli.");
-RegexValidatorMap.set(/- (.*) is a CAP and does not exist in this game\./, "- {NICKNAME} est un CAP et n'existe pas dans ce jeu.");
-RegexValidatorMap.set(/- (.*) is not possible to obtain in this game./, "- {NICKNAME} n'est pas obtenable dans ce jeu.");
-RegexValidatorMap.set(/- (.*) is a placeholder for a Gigantamax sprite, not a real Pokémon. (This message is likely to be a validator bug.)/, "- {NICKNAME} est un placeholder pour un sprite Gigantamax, pas un Pokémon utilisable. (Ce message est probablement un bug de validation");
-RegexValidatorMap.set(/- (.*) must be at least level (.*) to be evolved\./, "- {NICKNAME} doit être au moins niveau {NUMBER} pour être évolué.");
-RegexValidatorMap.set(/- (.*) is not obtainable at levels below (.*) in Gen 1\./, "- {NICKNAME} n'est pas obtenable avant le niveau {NUMBER} en Génération 1.");
-RegexValidatorMap.set(/- (.*) transforms in-battle with (.*), please fix its ability\./, "- {NICKNAME} se transforme en combat en utilisant {ABILITY}, tu dois modifier son talent.");
-RegexValidatorMap.set(/- (.*) transforms in-battle with (.*), please fix its item\./, "- {NICKNAME} se transforme en combat en utilisant {ABILITY}, tu dois modifier son objet.");
-RegexValidatorMap.set(/- (.*) transforms in-battle with (.*), please fix its moves\./, "- {NICKNAME} se transforme en combat en utilisant {ABILITY}, tu dois modifier ses capacités.");
-RegexValidatorMap.set(/- You must bring at least (.*) Pokémon \(your team has (.*)\)\./, "- Tu dois choisir au moins {NUMBER} Pokémon (ton équipe en a {NUMBER}).");
-RegexValidatorMap.set(/- You may only bring up to (.*) Pokémon \(your team has (.*)\)\./, "- Tu ne peux choisir que {NUMBER} Pokémon (ton équipe en a {NUMBER}).");
-RegexValidatorMap.set(/- You are limited to (.*) by (.*)\./, "- Tu es limité à \"{RULE}\" par \"{CAUSE}\".");
-RegexValidatorMap.set(/- You are limited to (.*)\./, "- Tu es limité à \"{RULE}\".");
-RegexValidatorMap.set(/- (.*) is limited to (.*) by (.*)\./, "- {NICKNAME} est limité à \"{RULE}\" par \"{CAUSE}\".");
-RegexValidatorMap.set(/- (.*) is limited to (.*)\./, "- {NICKNAME} est limité à \"{RULE}\".");
-RegexValidatorMap.set(/- Your team has the combination of (.*), which is banned by (.*)\./, "- Ton équipe a la combinaison \"{COMBINATION}\", qui est bannie par \"{CAUSE}\".");
-RegexValidatorMap.set(/- Your team has the combination of (.*), which is banned\./, "- Ton équipe a la combinaison \"{COMBINATION}\", qui est bannie.");
-RegexValidatorMap.set(/- (.*) has the combination of (.*), which is banned by (.*)\./, "- {NICKNAME} a la combinaison \"{COMBINATION}\", qui est bannie par \"{CAUSE}\".");
-RegexValidatorMap.set(/- (.*) has the combination of (.*), which is banned\./, "- {NICKNAME} a la combinaison \"{COMBINATION}\", qui est bannie.");
-RegexValidatorMap.set(/- (.*) has the combination of (.*), which is impossible to obtain legitimately\./, "- {NICKNAME} a la combinaison \"{COMBINATION}\", qui est impossible d'obtenir de manière légitime.");
-RegexValidatorMap.set(/- Nickname (.*) too long \(should be 18 characters or fewer\)/, "- Le surnom {NAME} est trop long (18 caractères max).");
-RegexValidatorMap.set(/- (.*) \(level (.*)\) is below the minimum level of (.*) from (.*)/, "- {NICKNAME} (niveau {NUMBER}) est sous le niveau minimum ({NUMBER}) de \"{SOURCE}\"");
-RegexValidatorMap.set(/- (.*) \(level (.*)\) is below the minimum level of (.*)/, "- {NICKNAME} (niveau {NUMBER}) est sous le niveau minimum ({NUMBER})");
-RegexValidatorMap.set(/- (.*) \(level (.*)\) is above the maximum level of (.*) from (.*)/, "- {NICKNAME} (niveau {NUMBER}) est au dessus du niveau maximum ({NUMBER}) de \"{SOURCE}\"");
-RegexValidatorMap.set(/- (.*) \(level (.*)\) is above the maximum level of (.*)/, "- {NICKNAME} (niveau {NUMBER}) est au dessus du niveau maximum ({NUMBER})");
-RegexValidatorMap.set(/- The Pokemon "(.*)" does not exist\./, "- Le Pokémon \"{POKEMON}\" n'existe pas.");
-RegexValidatorMap.set(/- "(.*)" is an invalid item\./, "- L'objet \"{ITEM}\" est invalide.");
-RegexValidatorMap.set(/- "(.*)" is an invalid ability\./, "- Le talent \"{ABILITY}\" est invalide.");
-RegexValidatorMap.set(/- "(.*)" is an invalid nature\./, "- La nature \"{NATURE}\" est invalide.");
-RegexValidatorMap.set(/- "(.*)" is an invalid move\./, "- La capacité \"{MOVE}\" est invalide.");
-RegexValidatorMap.set(/- (.*) has an invalid happiness value\./, "- {NICKNAME} a une valeur de bonheur invalide.");
-RegexValidatorMap.set(/- (.*)'s Hidden Power type \((.*)\) is invalid\./, "- Le type de la Puissance Cachée de {NICKNAME} ({TYPE}) est invalide.");
-RegexValidatorMap.set(/- (.*) cannot hold the Griseous Orb\./, "- {NICKNAME} ne peut pas porter l'Orbe Platiné.");
-RegexValidatorMap.set(/- (.*) needs to have an ability\./, "- {NICKNAME} doit avoir un talent.");
-RegexValidatorMap.set(/- (.*) can't have (.*)\./, "- {NICKNAME} ne peut pas avoir {ABILITY}.");
-RegexValidatorMap.set(/- (.*)'s Hidden Ability is unreleased\./, "- Le Talent Caché de {NICKNAME} n'est pas disponible.");
-RegexValidatorMap.set(/- (.*)'s Hidden Ability is only available from Virtual Console, which is not allowed in this format\./, "- Le Talent Caché de {NICKNAME} n'est disponible que sur Console Virtuelle, qui n'est pas autorisée dans ce format.");
-RegexValidatorMap.set(/- (.*)'s Hidden Ability is unreleased for the Orange and White forms\./, "- Le Talent Caché de {NICKNAME} n'est pas disponible pour les formes Orange et Blanc.");
-RegexValidatorMap.set(/- (.*) must be at least level 10 to have a Hidden Ability\./, "- {NICKNAME} doit être au moins niveau 10 pour avoir un Talent Caché.");
-RegexValidatorMap.set(/- (.*) must be male to have a Hidden Ability\./, "- {NICKNAME} doit être mâle pour avoir un Talent Caché.");
-RegexValidatorMap.set(/- (.*) has (.*) moves, which is more than the limit of (.*)\./, "- {NICKNAME} a {NUMBER} capacités, qui dépasse la limite ({NUMBER}).");
-RegexValidatorMap.set(/- (.*) has an event-exclusive move that it doesn't qualify for \(only one of several ways to get the move will be listed\):/, "- {NICKNAME} a une capacité évènementielle qu'il n'est pas censé avoir - exemple de moyen d'obtenir la capacité :");
-RegexValidatorMap.set(/- (.*) is only obtainable from an event \- it needs to match its event:/, "- {POKEMON} est uniquement obtenable dans un événement - il doit correspondre à son événement :");
-RegexValidatorMap.set(/- (.*) is only obtainable from events \- it needs to match one of its events, such as:/, "- {POKEMON} est uniquement obtenable dans des événements - il doit correspondre à un de ses événements :");
-RegexValidatorMap.set(/- This format requires Pokemon from gen (.*) or later and (.*) is from gen (.*) because it has a move only available from an event\./, "- Ce format nécessite d'utiliser des Pokémon de la Génération {NUMBER} ou plus, mais {NICKNAME} est de la Génération {NUMBER} car il possède une capacité événementielle.");
-RegexValidatorMap.set(/- This format requires Pokemon from gen (.*) or later and (.*) is from gen (.*)\./, "- Ce format nécessite d'utiliser des Pokémon de la Génération {NUMBER} ou plus, mais {NICKNAME} est de la Génération {NUMBER}.");
-RegexValidatorMap.set(/- This format is in gen (.*) and (.*) is from gen (.*) because it has a move only available from an event\./, "- Ce format est en Génération {NUMBER}, mais {NICKNAME} est de la Génération {NUMBER} car il possède une capacité événementielle.");
-RegexValidatorMap.set(/- This format is in gen (.*) and (.*) is from gen (.*)\./, "- Ce format est en Génération {NUMBER}, mais {NICKNAME} est de la Génération {NUMBER}.");
-RegexValidatorMap.set(/- (.*) has moves from Japan-only events, but this format simulates International Yellow\/Crystal which can't trade with Japanese games\./, "- {NICKNAME} a des capacités évènementielles japonaises, mais ce format utilise Pokémon Jaune/Cristal international qui ne peut pas faire d'échange avec les jeux japonais.");
-RegexValidatorMap.set(/- (.*) must be at least level (.*) because it has a move only available from an event\./, "- {NICKNAME} doit être au moins niveau {LEVEL} car il possède une capacité événementielle.");
-RegexValidatorMap.set(/- (.*) must be at least level (.*)\./, "- {NICKNAME} doit être au moins niveau {LEVEL}.");
-RegexValidatorMap.set(/- (.*) must be shiny because it has a move only available from an event\./, "- {NICKNAME} doit être shiny car il possède une capacité événementielle.");
-RegexValidatorMap.set(/- (.*) must be shiny\./, "- {NICKNAME} doit être shiny.");
-RegexValidatorMap.set(/- (.*) must not be shiny because it has a move only available from an event\./, "- {NICKNAME} ne doit pas être shiny car il possède une capacité événementielle.");
-RegexValidatorMap.set(/- (.*) must not be shiny\./, "- {NICKNAME} ne doit pas être shiny.");
-RegexValidatorMap.set(/- (.*)'s gender must be (.*) because it has a move only available from an event\./, "- {NICKNAME} doit être {GENDER} car il possède une capacité événementielle.");
-RegexValidatorMap.set(/- (.*)'s gender must be (.*)\./, "- {NICKNAME} doit être {GENDER}.");
-RegexValidatorMap.set(/- (.*) must have a (.*) nature because it has a move only available from an event \- Mints are only available starting gen 8\./, "- {NICKNAME} doit avoir une nature {NATURE} car il possède une capacité événementielle - Les Aromates ne sont pas disponibles avant la Génération 8.");
-RegexValidatorMap.set(/- (.*) must have a (.*) nature \- Mints are only available starting gen 8\./, "- {NICKNAME} doit avoir une nature {NATURE} - Les Aromates ne sont pas disponibles avant la Génération 8.");
-RegexValidatorMap.set(/- (.*) must have (.*) (.*) IVs because it has a move only available from an event\./, "- {NICKNAME} doit {NUMBER} IVs en {STATS} car il possède une capacité événementielle.");
-RegexValidatorMap.set(/- (.*) must have (.*) (.*) IVs\./, "- {NICKNAME} doit {NUMBER} IVs en {STATS}.");
-RegexValidatorMap.set(/- (.*) can only have Hidden Power (.*) because it has a move only available from an event\./, "- {NICKNAME} ne peut avoir qu'une Puissance Cachée de type {TYPE} car il possède une capacité événementielle.");
-RegexValidatorMap.set(/- (.*) can only have Hidden Power (.*)\./, "- {NICKNAME} ne peut avoir qu'une Puissance Cachée de type {TYPE}.");
-RegexValidatorMap.set(/- (.*) can't use Hidden Power Fighting because it must have at least three perfect IVs\./, "- {NICKNAME} ne peut pas avoir Puissance Cachée Combat car il doit avoir au moins trois IVs parfaits.");
-RegexValidatorMap.set(/- (.*) can only use Hidden Power Dark\/Dragon\/Electric\/Steel\/Ice because it must have at least 5 perfect IVs\./, "- {NICKNAME} ne peut pas avoir Puissance Cachée Acier/Dragon/Électrik/Glace/Ténèbres car il doit avoir au moins cinq IVs parfaits.");
-RegexValidatorMap.set(/- (.*) must have its Hidden Ability\./, "- {NICKNAME} doit avoir son Talent Caché.");
-RegexValidatorMap.set(/- (.*) must not have its Hidden Ability\./, "- {NICKNAME} ne doit pas avoir {ABILITY}.");
-RegexValidatorMap.set(/- (.*) is not obtainable at levels below (.*) in Gen 1\./, "- {NICKNAME} ne peut pas être obtenu sous le niveau {NUMBER} en Génération 1.");
-RegexValidatorMap.set(/- (.*) must be at least level (.*) to be evolved\./, "- {NICKNAME} doit être au moins niveau {NUMBER} pour être évolué.");
-RegexValidatorMap.set(/- (.*) has Secret Sword, which is only compatible with Keldeo-Ordinary obtained from Gen 5\./, "- {NICKNAME} a Lame Ouinte, qui n'est utilisable que par Keldeo-Normal en Génération 5.");
-RegexValidatorMap.set(/- (.*) has a Gen 4 ability and isn't evolved \- it can't use moves from Gen 3\./, "- {NICKNAME} a un talent de Génération 4 et n'est pas évolué - il ne peut pas utiliser de capacités de Génération 3.");
-RegexValidatorMap.set(/- (.*) has a Hidden Ability \- it can't use moves from before Gen 5\./, "- {NICKNAME} a un Talent Caché, il ne peut utiliser de capacités d'avant la Génération 5.");
-RegexValidatorMap.set(/- (.*) has an unbreedable Hidden Ability \- it can't use egg moves\./, "- {NICKNAME} a un Talent Caché non reproductible, il ne peut pas utiliser d'Egg move.");
-RegexValidatorMap.set(/- (.*) must not be nicknamed a different Pokémon species than what it actually is\./, "- {NICKNAME} ne doit pas avoir le nom d'un autre Pokémon comme surnom.");
-RegexValidatorMap.set(/- (.*)'s Hidden Power type (.*) is incompatible with Hidden Power (.*)/, "- Le type {SWAP_1_TYPE_1} de la Puissance Cachée de {SWAP_0_NICKNAME} est incompatible avec Puissance Cachée {SWAP_2_TYPE_2}");
-RegexValidatorMap.set(/- (.*) must have at least three perfect IVs because it's a legendary and this format requires Gen (.*) Pokémon\./, "- {NICKNAME} doit avoir au moins trois IVs parfaits car c'est un légendaire et ce format utilise des Pokémon de Génération {NUMBER}.");
-RegexValidatorMap.set(/- (.*) must have at least three perfect IVs because it's a legendary in Gen 6 or later\./, "- {NICKNAME} doit avoir au moins trois IVs parfaits car c'est un légendaire en Génération 6+.");
-RegexValidatorMap.set(/- (.*) must have at least (.*) perfect IVs because it has a move only available from an event\./, "- {NICKNAME} doit avoir au moins {NUMBER} IVs parfaits car il possède une capacité événementielle.");
-RegexValidatorMap.set(/- (.*) must have at least (.*) perfect IVs\./, "- {NICKNAME} doit avoir au moins {NUMBER} IVs parfaits.");
-RegexValidatorMap.set(/- (.*) has Hidden Power (.*), but its IVs are for Hidden Power (.*)\./, "- {NICKNAME} a Puissance Cachée {TYPE}, mais ses IVs sont pour Puissance Cachée {TYPE}");
-RegexValidatorMap.set(/- (.*) has Hidden Power (.*), but its IVs don't allow this even with \(Bottle Cap\) Hyper Training\./, "- {NICKNAME} a Puissance Cachée {TYPE}, mais ses IVs sont incompatibles, même avec l'Entraînement Ultime.");
-RegexValidatorMap.set(/- (.*) has an HP DV of (.*), but its Atk, Def, Spe, and Spc DVs give it an HP DV of (.*)\./, "- {NICKNAME} a des DVs en PV de {NUMBER}, mais ses DVs en Atq, Déf, Vit et Spé lui donnent des DVs en PV de {NUMBER}.");
-RegexValidatorMap.set(/- (.*) has different SpA and SpD DVs, which is not possible in Gen 2\./, "- {NICKNAME} a des DVs en SpA et SpD différents, ce qui est impossible en Génération 2.");
-RegexValidatorMap.set(/- (.*) is (.*), but it has an Atk DV of (.*), which makes its gender (.*)\./, "- {NICKNAME} est {GENDER}, mais ses DVs d'Atq sont à {NUMBER}, ce qui le rend {GENDER}.");
-RegexValidatorMap.set(/- (.*) is not shiny, which does not match its DVs\./, "- {NICKNAME} n'est pas shiny, ce qui est incohérent avec ses DVs.");
-RegexValidatorMap.set(/- (.*) is shiny, which does not match its DVs (its DVs must all be 10, except Atk which must be 2, 3, 6, 7, 10, 11, 14, or 15)\./, "- {NICKNAME} est shiny, ce qui est incohérent avec ses DVs (ses DVs doivent tous être à 10, sauf l'Atq qui doit être 2, 3, 6, 7, 10, 11, 14, ou 15).");
-RegexValidatorMap.set(/- (.*) has less than 0 EVs in (.*)\./, "- {NICKNAME} a moins de 0 EV en {STATS}.");
-RegexValidatorMap.set(/- (.*) has less than 0 Awakening Values in (.*)\./, "- {NICKNAME} a moins de 0 Awakening Values en {STATS}.");
-RegexValidatorMap.set(/- (.*) has Awakening Values but this format doesn't allow them\./, "- {NICKNAME} a des Awakening Values mais le format ne les autorise pas.");
-RegexValidatorMap.set(/- (.*) has more than 200 Awakening Values in (.*)\./, "- {NICKNAME} a plus de 200 Awakening Values en {STATS}.");
-RegexValidatorMap.set(/- (.*) has more than 255 EVs in (.*)\./, "- {NICKNAME} a plus de 255 EVs en {STATS}.");
-RegexValidatorMap.set(/- (.*) has different SpA and SpD EVs, which is not possible in Gen 2\./, "- {NICKNAME} a des EVs en SpA et SpD différents, ce qui est impossible en Génération 2.");
-RegexValidatorMap.set(/- (.*) has EVs, which is not allowed by this format.\./, "- {NICKNAME} a des EVs, ce qui n'est pas autorisé dans ce format.");
-RegexValidatorMap.set(/- (.*) has (.*) total EVs, which is more than this format's limit of (.*)\./, "- {NICKNAME} a {NUMBER} EVs en tout, ce qui est plus que la limite du format ({NUMBER})");
-RegexValidatorMap.set(/- (.*) needs to hold (.*) or (.*) to be in its (.*) forme\./, "- {NICKNAME} doit tenir {ITEM} ou {ITEM} pour être sous sa forme \"{FORM}\".");
-RegexValidatorMap.set(/- (.*) needs to hold (.*) to be in its (.*) forme\./, "- {NICKNAME} doit tenir {ITEM} pour être sous sa forme \"{FORM}\".");
-RegexValidatorMap.set(/- (.*) needs to hold (.*) or (.*)\./, "- {NICKNAME} doit tenir {ITEM} ou {ITEM}.");
-RegexValidatorMap.set(/- (.*) needs to hold (.*)\./, "- {NICKNAME} doit tenir {ITEM}.");
-RegexValidatorMap.set(/- (.*) needs to know the move (.*) to be in its (.*) forme\./, "- {NICKNAME} doit connaître la capacité {MOVE} pour être sous sa forme \"{FORM}\".");
-RegexValidatorMap.set(/- (.*) needs to know a Fairy-type move to evolve, so it can only know 3 other moves from (.*)\./, "- {NICKNAME} doit connaître une capacité de type Fée pour évoluer, il ne peut donc connaître que 3 capacités supplémentaires de {POKEMON}.");
-RegexValidatorMap.set(/- (.*) needs to know (.*) to evolve, so it can only know 3 other moves from (.*)\./, "- {NICKNAME} doit connaître {MOVE} pour évoluer, il ne peut donc connaître que 3 capacités supplémentaires de {POKEMON}.");
-RegexValidatorMap.set(/- (.*) has a hidden ability - it can't have moves only learned before gen 5\./, "- {NICKNAME} a un Talent Caché, il ne peut pas utiliser de capacités apprises seulement dans les générations < 5.");
-RegexValidatorMap.set(/- (.*)'s event\/egg moves are from an evolution, and are incompatible with its moves from (.*)\./, "- {NICKNAME} a des capacités exclusives aux générations < {NUMBER}, et sont incompatibles avec les capacités de {POKEMON}.");
-RegexValidatorMap.set(/- (.*) has moves from before Gen (.*), which are incompatible with its moves from (.*)\./, "- Les capacités événementielles/oeuf de {NICKNAME} viennent d'une évolution, et sont incompatibles avec les capacités de {POKEMON}.");
-RegexValidatorMap.set(/- (.*) can't learn any moves at all.\./, "- {NICKNAME} ne peut pas apprendre aucune capacité.");
-RegexValidatorMap.set(/- (.*)'s move (.*) can't be Sketched\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être Gribouillée.");
-RegexValidatorMap.set(/- (.*)'s move (.*) can't be Sketched because it's a Gen 8 move and Sketch isn't available in Gen 8\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être Gribouillée car elle povient de la Génération 8 et Gribouille n'existe pas en Génération 8.");
-RegexValidatorMap.set(/- (.*)'s move (.*) can't be transferred from Gen (.*) to (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être transférée de la Génération {SWAP_2_NUMBER} vers la Génération {SWAP_3_NUMBER}.");
-RegexValidatorMap.set(/- (.*)'s move (.*) can only be learned in gens without Hidden Abilities\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être apprise dans une génération sans Talent caché.");
-RegexValidatorMap.set(/- (.*)'s move (.*) can't be transferred from Gen 3 to 4 because it's an HM move\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être transférée de la Génération 3 à la Génération 4 car c'est une CS.");
-RegexValidatorMap.set(/- (.*)'s move (.*) can't be transferred from Gen 4 to 5 because it's an HM move\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être transférée de la Génération 4 à la Génération 5 car c'est une CS.");
-RegexValidatorMap.set(/- (.*)'s move (.*) is learned at level (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être apprise au niveau {SWAP_2_NUMBER}.");
-RegexValidatorMap.set(/- (.*)'s moves (.*), (.*) are incompatible\./, "- Les capacités {SWAP_1_MOVE} et {SWAP_2_MOVE} de {SWAP_0_NICKNAME} sont incompatibles.");
-RegexValidatorMap.set(/- (.*) can't Sketch (.*) and (.*) because it can only Sketch 1 move\./, "- {NICKNAME} ne peut pas Gribouiller {MOVE} et {MOVE} car une seule capacité peut être Gribouillée.");
-RegexValidatorMap.set(/- (.*) can't simultaneously transfer Defog and Whirlpool from Gen 4 to 5\./, "- {NICKNAME} ne peut pas transférer Anti-Brume et Siphon depuis la Génération 4 vers la Génération 5.");
-RegexValidatorMap.set(/- (.*) can't learn (.*)\./, "- {NICKNAME} ne peut pas apprendre {MOVE}.");
-RegexValidatorMap.set(/- \(It will revert to its (.*) forme if you remove the item or give it a different item\.\)/, "- (Il retrouvera sa forme \"{FORM}\" s'il perd son objet ou s'il obtient un objet différent.)");
-RegexValidatorMap.set(/- \(It will revert to its (.*) forme if it forgets the move\.\)/, "- (Il retrouvera sa forme \"{FORM}\" s'il oublie la capacité.)");
-RegexValidatorMap.set(/- (.*) must have (.*)\./, "- {NICKNAME} doit avoir {ABILITY}.");
-RegexValidatorMap.set(/- (.*) cannot Gigantamax but is flagged as being able to\./, "- {NICKNAME} ne peut pas Gigantamaxer mais est noté comme pouvant le faire.");
-RegexValidatorMap.set(/- (.*) is flagged as gigantamax, but it cannot gigantamax without hacking or glitches\./, "- {NICKNAME} est taggé comme Gigantamax mais ne peut pas gigantamaxer sans hack ou glitch.");
-RegexValidatorMap.set(/- (.*) is tagged (.*), which is banned\./, "- {NICKNAME} est taggé \"{TAG}\", qui est banni.");
-RegexValidatorMap.set(/- (.*) is tagged (.*), which is (.*)\./, "- {NICKNAME} est taggé \"{TAG}\", qui est \"{QUALIFY}\".");
-RegexValidatorMap.set(/- (.*) is not in the list of allowed pokemon\./, "- {NICKNAME} n'est pas dans la liste des Pokémon autorisés.");
-RegexValidatorMap.set(/- (.*) not holding an item is (.*)\./, "- {NICKNAME} sans objet est \"{BANREASON}\".");
-RegexValidatorMap.set(/- (.*) is not obtainable without hacking or glitches\./, "- {ITEM} n'est pas obtenable sans hack ou glitch.");
-RegexValidatorMap.set(/- (.*) is not usable without Gigantamaxing its user, (.*)\./, "- {MOVE} n'est pas utilisable sans Gigantamaxer son utilisateur, {POKEMON}.");
-RegexValidatorMap.set(/- (.*)'s item (.*) is (.*)\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} est \"{SWAP_2_BANREASON}\".");
-RegexValidatorMap.set(/- (.*)'s item (.*) is tagged (.*), which is (.*)\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
-RegexValidatorMap.set(/- (.*)'s move (.*) is tagged (.*), which is (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
-RegexValidatorMap.set(/- (.*)'s ability (.*) is tagged (.*), which is (.*)\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
-RegexValidatorMap.set(/- (.*)'s nature (.*) is tagged (.*), which is (.*)\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
-RegexValidatorMap.set(/- (.*)'s item (.*) is not in the list of allowed items\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} n'est pas dans la liste des objets autorisés.");
-RegexValidatorMap.set(/- (.*)'s move (.*) is not in the list of allowed moves\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'est pas dans la liste des capacités autorisées.");
-RegexValidatorMap.set(/- (.*)'s ability (.*) is not in the list of allowed abilities\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'est pas dans la liste des talents autorisés.");
-RegexValidatorMap.set(/- (.*)'s nature (.*) is not in the list of allowed abilities\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'est pas dans la liste des natures autorisées.");
-RegexValidatorMap.set(/The room "(.*)" does not exist\./, "Le salon {ROOM} n'existe pas.");
-RegexValidatorMap.set(/The user '(.*)' was not found\./, "L'utilisateur '{TRAINER}' n'a pas été trouvé.");
+// TEAM POPUPMESSAGE
+RegexPopupMessagesMap.set(/Your team is valid for (.*)\./, "Ton équipe est valide pour {FORMAT}.");
+RegexPopupMessagesMap.set(/The format (.*) was not found\./, "Le format {FORMAT} n'existe pas.");
+RegexPopupMessagesMap.set(/- (.*) has no moves \(it must have at least one to be usable\)\./, "- {NICKNAME} n'a pas de capacités (il doit avoir au moins une capacité pour être utilisable).");
+RegexPopupMessagesMap.set(/- (.*) has exactly 0 EVs \- did you forget to EV it\? \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\./, "- {NICKNAME} a exactement 0 EV - as-tu oublié de lui donner des EVs ? (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
+RegexPopupMessagesMap.set(/- (.*) has exactly (.*) EVs, but this format does not restrict you to 510 EVs \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\./, "- {NICKNAME} a exactement {NUMBER} EVs, mais ce format ne restreint pas à 510 EVs (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
+RegexPopupMessagesMap.set(/- (.*) is level 50, but this format allows level (.*) Pokémon\. \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\./,  "- {NICKNAME} est niveau 50, mais ce format autorise les Pokémon de niveau {NUMBER} (Si c'était intentionnel, ajoute 1 EV, cela ne changera pas ses stats mais nous indiquera que ce n'était pas une erreur).");
+RegexPopupMessagesMap.set(/- (.*)'s item (.*) does not exist in Gen (.*)\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
+RegexPopupMessagesMap.set(/- (.*)'s move (.*) does not exist in Gen (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
+RegexPopupMessagesMap.set(/- (.*)'s ability (.*) does not exist in Gen (.*)\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
+RegexPopupMessagesMap.set(/- (.*)'s nature (.*) does not exist in Gen (.*)\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'existe pas en Génération {SWAP_2_NUMBER}.");
+RegexPopupMessagesMap.set(/- (.*)'s item (.*) does not exist in this game\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
+RegexPopupMessagesMap.set(/- (.*)'s move (.*) does not exist in this game\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
+RegexPopupMessagesMap.set(/- (.*)'s ability (.*) does not exist in this game\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
+RegexPopupMessagesMap.set(/- (.*)'s nature (.*) does not exist in this game\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'existe pas dans ce jeu.");
+RegexPopupMessagesMap.set(/- (.*) does not exist in this game\./, "- {NICKNAME} n'existe pas dans ce jeu.");
+RegexPopupMessagesMap.set(/- (.*) does not exist in Gen (.*)\./, "- {NICKNAME} n'existe pas en Génération {NUMBER}.");
+RegexPopupMessagesMap.set(/- (.*) does not exist in this game, only in Let's Go Pikachu\/Eevee\./, "- {NICKNAME} n'existe pas dans ce jeu, seulement dans Let's Go Pikachu/Évoli.");
+RegexPopupMessagesMap.set(/- (.*) is a CAP and does not exist in this game\./, "- {NICKNAME} est un CAP et n'existe pas dans ce jeu.");
+RegexPopupMessagesMap.set(/- (.*) is not possible to obtain in this game./, "- {NICKNAME} n'est pas obtenable dans ce jeu.");
+RegexPopupMessagesMap.set(/- (.*) is a placeholder for a Gigantamax sprite, not a real Pokémon. \(This message is likely to be a validator bug\.\)/, "- {NICKNAME} est un placeholder pour un sprite Gigantamax, pas un Pokémon utilisable. (Ce message est probablement un bug de validation");
+RegexPopupMessagesMap.set(/- (.*) must be at least level (.*) to be evolved\./, "- {NICKNAME} doit être au moins niveau {NUMBER} pour être évolué.");
+RegexPopupMessagesMap.set(/- (.*) is not obtainable at levels below (.*) in Gen 1\./, "- {NICKNAME} n'est pas obtenable avant le niveau {NUMBER} en Génération 1.");
+RegexPopupMessagesMap.set(/- (.*) transforms in-battle with (.*), please fix its ability\./, "- {NICKNAME} se transforme en combat en utilisant {ABILITY}, tu dois modifier son talent.");
+RegexPopupMessagesMap.set(/- (.*) transforms in-battle with (.*), please fix its item\./, "- {NICKNAME} se transforme en combat en utilisant {ABILITY}, tu dois modifier son objet.");
+RegexPopupMessagesMap.set(/- (.*) transforms in-battle with (.*), please fix its moves\./, "- {NICKNAME} se transforme en combat en utilisant {ABILITY}, tu dois modifier ses capacités.");
+RegexPopupMessagesMap.set(/- You must bring at least (.*) Pokémon \(your team has (.*)\)\./, "- Tu dois choisir au moins {NUMBER} Pokémon (ton équipe en a {NUMBER}).");
+RegexPopupMessagesMap.set(/- You may only bring up to (.*) Pokémon \(your team has (.*)\)\./, "- Tu ne peux choisir que {NUMBER} Pokémon (ton équipe en a {NUMBER}).");
+RegexPopupMessagesMap.set(/- You are limited to (.*) by (.*)\./, "- Tu es limité à \"{RULE}\" par \"{CAUSE}\".");
+RegexPopupMessagesMap.set(/- You are limited to (.*)\./, "- Tu es limité à \"{RULE}\".");
+RegexPopupMessagesMap.set(/- (.*) is limited to (.*) by (.*)\./, "- {NICKNAME} est limité à \"{RULE}\" par \"{CAUSE}\".");
+RegexPopupMessagesMap.set(/- (.*) is limited to (.*)\./, "- {NICKNAME} est limité à \"{RULE}\".");
+RegexPopupMessagesMap.set(/- Your team has the combination of (.*), which is banned by (.*)\./, "- Ton équipe a la combinaison \"{COMBINATION}\", qui est bannie par \"{CAUSE}\".");
+RegexPopupMessagesMap.set(/- Your team has the combination of (.*), which is banned\./, "- Ton équipe a la combinaison \"{COMBINATION}\", qui est bannie.");
+RegexPopupMessagesMap.set(/- (.*) has the combination of (.*), which is banned by (.*)\./, "- {NICKNAME} a la combinaison \"{COMBINATION}\", qui est bannie par \"{CAUSE}\".");
+RegexPopupMessagesMap.set(/- (.*) has the combination of (.*), which is banned\./, "- {NICKNAME} a la combinaison \"{COMBINATION}\", qui est bannie.");
+RegexPopupMessagesMap.set(/- (.*) has the combination of (.*), which is impossible to obtain legitimately\./, "- {NICKNAME} a la combinaison \"{COMBINATION}\", qui est impossible d'obtenir de manière légitime.");
+RegexPopupMessagesMap.set(/- Nickname (.*) too long \(should be 18 characters or fewer\)/, "- Le surnom {NAME} est trop long (18 caractères max).");
+RegexPopupMessagesMap.set(/- (.*) \(level (.*)\) is below the minimum level of (.*) from (.*)/, "- {NICKNAME} (niveau {NUMBER}) est sous le niveau minimum ({NUMBER}) de \"{SOURCE}\"");
+RegexPopupMessagesMap.set(/- (.*) \(level (.*)\) is below the minimum level of (.*)/, "- {NICKNAME} (niveau {NUMBER}) est sous le niveau minimum ({NUMBER})");
+RegexPopupMessagesMap.set(/- (.*) \(level (.*)\) is above the maximum level of (.*) from (.*)/, "- {NICKNAME} (niveau {NUMBER}) est au dessus du niveau maximum ({NUMBER}) de \"{SOURCE}\"");
+RegexPopupMessagesMap.set(/- (.*) \(level (.*)\) is above the maximum level of (.*)/, "- {NICKNAME} (niveau {NUMBER}) est au dessus du niveau maximum ({NUMBER})");
+RegexPopupMessagesMap.set(/- The Pokemon "(.*)" does not exist\./, "- Le Pokémon \"{POKEMON}\" n'existe pas.");
+RegexPopupMessagesMap.set(/- "(.*)" is an invalid item\./, "- L'objet \"{ITEM}\" est invalide.");
+RegexPopupMessagesMap.set(/- "(.*)" is an invalid ability\./, "- Le talent \"{ABILITY}\" est invalide.");
+RegexPopupMessagesMap.set(/- "(.*)" is an invalid nature\./, "- La nature \"{NATURE}\" est invalide.");
+RegexPopupMessagesMap.set(/- "(.*)" is an invalid move\./, "- La capacité \"{MOVE}\" est invalide.");
+RegexPopupMessagesMap.set(/- (.*) has an invalid happiness value\./, "- {NICKNAME} a une valeur de bonheur invalide.");
+RegexPopupMessagesMap.set(/- (.*)'s Hidden Power type \((.*)\) is invalid\./, "- Le type de la Puissance Cachée de {NICKNAME} ({TYPE}) est invalide.");
+RegexPopupMessagesMap.set(/- (.*) cannot hold the Griseous Orb\./, "- {NICKNAME} ne peut pas porter l'Orbe Platiné.");
+RegexPopupMessagesMap.set(/- (.*) needs to have an ability\./, "- {NICKNAME} doit avoir un talent.");
+RegexPopupMessagesMap.set(/- (.*) can't have (.*)\./, "- {NICKNAME} ne peut pas avoir {ABILITY}.");
+RegexPopupMessagesMap.set(/- (.*)'s Hidden Ability is unreleased\./, "- Le Talent Caché de {NICKNAME} n'est pas disponible.");
+RegexPopupMessagesMap.set(/- (.*)'s Hidden Ability is only available from Virtual Console, which is not allowed in this format\./, "- Le Talent Caché de {NICKNAME} n'est disponible que sur Console Virtuelle, qui n'est pas autorisée dans ce format.");
+RegexPopupMessagesMap.set(/- (.*)'s Hidden Ability is unreleased for the Orange and White forms\./, "- Le Talent Caché de {NICKNAME} n'est pas disponible pour les formes Orange et Blanc.");
+RegexPopupMessagesMap.set(/- (.*) must be at least level 10 to have a Hidden Ability\./, "- {NICKNAME} doit être au moins niveau 10 pour avoir un Talent Caché.");
+RegexPopupMessagesMap.set(/- (.*) must be male to have a Hidden Ability\./, "- {NICKNAME} doit être mâle pour avoir un Talent Caché.");
+RegexPopupMessagesMap.set(/- (.*) has (.*) moves, which is more than the limit of (.*)\./, "- {NICKNAME} a {NUMBER} capacités, qui dépasse la limite ({NUMBER}).");
+RegexPopupMessagesMap.set(/- (.*) has an event-exclusive move that it doesn't qualify for \(only one of several ways to get the move will be listed\):/, "- {NICKNAME} a une capacité évènementielle qu'il n'est pas censé avoir - exemple de moyen d'obtenir la capacité :");
+RegexPopupMessagesMap.set(/- (.*) is only obtainable from an event \- it needs to match its event:/, "- {POKEMON} est uniquement obtenable dans un événement - il doit correspondre à son événement :");
+RegexPopupMessagesMap.set(/- (.*) is only obtainable from events \- it needs to match one of its events, such as:/, "- {POKEMON} est uniquement obtenable dans des événements - il doit correspondre à un de ses événements :");
+RegexPopupMessagesMap.set(/- This format requires Pokemon from gen (.*) or later and (.*) is from gen (.*) because it has a move only available from an event\./, "- Ce format nécessite d'utiliser des Pokémon de la Génération {NUMBER} ou plus, mais {NICKNAME} est de la Génération {NUMBER} car il possède une capacité événementielle.");
+RegexPopupMessagesMap.set(/- This format requires Pokemon from gen (.*) or later and (.*) is from gen (.*)\./, "- Ce format nécessite d'utiliser des Pokémon de la Génération {NUMBER} ou plus, mais {NICKNAME} est de la Génération {NUMBER}.");
+RegexPopupMessagesMap.set(/- This format is in gen (.*) and (.*) is from gen (.*) because it has a move only available from an event\./, "- Ce format est en Génération {NUMBER}, mais {NICKNAME} est de la Génération {NUMBER} car il possède une capacité événementielle.");
+RegexPopupMessagesMap.set(/- This format is in gen (.*) and (.*) is from gen (.*)\./, "- Ce format est en Génération {NUMBER}, mais {NICKNAME} est de la Génération {NUMBER}.");
+RegexPopupMessagesMap.set(/- (.*) has moves from Japan-only events, but this format simulates International Yellow\/Crystal which can't trade with Japanese games\./, "- {NICKNAME} a des capacités évènementielles japonaises, mais ce format utilise Pokémon Jaune/Cristal international qui ne peut pas faire d'échange avec les jeux japonais.");
+RegexPopupMessagesMap.set(/- (.*) must be at least level (.*) because it has a move only available from an event\./, "- {NICKNAME} doit être au moins niveau {LEVEL} car il possède une capacité événementielle.");
+RegexPopupMessagesMap.set(/- (.*) must be at least level (.*)\./, "- {NICKNAME} doit être au moins niveau {LEVEL}.");
+RegexPopupMessagesMap.set(/- (.*) must be shiny because it has a move only available from an event\./, "- {NICKNAME} doit être shiny car il possède une capacité événementielle.");
+RegexPopupMessagesMap.set(/- (.*) must be shiny\./, "- {NICKNAME} doit être shiny.");
+RegexPopupMessagesMap.set(/- (.*) must not be shiny because it has a move only available from an event\./, "- {NICKNAME} ne doit pas être shiny car il possède une capacité événementielle.");
+RegexPopupMessagesMap.set(/- (.*) must not be shiny\./, "- {NICKNAME} ne doit pas être shiny.");
+RegexPopupMessagesMap.set(/- (.*)'s gender must be (.*) because it has a move only available from an event\./, "- {NICKNAME} doit être {GENDER} car il possède une capacité événementielle.");
+RegexPopupMessagesMap.set(/- (.*)'s gender must be (.*)\./, "- {NICKNAME} doit être {GENDER}.");
+RegexPopupMessagesMap.set(/- (.*) must have a (.*) nature because it has a move only available from an event \- Mints are only available starting gen 8\./, "- {NICKNAME} doit avoir une nature {NATURE} car il possède une capacité événementielle - Les Aromates ne sont pas disponibles avant la Génération 8.");
+RegexPopupMessagesMap.set(/- (.*) must have a (.*) nature \- Mints are only available starting gen 8\./, "- {NICKNAME} doit avoir une nature {NATURE} - Les Aromates ne sont pas disponibles avant la Génération 8.");
+RegexPopupMessagesMap.set(/- (.*) must have (.*) (.*) IVs because it has a move only available from an event\./, "- {NICKNAME} doit avoir {NUMBER} IVs en {STATS} car il possède une capacité événementielle.");
+RegexPopupMessagesMap.set(/- (.*) must have (.*) (.*) IVs\./, "- {NICKNAME} doit avoir {NUMBER} IVs en {STATS}.");
+RegexPopupMessagesMap.set(/- (.*) can only have Hidden Power (.*) because it has a move only available from an event\./, "- {NICKNAME} ne peut avoir qu'une Puissance Cachée de type {TYPE} car il possède une capacité événementielle.");
+RegexPopupMessagesMap.set(/- (.*) can only have Hidden Power (.*)\./, "- {NICKNAME} ne peut avoir qu'une Puissance Cachée de type {TYPE}.");
+RegexPopupMessagesMap.set(/- (.*) can't use Hidden Power Fighting because it must have at least three perfect IVs\./, "- {NICKNAME} ne peut pas avoir Puissance Cachée Combat car il doit avoir au moins trois IVs parfaits.");
+RegexPopupMessagesMap.set(/- (.*) can only use Hidden Power Dark\/Dragon\/Electric\/Steel\/Ice because it must have at least 5 perfect IVs\./, "- {NICKNAME} ne peut pas avoir Puissance Cachée Acier/Dragon/Électrik/Glace/Ténèbres car il doit avoir au moins cinq IVs parfaits.");
+RegexPopupMessagesMap.set(/- (.*) must have its Hidden Ability\./, "- {NICKNAME} doit avoir son Talent Caché.");
+RegexPopupMessagesMap.set(/- (.*) must not have its Hidden Ability\./, "- {NICKNAME} ne doit pas avoir {ABILITY}.");
+RegexPopupMessagesMap.set(/- (.*) is not obtainable at levels below (.*) in Gen 1\./, "- {NICKNAME} ne peut pas être obtenu sous le niveau {NUMBER} en Génération 1.");
+RegexPopupMessagesMap.set(/- (.*) must be at least level (.*) to be evolved\./, "- {NICKNAME} doit être au moins niveau {NUMBER} pour être évolué.");
+RegexPopupMessagesMap.set(/- (.*) has Secret Sword, which is only compatible with Keldeo-Ordinary obtained from Gen 5\./, "- {NICKNAME} a Lame Ointe, qui n'est utilisable que par Keldeo-Normal en Génération 5.");
+RegexPopupMessagesMap.set(/- (.*) has a Gen 4 ability and isn't evolved \- it can't use moves from Gen 3\./, "- {NICKNAME} a un talent de Génération 4 et n'est pas évolué - il ne peut pas utiliser de capacités de Génération 3.");
+RegexPopupMessagesMap.set(/- (.*) has a Hidden Ability \- it can't use moves from before Gen 5\./, "- {NICKNAME} a un Talent Caché, il ne peut utiliser de capacités d'avant la Génération 5.");
+RegexPopupMessagesMap.set(/- (.*) has an unbreedable Hidden Ability \- it can't use egg moves\./, "- {NICKNAME} a un Talent Caché non reproductible, il ne peut pas utiliser d'Egg move.");
+RegexPopupMessagesMap.set(/- (.*) must not be nicknamed a different Pokémon species than what it actually is\./, "- {NICKNAME} ne doit pas avoir le nom d'un autre Pokémon comme surnom.");
+RegexPopupMessagesMap.set(/- (.*)'s Hidden Power type (.*) is incompatible with Hidden Power (.*)/, "- Le type {SWAP_1_TYPE_1} de la Puissance Cachée de {SWAP_0_NICKNAME} est incompatible avec Puissance Cachée {SWAP_2_TYPE_2}");
+RegexPopupMessagesMap.set(/- (.*) must have at least three perfect IVs because it's a legendary and this format requires Gen (.*) Pokémon\./, "- {NICKNAME} doit avoir au moins trois IVs parfaits car c'est un légendaire et ce format utilise des Pokémon de Génération {NUMBER}.");
+RegexPopupMessagesMap.set(/- (.*) must have at least three perfect IVs because it's a legendary in Gen 6 or later\./, "- {NICKNAME} doit avoir au moins trois IVs parfaits car c'est un légendaire en Génération 6+.");
+RegexPopupMessagesMap.set(/- (.*) must have at least (.*) perfect IVs because it has a move only available from an event\./, "- {NICKNAME} doit avoir au moins {NUMBER} IVs parfaits car il possède une capacité événementielle.");
+RegexPopupMessagesMap.set(/- (.*) must have at least (.*) perfect IVs\./, "- {NICKNAME} doit avoir au moins {NUMBER} IVs parfaits.");
+RegexPopupMessagesMap.set(/- (.*) has Hidden Power (.*), but its IVs are for Hidden Power (.*)\./, "- {NICKNAME} a Puissance Cachée {TYPE}, mais ses IVs sont pour Puissance Cachée {TYPE}");
+RegexPopupMessagesMap.set(/- (.*) has Hidden Power (.*), but its IVs don't allow this even with \(Bottle Cap\) Hyper Training\./, "- {NICKNAME} a Puissance Cachée {TYPE}, mais ses IVs sont incompatibles, même avec l'Entraînement Ultime.");
+RegexPopupMessagesMap.set(/- (.*) has an HP DV of (.*), but its Atk, Def, Spe, and Spc DVs give it an HP DV of (.*)\./, "- {NICKNAME} a des DVs en PV de {NUMBER}, mais ses DVs en Atq, Déf, Vit et Spé lui donnent des DVs en PV de {NUMBER}.");
+RegexPopupMessagesMap.set(/- (.*) has different SpA and SpD DVs, which is not possible in Gen 2\./, "- {NICKNAME} a des DVs en SpA et SpD différents, ce qui est impossible en Génération 2.");
+RegexPopupMessagesMap.set(/- (.*) is (.*), but it has an Atk DV of (.*), which makes its gender (.*)\./, "- {NICKNAME} est {GENDER}, mais ses DVs d'Atq sont à {NUMBER}, ce qui le rend {GENDER}.");
+RegexPopupMessagesMap.set(/- (.*) is not shiny, which does not match its DVs\./, "- {NICKNAME} n'est pas shiny, ce qui est incohérent avec ses DVs.");
+RegexPopupMessagesMap.set(/- (.*) is shiny, which does not match its DVs (its DVs must all be 10, except Atk which must be 2, 3, 6, 7, 10, 11, 14, or 15)\./, "- {NICKNAME} est shiny, ce qui est incohérent avec ses DVs (ses DVs doivent tous être à 10, sauf l'Atq qui doit être 2, 3, 6, 7, 10, 11, 14, ou 15).");
+RegexPopupMessagesMap.set(/- (.*) has less than 0 EVs in (.*)\./, "- {NICKNAME} a moins de 0 EV en {STATS}.");
+RegexPopupMessagesMap.set(/- (.*) has less than 0 Awakening Values in (.*)\./, "- {NICKNAME} a moins de 0 Awakening Values en {STATS}.");
+RegexPopupMessagesMap.set(/- (.*) has Awakening Values but this format doesn't allow them\./, "- {NICKNAME} a des Awakening Values mais le format ne les autorise pas.");
+RegexPopupMessagesMap.set(/- (.*) has more than 200 Awakening Values in (.*)\./, "- {NICKNAME} a plus de 200 Awakening Values en {STATS}.");
+RegexPopupMessagesMap.set(/- (.*) has more than 255 EVs in (.*)\./, "- {NICKNAME} a plus de 255 EVs en {STATS}.");
+RegexPopupMessagesMap.set(/- (.*) has different SpA and SpD EVs, which is not possible in Gen 2\./, "- {NICKNAME} a des EVs en SpA et SpD différents, ce qui est impossible en Génération 2.");
+RegexPopupMessagesMap.set(/- (.*) has EVs, which is not allowed by this format.\./, "- {NICKNAME} a des EVs, ce qui n'est pas autorisé dans ce format.");
+RegexPopupMessagesMap.set(/- (.*) has (.*) total EVs, which is more than this format's limit of (.*)\./, "- {NICKNAME} a {NUMBER} EVs en tout, ce qui est plus que la limite du format ({NUMBER})");
+RegexPopupMessagesMap.set(/- (.*) needs to hold (.*) or (.*) to be in its (.*) forme\./, "- {NICKNAME} doit tenir {ITEM} ou {ITEM} pour être sous sa forme \"{FORM}\".");
+RegexPopupMessagesMap.set(/- (.*) needs to hold (.*) to be in its (.*) forme\./, "- {NICKNAME} doit tenir {ITEM} pour être sous sa forme \"{FORM}\".");
+RegexPopupMessagesMap.set(/- (.*) needs to hold (.*) or (.*)\./, "- {NICKNAME} doit tenir {ITEM} ou {ITEM}.");
+RegexPopupMessagesMap.set(/- (.*) needs to hold (.*)\./, "- {NICKNAME} doit tenir {ITEM}.");
+RegexPopupMessagesMap.set(/- (.*) needs to know the move (.*) to be in its (.*) forme\./, "- {NICKNAME} doit connaître la capacité {MOVE} pour être sous sa forme \"{FORM}\".");
+RegexPopupMessagesMap.set(/- (.*) needs to know a Fairy-type move to evolve, so it can only know 3 other moves from (.*)\./, "- {NICKNAME} doit connaître une capacité de type Fée pour évoluer, il ne peut donc connaître que 3 capacités supplémentaires de {POKEMON}.");
+RegexPopupMessagesMap.set(/- (.*) needs to know (.*) to evolve, so it can only know 3 other moves from (.*)\./, "- {NICKNAME} doit connaître {MOVE} pour évoluer, il ne peut donc connaître que 3 capacités supplémentaires de {POKEMON}.");
+RegexPopupMessagesMap.set(/- (.*) has a hidden ability - it can't have moves only learned before gen 5\./, "- {NICKNAME} a un Talent Caché, il ne peut pas utiliser de capacités apprises seulement dans les générations < 5.");
+RegexPopupMessagesMap.set(/- (.*)'s event\/egg moves are from an evolution, and are incompatible with its moves from (.*)\./, "- Les capacités oeuf événementielles de {NICKNAME} provienent d'une évolution, et sont incompatibles avec ses capacités de {POKEMON}.");
+RegexPopupMessagesMap.set(/- (.*) has moves from before Gen (.*), which are incompatible with its moves from (.*)\./, "- Les capacités événementielles/oeuf de {NICKNAME} viennent d'une évolution, et sont incompatibles avec les capacités de {POKEMON}.");
+RegexPopupMessagesMap.set(/- (.*) can't learn any moves at all.\./, "- {NICKNAME} ne peut pas apprendre aucune capacité.");
+RegexPopupMessagesMap.set(/- (.*)'s move (.*) can't be Sketched\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être Gribouillée.");
+RegexPopupMessagesMap.set(/- (.*)'s move (.*) can't be Sketched because it's a Gen 8 move and Sketch isn't available in Gen 8\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être Gribouillée car elle povient de la Génération 8 et Gribouille n'existe pas en Génération 8.");
+RegexPopupMessagesMap.set(/- (.*)'s move (.*) can't be transferred from Gen (.*) to (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être transférée de la Génération {SWAP_2_NUMBER} vers la Génération {SWAP_3_NUMBER}.");
+RegexPopupMessagesMap.set(/- (.*)'s move (.*) can only be learned in gens without Hidden Abilities\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être apprise dans une génération sans Talent caché.");
+RegexPopupMessagesMap.set(/- (.*)'s move (.*) can't be transferred from Gen 3 to 4 because it's an HM move\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être transférée de la Génération 3 à la Génération 4 car c'est une CS.");
+RegexPopupMessagesMap.set(/- (.*)'s move (.*) can't be transferred from Gen 4 to 5 because it's an HM move\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être transférée de la Génération 4 à la Génération 5 car c'est une CS.");
+RegexPopupMessagesMap.set(/- (.*)'s move (.*) is learned at level (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} ne peut pas être apprise au niveau {SWAP_2_NUMBER}.");
+RegexPopupMessagesMap.set(/- (.*)'s moves (.*), (.*) are incompatible\./, "- Les capacités {SWAP_1_MOVE} et {SWAP_2_MOVE} de {SWAP_0_NICKNAME} sont incompatibles.");
+RegexPopupMessagesMap.set(/- (.*) can't Sketch (.*) and (.*) because it can only Sketch 1 move\./, "- {NICKNAME} ne peut pas Gribouiller {MOVE} et {MOVE} car une seule capacité peut être Gribouillée.");
+RegexPopupMessagesMap.set(/- (.*) can't simultaneously transfer Defog and Whirlpool from Gen 4 to 5\./, "- {NICKNAME} ne peut pas transférer Anti-Brume et Siphon depuis la Génération 4 vers la Génération 5.");
+RegexPopupMessagesMap.set(/- (.*) can't learn (.*)\./, "- {NICKNAME} ne peut pas apprendre {MOVE}.");
+RegexPopupMessagesMap.set(/- \(It will revert to its (.*) forme if you remove the item or give it a different item\.\)/, "- (Il retrouvera sa forme \"{FORM}\" s'il perd son objet ou s'il obtient un objet différent.)");
+RegexPopupMessagesMap.set(/- \(It will revert to its (.*) forme if it forgets the move\.\)/, "- (Il retrouvera sa forme \"{FORM}\" s'il oublie la capacité.)");
+RegexPopupMessagesMap.set(/- (.*) must have (.*)\./, "- {NICKNAME} doit avoir {ABILITY}.");
+RegexPopupMessagesMap.set(/- (.*) cannot Gigantamax but is flagged as being able to\./, "- {NICKNAME} ne peut pas Gigantamaxer mais est noté comme pouvant le faire.");
+RegexPopupMessagesMap.set(/- (.*) is flagged as gigantamax, but it cannot gigantamax without hacking or glitches\./, "- {NICKNAME} est taggé comme Gigantamax mais ne peut pas gigantamaxer sans hack ou glitch.");
+RegexPopupMessagesMap.set(/- (.*) is tagged (.*), which is banned\./, "- {NICKNAME} est taggé \"{TAG}\", qui est banni.");
+RegexPopupMessagesMap.set(/- (.*) is tagged (.*), which is (.*)\./, "- {NICKNAME} est taggé \"{TAG}\", qui est \"{QUALIFY}\".");
+RegexPopupMessagesMap.set(/- (.*) is not in the list of allowed pokemon\./, "- {NICKNAME} n'est pas dans la liste des Pokémon autorisés.");
+RegexPopupMessagesMap.set(/- (.*) not holding an item is (.*)\./, "- {NICKNAME} sans objet est \"{BANREASON}\".");
+RegexPopupMessagesMap.set(/- (.*) is not obtainable without hacking or glitches\./, "- {ITEM} n'est pas obtenable sans hack ou glitch.");
+RegexPopupMessagesMap.set(/- (.*) is not usable without Gigantamaxing its user, (.*)\./, "- {MOVE} n'est pas utilisable sans Gigantamaxer son utilisateur, {POKEMON}.");
+RegexPopupMessagesMap.set(/- (.*)'s item (.*) is (.*)\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} est \"{SWAP_2_BANREASON}\".");
+RegexPopupMessagesMap.set(/- (.*)'s item (.*) is tagged (.*), which is (.*)\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
+RegexPopupMessagesMap.set(/- (.*)'s move (.*) is tagged (.*), which is (.*)\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
+RegexPopupMessagesMap.set(/- (.*)'s ability (.*) is tagged (.*), which is (.*)\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
+RegexPopupMessagesMap.set(/- (.*)'s nature (.*) is tagged (.*), which is (.*)\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} est taggé \"{SWAP_2_TAG}\", qui est \"{SWAP_3_BANREASON}\".");
+RegexPopupMessagesMap.set(/- (.*)'s item (.*) is not in the list of allowed items\./, "- L'objet {SWAP_1_ITEM} de {SWAP_0_NICKNAME} n'est pas dans la liste des objets autorisés.");
+RegexPopupMessagesMap.set(/- (.*)'s move (.*) is not in the list of allowed moves\./, "- La capacité {SWAP_1_MOVE} de {SWAP_0_NICKNAME} n'est pas dans la liste des capacités autorisées.");
+RegexPopupMessagesMap.set(/- (.*)'s ability (.*) is not in the list of allowed abilities\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'est pas dans la liste des talents autorisés.");
+RegexPopupMessagesMap.set(/- (.*)'s nature (.*) is not in the list of allowed abilities\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'est pas dans la liste des natures autorisées.");
+RegexPopupMessagesMap.set(/The room "(.*)" does not exist\./, "Le salon {ROOM} n'existe pas.");
+RegexPopupMessagesMap.set(/The user '(.*)' was not found\./, "L'utilisateur '{TRAINER}' n'a pas été trouvé.");
+RegexPopupMessagesMap.set(/You are trapped and cannot select (.*)!/, "Tu es piégé, tu ne peux pas sélectionner {POKEMON} !");
 
 // TRAINER
 RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le match entre {TRAINER} et {TRAINER} a commencé !");
 RegexLogMessagesMap.set(/Tie between (.*) and (.*)!/, "Égalité entre {TRAINER} et {TRAINER} !");
 RegexLogMessagesMap.set(/(.*) forfeited\./, "{TRAINER} a déclaré forfait.");
-RegexLogMessagesMap.set(/(.*) disconnected and has (.*) seconds to reconnect!\./, "{TRAINER} est déconnecté et a {NUMBER} secondes pour se reconnecter !.");
+RegexLogMessagesMap.set(/(.*) disconnected and has (.*) seconds to reconnect!/, "{TRAINER} est déconnecté et a {NUMBER} secondes pour se reconnecter !");
+RegexLogMessagesMap.set(/(.*) has (.*) seconds to reconnect!/, "{TRAINER} a {NUMBER} secondes pour se reconnecter !");
 RegexLogMessagesMap.set(/(.*) reconnected and has (.*) seconds left/, "{TRAINER} n'a plus que {NUMBER} secondes.");
 RegexLogMessagesMap.set(/(.*) has (.*) seconds left\./, "{TRAINER} n'a plus que {NUMBER} secondes.");
 RegexLogMessagesMap.set(/(.*) and (.*) left/, "{TRAINER} et {TRAINER} sont partis");
 RegexLogMessagesMap.set(/(.*) and (.*) joined/, "{TRAINER_1} et {TRAINER_2} ont rejoint la partie");
 RegexLogMessagesMap.set(/(.*) left/, "{TRAINER} est parti");
 RegexLogMessagesMap.set(/(.*) joined/, "{TRAINER} a rejoint la partie");
-RegexLogMessagesMap.set(/(.*) lost due to inactivity./, "{TRAINER} a perdu pour cause inactivité.");
+RegexLogMessagesMap.set(/(.*) lost due to inactivity\./, "{TRAINER} a perdu pour cause d'inactivité.");
+RegexLogMessagesMap.set(/(.*)'s rating: (.*) → /, "Elo de {TRAINER} : {NUMBER} → ");
+RegexLogMessagesMap.set(/\((.*) for losing\)/, "({NUMBER} en perdant)");
+RegexLogMessagesMap.set(/\((.*) for winning\)/, "({NUMBER} en gagnant)");
 RegexLogMessagesMap.set(/Turn (.*)/, "Tour {NUMBER}");
 RegexLogMessagesMap.set(/User (.*) not found\./, "L'utilisateur {TRAINER} n'existe pas.");
 RegexLogMessagesMap.set(/Battle timer is ON: inactive players will automatically lose when time's up. \(requested by (.*)\)/, "Le Timer est activé : les joueurs inactifs perdront automatiquement quand le temps sera écoulé (demandé par {TRAINER})");
 RegexLogMessagesMap.set(/The timer can't be re-enabled so soon after disabling it \((.*) seconds remaining\)\./, "Le Timer ne peut pas être réactivé aussi tôt après avoir été désactivé ({NUMBER} secondes restantes)");
+RegexLogMessagesMap.set(/(.*) also wants the timer to be on\./, "{TRAINER} veut aussi que le Timer soit activé.");
 
 // HOME PAGE LOG
 RegexLogMessagesMap.set(/(.*) wants to battle!/, "{TRAINER} veut se battre !");
@@ -264,13 +273,12 @@ RegexLogMessagesMap.set(/(.*), come back!/, "{POKEMON}, reviens !");
 RegexLogMessagesMap.set(/(.*) withdrew (.*)!/, "{TRAINER} a retiré {POKEMON} !");
 RegexLogMessagesMap.set(/(.*) was dragged out!/, "{POKEMON} est traîné de force au combat !");
 RegexLogMessagesMap.set(/(.*) went back to (.*)!/, "{POKEMON} revient vers {TRAINER} !");
-RegexLogMessagesMap.set(/(.*) fainted!/, "{POKEMON} est K.O. !");
+RegexLogMessagesMap.set(/(.*) fainted!/, "{POKEMON} est KO !");
 RegexLogMessagesMap.set(/(.*) avoided the attack!/, "{POKEMON} évite l'attaque !");
-RegexLogMessagesMap.set(/(.*) used /, "{POKEMON} utilise ");
 RegexLogMessagesMap.set(/\((.*) lost (.*) of its health!\)/, "({POKEMON} a perdu {PERCENTAGE} de ses points de vie !)");
 RegexLogMessagesMap.set(/(.*)'s HP is full!/, "Les PV de {POKEMON} sont au max !");
 RegexLogMessagesMap.set(/\[(.*)'s (.*)\]/, "[{SWAP_1_ABILITY} de {SWAP_0_POKEMON}]");
-RegexLogMessagesMap.set(/"(.*) and (.*) switched places!"/, "{POKEMON_1} et {POKEMON_2} échangent leur place !");
+RegexLogMessagesMap.set(/(.*) and (.*) switched places!/, "{POKEMON_1} et {POKEMON_2} échangent leur place !");
 RegexLogMessagesMap.set(/It's super effective on (.*)!/, "C'est super efficace sur {POKEMON} !");
 RegexLogMessagesMap.set(/It's not very effective on (.*)\./, "Ce n'est pas très efficace sur {POKEMON}...");
 RegexLogMessagesMap.set(/A critical hit on (.*)!/, "Coup critique infligé à {POKEMON} !");
@@ -307,8 +315,8 @@ RegexLogMessagesMap.set(/The pointed stones disappeared from around (.*)!/, "Les
 RegexLogMessagesMap.set(/(.*) was seeded!/, "{POKEMON} est infecté !");
 RegexLogMessagesMap.set(/(.*)'s health is sapped by Leech Seed!/, "Vampigraine draine l'énergie du {POKEMON} !");
 RegexLogMessagesMap.set(/(.*) was freed from Leech Seed!/, "{POKEMON} est libéré de la capacité Vampigraine !");
-RegexLogMessagesMap.set(/(.*) put in a substitute!/, "{POKEMON} a déjà un clone !");
-RegexLogMessagesMap.set(/(.*) already has a substitute!/, "{POKEMON} crée un clone !");
+RegexLogMessagesMap.set(/(.*) put in a substitute!/, "{POKEMON} crée un clone !");
+RegexLogMessagesMap.set(/(.*) already has a substitute!/, "{POKEMON} a déjà un clone !");
 RegexLogMessagesMap.set(/(.*)'s substitute faded!/, "Le clone du {POKEMON} disparaît...");
 RegexLogMessagesMap.set(/The substitute took damage for (.*)!/, "Le clone prend les dégâts à la place du {POKEMON} !");
 RegexLogMessagesMap.set(/(.*) surrounded itself with a veil of water!/, "{POKEMON} s'entoure d'un voile d'eau !");
@@ -324,7 +332,7 @@ RegexLogMessagesMap.set(/The sea of fire around (.*) disappeared!/, "La mer de f
 RegexLogMessagesMap.set(/(.*) was hurt by the sea of fire!/, "{POKEMON} est plongé dans un océan de feu !");
 RegexLogMessagesMap.set(/(.*) became trapped in the fiery vortex!/, "{POKEMON} est piégé dans le tourbillon de feu !");
 RegexLogMessagesMap.set(/The bursting flame hit (.*)!/, "{POKEMON} est arrosé d'une gerbe de flammes !");
-RegexLogMessagesMap.set(/(.*) flung its (.*)!/, "{POKEMON} lance son objet (.*) !");
+RegexLogMessagesMap.set(/(.*) flung its (.*)!/, "{POKEMON} lance son objet {ITEM} !");
 RegexLogMessagesMap.set(/(.*) flew up high!/, "{POKEMON} s'envole !");
 RegexLogMessagesMap.set(/(.*) is getting pumped!/, "{POKEMON} se gonfle !");
 RegexLogMessagesMap.set(/(.*) used the (.*) to get pumped!/, "{POKEMON} est plein d'énergie grâce à {ITEM} !");
@@ -360,7 +368,8 @@ RegexLogMessagesMap.set(/(.*) was prevented from healing!/, "{POKEMON} ne peut p
 RegexLogMessagesMap.set(/(.*)'s Heal Block wore off!/, "{POKEMON} peut à nouveau guérir !");
 RegexLogMessagesMap.set(/(.*) can't use (.*) because of Heal Block!/, "{POKEMON} ne peut pas utiliser la capacité {MOVE} à cause d'Anti-Soin !");
 RegexLogMessagesMap.set(/But it failed to affect (.*)!/, "{POKEMON} n'est pas affecté !");
-RegexLogMessagesMap.set(/The healing wish came true for (.*)!/, "Le Voeu Soin est exaucé et profite à {POKEMON}");
+RegexLogMessagesMap.set(/The healing wish came true for (.*)!/, "Le Voeu Soin est exaucé et profite à {POKEMON} !");
+RegexLogMessagesMap.set(/\((.*)'s BP doubled on grounded target\.\)/, "(La puissance de base de {MOVE} est doublée sur une cible au sol.)");
 RegexLogMessagesMap.set(/(.*) is ready to help (.*)!/, "{POKEMON_1} est prêt à aider {POKEMON_2} !");
 RegexLogMessagesMap.set(/(.*) became cloaked in freezing air!/, "{POKEMON} est entouré d'un air glacial !");
 RegexLogMessagesMap.set(/(.*) sealed any moves its target shares with it!/, "{POKEMON} bloque les capacités en commun avec l'adversaire !");
@@ -393,6 +402,7 @@ RegexLogMessagesMap.set(/(.*) is overflowing with space power!/, "La puissance d
 RegexLogMessagesMap.set(/Waggling a finger let it use (.*)!/, "Grâce à Métronome, le Pokémon lance {MOVE} !");
 RegexLogMessagesMap.set(/(.*) learned (.*)!/, "{POKEMON} apprend {MOVE} !");
 RegexLogMessagesMap.set(/\((.*) cut its own HP to power up its move!\)/, "({POKEMON} sacrifie des PV pour améliorer son attaque !)");
+RegexLogMessagesMap.set(/\((.*) only works your first turn out\.\)/, "({MOVE} ne fonctionne que le premier tour.)");
 RegexLogMessagesMap.set(/(.*) became shrouded in mist!/, "{TEAM} s'entoure de Brume !");
 RegexLogMessagesMap.set(/(.*) is no longer protected by mist!/, "La Brume autour de {TEAM} s'est dissipée !");
 RegexLogMessagesMap.set(/(.*) is protected by the mist!"/, "{POKEMON} est protégé par la Brume !");
@@ -418,6 +428,8 @@ RegexLogMessagesMap.set(/(.*)'s Aurora Veil wore off!/, "Voile Aurore n'a plus d
 RegexLogMessagesMap.set(/(.*)'s type became the same as (.*)'s type!/, "{POKEMON_1} prend le type du {POKEMON_2} !");
 RegexLogMessagesMap.set(/(.*) copied (.*)'s (.*) Ability!/, "{SWAP_0_POKEMON_1} copie le talent {SWAP_2_ABILITY} du {SWAP_1_POKEMON_1} !");
 RegexLogMessagesMap.set(/\((.*) loses Flying type this turn\.\)/, "({POKEMON} perd le type Vol pour ce tour.)");
+RegexLogMessagesMap.set(/\((.*) did not hit because the target is fainted\.\)/, "({MOVE} n'a pas touché car la cible est KO)");
+RegexLogMessagesMap.set(/\((.*) did not hit because the target is the user\.\)/, "({MOVE} n'a pas touché car la cible est le lanceur)");
 RegexLogMessagesMap.set(/(.*) cloaked itself in a mystical veil!/, "{TEAM} est recouverte par un voile mystérieux !");
 RegexLogMessagesMap.set(/(.*) is no longer protected by Safeguard!/, "{TEAM} n'est plus protégée par le voile mystérieux !");
 RegexLogMessagesMap.set(/(.*) is protected by Safeguard!/, "{POKEMON} est protégé par la capacité Rune Protect !");
@@ -510,7 +522,7 @@ RegexLogMessagesMap.set(/(.*) is afflicted by the curse!/, "{POKEMON} est touch�
 RegexLogMessagesMap.set(/(.*) is hoping to take its attacker down with it!/, "{POKEMON} veut emmener son ennemi au tapis !");
 RegexLogMessagesMap.set(/(.*) took its attacker down with it!/, "{POKEMON} emmène son adversaire au tapis !");
 RegexLogMessagesMap.set(/(.*) burrowed its way under the ground!/, "{POKEMON} se cache dans le sol !");
-RegexLogMessagesMap.set(/(.*)'s (.*) was disabled!/, "La capacité {SWAP_0_MOVE} du {SWAP_1_POKEMON} est mise sous entrave !");
+RegexLogMessagesMap.set(/(.*)'s (.*) was disabled!/, "La capacité {SWAP_1_MOVE} du {SWAP_0_POKEMON} est mise sous entrave !");
 RegexLogMessagesMap.set(/(.*)'s move is no longer disabled!/, "La capacité du {POKEMON} n'est plus sous entrave !");
 RegexLogMessagesMap.set(/(.*) hid underwater!/, "{POKEMON} se cache sous l'eau !");
 RegexLogMessagesMap.set(/(.*) chose Doom Desire as its destiny!/, "{POKEMON} souhaite le déclenchement de la capacité Voeu Destructeur !");
@@ -531,7 +543,7 @@ RegexLogMessagesMap.set(/(.*) maxed its Attack!/, "{POKEMON} monte son Attaque a
 RegexLogMessagesMap.set(/(.*) shuddered!/, "{POKEMON} est tout tremblant !");
 RegexLogMessagesMap.set(/(.*) is protected by an aromatic veil!/, "{POKEMON} est protégé par Aroma-Voile !");
 RegexLogMessagesMap.set(/(.*) has two Abilities!/, "{POKEMON} a deux Talents !");
-RegexLogMessagesMap.set(/(.*) reversed all other Pok\u00E9mon's auras!/, "{POKEMON} inverse toutes les auras !");
+RegexLogMessagesMap.set(/(.*) reversed all other Pokémon's auras!/, "{POKEMON} inverse toutes les auras !");
 RegexLogMessagesMap.set(/(.*) is tormented!/, "{POKEMON} a le sommeil agité !");
 RegexLogMessagesMap.set(/(.*) became fully charged due to its bond with its Trainer!/, "{POKEMON} sent la force de la Synergie !");
 RegexLogMessagesMap.set(/(.*) became Ash-Greninja!/, "{POKEMON} se transforme en Sachanobi !");
@@ -543,7 +555,7 @@ RegexLogMessagesMap.set(/(.*) is radiating a fairy aura!/, "{POKEMON} dégage un
 RegexLogMessagesMap.set(/The power of (.*)'s Fire-type moves rose!/, "{POKEMON} augmente la puissance de ses capacités de type Feu !");
 RegexLogMessagesMap.set(/(.*) surrounded itself with a veil of petals!/, "{POKEMON} est protégé par le Flora-Voile !");
 RegexLogMessagesMap.set(/(.*)'s (.*) was revealed!/, "La capacité {SWAP_1_MOVE} du {SWAP_0_POKEMON} a été détectée !");
-RegexLogMessagesMap.set(/(.*)'s Forewarn alerted it to (.*)!/, "{POKEMON}"); // TOFIND : Prédiction en cas d'égalité
+RegexLogMessagesMap.set(/(.*)'s Forewarn alerted it to (.*)!/, "Prédiction du {POKEMON} le prévient de {MOVE} !");
 RegexLogMessagesMap.set(/(.*) frisked (.*) and found its (.*)!/, "{POKEMON_1} fouille {POKEMON_2} et trouve son objet {ITEM} !"); 
 RegexLogMessagesMap.set(/(.*) frisked its target and found one (.*)!/, "{POKEMON} fouille sa cible et trouve un {ITEM} !");
 RegexLogMessagesMap.set(/(.*) harvested one (.*)!/, "{POKEMON} a récolté une {ITEM} !");
@@ -569,7 +581,7 @@ RegexLogMessagesMap.set(/(.*) endured the hit!/, "{POKEMON} encaisse les coups !
 RegexLogMessagesMap.set(/(.*) is anchored in place with its suction cups!/, "{POKEMON} s'accroche avec ses ventouses !");
 RegexLogMessagesMap.set(/(.*) can't fall asleep due to a veil of sweetness!/, "Le Gluco-Voile empêche {POKEMON} de dormir !");
 RegexLogMessagesMap.set(/(.*) shared its (.*) with (.*)!/, "{POKEMON_1} donne l'objet {ITEM} à {POKEMON_2} !"); 
-RegexLogMessagesMap.set(/(.*) can't be hit by attacks from its ally Pok\u00E9mon!/, "{POKEMON} ne peut pas être attaqué par ses alliés !");
+RegexLogMessagesMap.set(/(.*) can't be hit by attacks from its ally Pokémon!/, "{POKEMON} ne peut pas être attaqué par ses alliés !");
 RegexLogMessagesMap.set(/(.*) is radiating a bursting aura!/, "{POKEMON} dégage une aura électrique instable !");
 RegexLogMessagesMap.set(/(.*) traced (.*)'s (.*)!/, "{SWAP_0_POKEMON_1} a calqué le Talent {SWAP_2_ABILITY} du {SWAP_1_POKEMON_2} !");
 RegexLogMessagesMap.set(/(.*) is loafing around!/, "{POKEMON} paresse !");
@@ -612,26 +624,26 @@ RegexLogMessagesMap.set(/(.*) restored its HP using its Z-Power!/, "{POKEMON} ut
 RegexLogMessagesMap.set(/The (.*) raised (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} augmente {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
 RegexLogMessagesMap.set(/The (.*) sharply raised (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} augmente beaucoup {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
 RegexLogMessagesMap.set(/The (.*) drastically raised (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} augmente énormément {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
-RegexLogMessagesMap.set(/(.*) boosted its (.*) using its Z-Power!/, "{POKEMON} {STATS}");
-RegexLogMessagesMap.set(/(.*) boosted its (.*) sharply using its Z-Power!/, "{POKEMON} {STATS}");
-RegexLogMessagesMap.set(/(.*) boosted its (.*) drastically using its Z-Power!/, "{POKEMON} {STATS}");
-RegexLogMessagesMap.set(/(.*) boosted its stats using its Z-Power!/, "{POKEMON}");
+RegexLogMessagesMap.set(/(.*) boosted its (.*) using its Z-Power!/, "{POKEMON} utilise la Force Z pour augmenter {SELF_STATS} !");
+RegexLogMessagesMap.set(/(.*) boosted its (.*) sharply using its Z-Power!/, "{POKEMON} utilise la Force Z pour beaucoup augmenter {SELF_STATS} !");
+RegexLogMessagesMap.set(/(.*) boosted its (.*) drastically using its Z-Power!/, "{POKEMON} utilise la Force Z pour augmenter énormément {SELF_STATS} !");
+RegexLogMessagesMap.set(/(.*) boosted its stats using its Z-Power!/, "{POKEMON} utilise la Force Z pour augmenter ses stats !");
 RegexLogMessagesMap.set(/The (.*) lowered (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} baisse {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
 RegexLogMessagesMap.set(/The (.*) harshly lowered (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} baisse beaucoup {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
 RegexLogMessagesMap.set(/The (.*) lowered drastically (.*)'s (.*)!/, "L'objet {SWAP_0_ITEM} baisse énormément {SWAP_2_STATS} du {SWAP_1_POKEMON} !");
 RegexLogMessagesMap.set(/(.*) switched stat changes with its target!/, "{POKEMON} intervertit ses changements de stats avec ceux de sa cible !");
 RegexLogMessagesMap.set(/(.*) switched all changes to its Attack and Sp. Atk with its target!/, "{POKEMON} intervertit les changements d'Attaque et d'Attaque Spéciale avec ceux de sa cible !");
 RegexLogMessagesMap.set(/(.*) switched all changes to its Defense and Sp. Def with its target!/, "{POKEMON} intervertit les changements de Défense et de Défense Spéciale avec ceux de sa cible !");
-RegexLogMessagesMap.set(/(.*) copied (.*)'s stat changes!\)/, "{POKEMON_1} copie les changements de stats du {POKEMON_2} !");
+RegexLogMessagesMap.set(/(.*) copied (.*)'s stat changes!/, "{POKEMON_1} copie les changements de stats du {POKEMON_2} !");
 RegexLogMessagesMap.set(/(.*)'s stat changes were removed!/, "Les stats du {POKEMON} sont revenues à la normale !");
-RegexLogMessagesMap.set(/(.*) returned its decreased stats to normal using its Z-Power!/, "{POKEMON}");
+RegexLogMessagesMap.set(/(.*) returned its decreased stats to normal using its Z-Power!/, "{POKEMON} utilise la Force Z pour annuler ses baisses de stats !");
 RegexLogMessagesMap.set(/(.*)'s stat changes were inverted!/, "Les changements de stats du {POKEMON} sont inversés !");
 RegexLogMessagesMap.set(/(.*) is unaffected!/, "{POKEMON} n'est pas affecté !");
 RegexLogMessagesMap.set(/(.*)'s attack missed!/, "L'attaque du {POKEMON} a échoué !");
-RegexLogMessagesMap.set(/The Pok\u00E9mon was hit (.*) times!/, "Touché {NUMBER} fois !");
+RegexLogMessagesMap.set(/The Pokémon was hit (.*) times!/, "Touché {NUMBER} fois !");
 RegexLogMessagesMap.set(/(.*) had its energy drained!/, "L'énergie du {POKEMON} est drainée !");
 RegexLogMessagesMap.set(/(.*) flinched and couldn't move!/, "{POKEMON} a la trouille ! Il ne peut plus attaquer !");
-RegexLogMessagesMap.set(/(.*) will restore its replacement's HP using its Z-Power!/, "{POKEMON}");
+RegexLogMessagesMap.set(/(.*) will restore its replacement's HP using its Z-Power!/, "{POKEMON} utilise la Force Z pour soigner un allié qui entrera sur le terrain !");
 RegexLogMessagesMap.set(/(.*) must recharge!/, "Le contrecoup empêche {POKEMON} de bouger !");
 RegexLogMessagesMap.set(/(.*) was damaged by the recoil!/, "{POKEMON} est blessé par le contrecoup !");
 RegexLogMessagesMap.set(/(.*)'s stats were not lowered!/, "Les stats du {POKEMON} ne baissent pas !");
@@ -662,6 +674,7 @@ RegexLogMessagesMap.set(/\((.*) started!\)/, "({EFFECT} est actif !)");
 RegexLogMessagesMap.set(/\((.*) activated!\)/, "({EFFECT} est activé !)");
 RegexLogMessagesMap.set(/\((.*) ended on (.*)!\)/, "({EFFECT} n'est plus actif sur {TEAM})");
 RegexLogMessagesMap.set(/\((.*) ended!\)/, "({EFFECT} n'est plus actif !)");
+RegexLogMessagesMap.set(/(.*) used /, "{POKEMON} utilise ");
 
 
 export const PokemonDico: { [englishName: string]: string; } = {
@@ -680,6 +693,7 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Wartortle": "Carabaffe",
 	"Blastoise": "Tortank",
 	"Blastoise-Mega": "Tortank-Méga",
+	"Blastoise-Gmax": "Tortank-Gmax",
 	"Caterpie": "Chenipan",
 	"Metapod": "Chrysacier",
 	"Butterfree": "Papilusion",
@@ -2865,7 +2879,7 @@ export const MovesDico: { [englishName: string]: string; } = {
 	"Searing Shot": "Incendie",
 	"Techno Blast": "Techno-Buster",
 	"Relic Song": "Chant Antique",
-	"Secret Sword": "Lame Ouinte",
+	"Secret Sword": "Lame Ointe",
 	"Glaciate": "Ère Glaciaire",
 	"Bolt Strike": "Charge Foudre",
 	"Blue Flare": "Flamme Bleue",
@@ -3189,6 +3203,7 @@ export const MovesDico: { [englishName: string]: string; } = {
 
 export const ItemsDico: { [englishName: string] : string; } = {
 	"No item": "Pas d'objet",
+	"None": "Aucun",
 	"Abomasite": "Blizzarite",
 	"Absolite": "Absolite",
 	"Absorb Bulb": "Bulbe",
@@ -3386,7 +3401,7 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"Level Ball": "Niveau Ball",
 	"Liechi Berry": "Baie Lichii",
 	"Life Orb": "Orbe Vie",
-	"Light Ball": "Ballelumiere",
+	"Light Ball": "Balle Lumière",
 	"Light Clay": "Lumargile",
 	"Lopunnite": "Lockpinite",
 	"Love Ball": "Love Ball",
@@ -3703,7 +3718,6 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"Mint Berry": "Baie Menthe",
 	"Pink Bow": "Ruban Rose",
 	"Polkadot Bow": "Ruban à Pois",
-	"None": "Aucun"
 }
 
 export const AliasDico:  { [englishName: string]: string; } = {
@@ -3776,6 +3790,7 @@ export const StatsDico: { [englishName: string]: string; } = {
 	"Speed": "Vitesse",
 	"Spe": "Vit",
 	"Accuracy": "Précision",
+	"accuracy": "Précision",
 	"Evasion": "Esquive",
 	"evasiveness": "Esquive",
 	"Spc": "Spé"
@@ -3858,9 +3873,9 @@ export const EffectsDico: { [englishName: string]: string; } = {
 	"Heal Block": "Anti-Soin",
 	"Heal Block ended": "Fin de Anti-Soin",
 	"Drowsy": "Somnolent",
-	"Taunt": "Provocation",
+	"Taunt": "Provoc",
 	"Taunted": "Provoqué",
-	"Taunt ended": "Fin de Provocation",
+	"Taunt ended": "Fin de Provoc",
 	"Imprisoning": "Possessif",
 	"Imprisoning foe": "Possessif",
 	"Disable": "Entrave",
@@ -3877,10 +3892,10 @@ export const EffectsDico: { [englishName: string]: string; } = {
 	"Stockpile": "Stockage",
 	"Stockpile×2": "Stockage×2",
 	"Stockpile×3": "Stockage×3",
-	"Perish now": "K.O. maintenant",
-	"Perish next turn": "K.O. prochain tour",
-	"Perish in 2": "K.O. dans 2 tours",
-	"Perish in 3": "K.O. dans 3 tours",
+	"Perish now": "KO maintenant",
+	"Perish next turn": "KO prochain tour",
+	"Perish in 2": "KO dans 2 tours",
+	"Perish in 3": "KO dans 3 tours",
 	"Encored": "Encore",
 	"Encore ended": "Fin d'Encore",
 	"Bide": "Patience",
@@ -3956,7 +3971,7 @@ export const EffectsDico: { [englishName: string]: string; } = {
 	"Restored": "Restauré",
 }
 
-export const WeatherDicos: { [englishName: string]: string; } = {
+export const WeatherDico: { [englishName: string]: string; } = {
 	// Weathers
 	"Sun": "Soleil",
 	"Rain": "Pluie",
@@ -3997,7 +4012,38 @@ export const WeatherDicos: { [englishName: string]: string; } = {
 	"(no weather)": "(pas de météo)"
 }
 
-export const MoveEffectDicos: { [englishName: string]: string; } = {
+export const BoostEffectDico: { [englishName: string]: string; } = {
+	"Terrain Pulse boost": "boost de Champlification",
+	"Terrain boost": "boost du Champ",
+	"no Terrain": "pas de Champ",
+	"Misty Terrain + grounded target": "Champ Brumeux + cible au sol",
+	"Grassy Terrain + grounded target": "Champ Herbu + cible au sol",
+	"Expanding Force + Psychic Terrain boost": "Vaste Pouvoir + boost du Champ Psychique",
+	"Misty Explosion + Misty Terrain boost": "Explo-Brume + boost du Champ Brumeux",
+	"Rising Voltage + Electric Terrain boost": "Monte-Tension + Champ Électrifié",
+	"Fairy Aura + Aura Break": "Aura Féérique + Aura Inversée",
+	"Dark Aura + Aura Break": "Aura Ténébreuse + Aura Inversée",
+	"Acrobatics + no item": "Acrobatie + pas d'objet",
+	"Brine + target below half HP": "Saumure + cible en dessous de 50% PV",
+	"Facade + status": "Façade + statut",
+	"Hex + status": "Châtiment + statut",
+	"Smelling Salts + Paralysis": "Stimulant + Paralysie",
+	"Venoshock + Poison": "Choc Venin + Poison",
+	"Wake-Up Slap + Sleep": "Réveil Forcé + Sommeil",
+	"Rain Dance": "Pluie",
+	"Sunny Day": "Soleil",
+	"Burn": "Brûlure",
+	"Poison type": "Type Poison",
+	"not Ice-type": "pas de type Glace",
+	"approximate": "approximation",
+	"blocked by target's Dynamax": "bloqué par le Dynamax de la cible",
+	"fails if target's Speed is higher": "échoue si la Vitesse de la cible est supérieure",
+	"fails if target's level is higher": "échoue si le niveau de la cible est supérieur",
+	"FAILS: target's level is higher": "ÉCHOUE : le niveau de la cible est inférieur",
+	"+1% per level above target": "+1% par niveau supérieur à celui de la cible"
+}
+
+export const MoveEffectDico: { [englishName: string]: string; } = {
 	
 	"The user thaws out if it is frozen.": "L'utilisateur est dégelé.",
 	"Not blocked by Protect ": "Pas bloqué par Abri ",
@@ -4222,10 +4268,11 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Yes": "Oui",
 	"No": "Non",
 	"Happiness": "Bonheur",
-	"Dmax Level": "Niveau de Dmax",
+	"Dmax Level": "Niv. Dmax",
 	"HP Type": "Type PC",
 	"Hidden Power": "Pui. Cachée",
 	"Pokeball": "Ball",
+	"Genderless": "Asexué",
 	"Remaining:": "Restant :",
 	"IV spreads": "Répartition d'IVs",
 	"min Atk": "Atq mini",
@@ -4254,20 +4301,6 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Bulky Physical Sweeper": "Sweeper Physique Bulky",
 	"Possible abilities": "Talents possibles",
 	"Bulky Special Sweeper": "Sweeper Spécial Bulky",
-	// "Sw/Sh Singles": "Sw/Sh Solo",
-	// "Sw/Sh Doubles": "Sw/Sh Duo",
-	// "OM of the Month": "OM du Mois",
-	// "Challengeable OMs": "OMs défiS",
-	// "Past Gens OU": "OU des Gens précédentes",
-	// "US/UM Singles": "US/UM Solo",
-	// "US/UM Doubles": "US/UM Duo",
-	// "OR/AS Singles": "OR/AS Solo",
-	// "OR/AS Doubles/Triples": "OR/AS Duo/Trio",
-	// "B2/W2 Singles": "B2/W2 Solo",
-	// "B2/W2 Doubles": "B2/W2 Duo",
-	// "DPP Singles": "DPP Solo",
-	// "DPP Doubles": "DPP Duo",
-	// "Past Generations": "Générations précédentes",
 	"HP": "PV",
 	"Atk ": "Atq ",
 	" / Def ": " / Déf ",
@@ -4278,6 +4311,11 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"(After stat modifiers:": "(Après altération de stats)",
 	"(before items/abilities/modifiers)": "(avant objets/talents/modifications)",
 	"Would take if ability removed: ": "Dégâts reçus sans son talent : ",
+	"(More than 4 moves is usually a sign of Illusion Zoroark/Zorua.) ": "(Avoir plus que 4 capacités est généralement le signe d'une Illusion de Zorua/Zoroark.) ",
+	"(Pressure is not visible in Gen 3, so in certain situations, more PP may have been lost than shown here.) ":  "(Pression n'est pas visible en Gen 3, donc dans certaines situations, plus de PP auraient pu être perdus et ne seraient pas affichés ici.) ",
+	"(Your opponent has two indistinguishable Pokémon, making it impossible for you to tell which one has which moves/ability/item.) ":
+	"(Votre adversaire a deux Pokémons indistinguables, il est donc impossible de savoir lequel a tel ou tel talent/objet/capacité.) ",
+	" (fainted)": " (KO)",
 	" Next damage: ": " Prochains dégâts : ",
 	" Turns asleep: ": " Tours endormis : ",
 	"stolen": "volé",
@@ -4330,11 +4368,17 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" Event-only moves are banned": " Capacités évènementielles bannies",
 	" All Pokémon are trapped": " Les Pokémon sont piégés",
 	" Pokémon can be nicknamed the name of a type to have that type added onto their current ones.": " Les Pokémon peuvent avoir le nom d'un type en surnom pour gagner ce type",
-	" The first team to have a Pokémon faint loses.": " La première équipe à avoir un Pokémon K.O. perd la partie.",
+	" The first team to have a Pokémon faint loses.": " La première équipe à avoir un Pokémon KO perd la partie.",
 	" Pokémon get stat buffs depending on their tier, excluding HP.": " Les Pokémon ont leurs stats boostées en fonction de leur tier, sauf les PVs.",
 	" The first moveslots have their types changed to match the Pokémon's types": " Les premières capacités ont leur type changé pour correspondre aux types du Pokémon",
 	" Pokémon gain the boosts they would gain from evolving again": " Les Pokémon gagnent les boosts qu'il gagneraient s'ils évoluaient",
 	" All physical moves become special, and vice versa": "Les capacités physiques deviennent spéciales, et inversement",
+	"Restores negative stat stages to 0": "Annule tous les changements de stats",
+	"Crit ratio +2": "Taux de coup critiques +2",
+	"Restores HP 100%": "Restaure tous les PVs",
+	"Restores HP 100% if user is Ghost type, otherwise Attack +1": "Restaure tous les PVs si le lanceur est de type Spectre, sinon Attaque +1",
+	"Redirects opposing attacks to user": "Les capacités des ennemis ciblent le lanceur",
+	"Restores replacement's HP 100%": "Restaure tous les PVs du Pokémon envoyé",
 	"How will you start the battle?": "Comment commencerez-vous le match ?",
 	"Choose Lead": "Choisir un Lead",
 	"Turn ": "Tour ",
@@ -4347,11 +4391,26 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"'s team:": "Équipe de ",
 	"Attack": "Attaquer",
 	"Switch": "Switcher",
+	" Mega Evolution": " Méga-Évolution",
+	" Z-Power": " Force Z",
+	" Ultra Burst": " Ultra-Explosion",
+	"Changed forme: ": "Nouvelle forme : ",
+	"Transformed into ": "Transformé en ",
+	"Type changed": "Type changé",
+	" (base: ": " (base : ",
+	"You ": "Tu as ",
+	"might": "peut-être",
+	" have some moves disabled, so you won't be able to cancel an attack!": " des capacités entravées, tu ne pourras pas annuler une attaque !",
+	" be trapped, so you won\'t be able to cancel a switch!": " été piégé, tu ne pourras donc pas annuler un switch !",
+	"You are trapped and cannot switch!": "Tu es piégé et tu ne peux pas switcher !",
 	"Accuracy: ": "Précision : ",
+	"Z-Effect: ": "Effet Z : ",
 	"can't miss": "ne peut pas rater",
 	"Base power: ": "Puissance de base : ",
 	"(priority ": "(priorité ",
 	"Home": "Accueil",
+	" Home": " Accueil",
+	"Play": "Jouer",
 	"Request Help": "Demande d'aide",
 	"Battles": "Matchs",
 	"Connecting...": "Connexion...",
@@ -4404,6 +4463,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Meloetta is PS's mascot! The Aria forme is about using its voice, and represents our chatrooms.": "Meloetta est la mascotte de PS ! La forme Chant est associée à l'utilisation de la voix, et représente nos salons de discussion.",
 	"Meloetta is PS's mascot! The Pirouette forme is Fighting-type, and represents our battles.": "Meloetta est la mascotte de PS ! La forme Pirouette est de type Combat, et représente les matchs Pokémon.",
 	"Name": "Nom",
+	"Rating: ": "Elo : ",
 	"Elo rating": "Classement Elo",
 	"user's percentage chance of winning a random battle (aka GLIXARE)": "Probabilité de gagner un match aléatoire (aussi appelé GLIXARE)",
 	"Glicko-1 rating system: rating±deviation (provisional if deviation>100)": "Système de classement Glicko-1 : rang ± écart (temporaire si écart > 100)",
@@ -4419,6 +4479,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" is a different rating system. It has rating and deviation values.": " est un système de classement différent. Il affiche les valeurs du rang et de l'écart.",
 	"Note that win/loss should not be used to estimate skill, since who you play against is much more important than how many times you win or lose. Our other stats like Elo and GXE are much better for estimating skill.": 
 	"Attention : une victoire ou une défaite ne suffit pas pour estimer du niveau d'une personne : le joueur contre qui tu joues est beaucoup plus important que le nombre de victoires ou de défaites. Les autres stats comme l'Elo ou le GXE sont de bien meilleurs indicateurs du niveau d'un joueur.",
+	"Rated battle": "Match classé",
 
 	// Chat rooms
 	" users)": " utilisateurs)",
@@ -4500,6 +4561,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"The headquarters for all TV & Film discussion! Entertainment awaits.": "Le QG des discussions sur la TV ou les films !",
 
 	// Popup
+	"Change sprite": "Changer de sprite",
 	" Change name": " Changer de nom",
 	" Log out": " Déconnexion",
 	"Change avatar": "Changement d'avatar",
@@ -4550,6 +4612,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Join room": "Rejoindre",
 	"Username": "Nom d'utilisateur",
 	"Username: ": "Nom d'utilisateur : ",
+	"Password: ": "Mot de passe : ",
 	"Folder name:": "Nom du dossier :",
 	"Create folder": "Créer",
 	"Open": "Ouvrir",
@@ -4606,6 +4669,67 @@ export const MenuDico: { [englishName: string]: string; } = {
 	" Ignore nicknames": " Ignorer les surnoms",
 	" Automatically start timer": " Démarrer le Timer automatiquement",
 	" Open new battles on the right side": " Ouvrir les nouveaux matchs sur le côté droit",
+	"Pick a variant or ": "Choisir une variante ou ",
+	"Couldn't connect to server!": "Impossible de se connecter au serveur !",
+	"The Wii U does not support secure connections.": "La Wii U ne supporte pas les connexions sécurisées",
+	"Connect insecurely": "Connexion non sécurisée",
+	"Retry with HTTP": "Réessayer en HTTP",
+	"You have been logged out and disconnected.": "Tu as été déconnecté.",
+	"If you wanted to change your name while staying connected, use the 'Change Name' button or the '/nick' command.": "Si tu veux changer de nom et rester connecté, utilise le bouton \"Changer de nom\" ou la commande \"/nick\".",
+	"The name you chose is registered.": "Le nom que tu as choisis est déjà utilisé.",
+	"Wrong password.": "Mot de passe incorrect.",
+	"If this is your account:": "Si c'est ton compte :",
+	"If this is someone else's account:": "Si c'est le compte de quelqu'un d'autre :",
+	"Choose another name": "Choisir un autre nom",
+	"Log in": "Connexion",
+	"or": "ou",
+
+	// Replays
+	"Upload replays": "Uploader des replays",
+	"Search replays": "Rechercher des replays",
+	"Featured replays": "Replays mis en avant",
+	"Recent replays": "Replays récents",
+	"\n\t\t\tTo upload a replay, click \"Share\" or use the command ": "Pour uploader un replay, clique sur \"Partager\" ou utilise la commande ",
+	" in a Pokémon Showdown battle!\n\t\t": " dans un match sur Pokémon Showdown !",
+	"Search for user": "Rechercher un utilisateur",
+	"Search by format": "Recherche par format",
+	"Competitive": "Compétitif",
+	"Older": "Plus vieux",
+	"hour": "heure",
+	"hours": "heures",
+	"day": "jour",
+	"days": "jours",
+	"Speed:": "Vitesse :",
+	"Hyperfast": "Hyper rapide",
+	"Fast": "Rapide",
+	"Slow": "Lent",
+	"Really Slow": "Très lent",
+	"Color scheme:": "Thème :",
+	"Music:": "Musique :",
+	" Play": " Lecture",
+	"Play (music off)": "Lecture (musique off)",
+	" Download": " Télécharger",
+	" Reset": " Réinitialiser",
+	" Last turn": " Tour précédent",
+	" Next turn": " Tour suivant",
+	" Go to turn...": " Aller au tour...",
+	" Switch sides": "Changer de côté",
+	" Other replays": " Autres Replays",
+	" More replays": " Plus de Replays",
+	"Rating:": "Elo :",
+	"Uploaded:": "Uploadé :",
+	"Jan": "Janvier",
+	"Feb": "Février",
+	"Mar": "Mars",
+	"Apr": "Avril",
+	"May": "Mai",
+	"Jun": "Juin",
+	"Jul": "Juillet",
+	"Aug": "Août",
+	"Sep": "Septembre",
+	"Oct": "Octobre",
+	"Nov":" Novembre",
+	"Dec": "Décembre",
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
@@ -4630,7 +4754,7 @@ export const FiltersDico:  { [englishName: string]: string; } = {
 	"Number" : "Numéro",
 }
 
-export const ValidatorDico: { [englishName: string]: string; } = {
+export const PopupMessagesDico: { [englishName: string]: string; } = {
 	"Your team was rejected for the following reasons:": "Ton équipe a été refusée pour les raisons suivantes :",
 	"Add a Pokémon to your team before uploading it!": "Ajoute un Pokémon à ton équipe avant de l'uploader !",
 	"- You can only have one of Pikachu-Starter or Eevee-Starter on a team.": "- Tu ne peux avoir qu'un Pikachu-Starter ou Évoli-Starter dans ton équipe.",
@@ -4653,7 +4777,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"No one will be able to run away during the next turn!": "Il sera impossible de fuir au tour suivant !",
 	"Gravity intensified!": "La Gravité est intensifiée !",
 	"Gravity returned to normal!": "La Gravité est revenue à la normale !",
-	"It created a bizarre area in which Pok\u00E9mon's held items lose their effects!": "L'effet des objets tenus est neutralisé !",
+	"It created a bizarre area in which Pokémon's held items lose their effects!": "L'effet des objets tenus est neutralisé !",
 	"Magic Room wore off, and held items' effects returned to normal!": "L'effet des objets tenus est rétabli !",
 	"The twisted dimensions returned to normal!": "Les dimensions faussées reviennent à la normale !",
 	"Electricity's power was weakened!": "La puissance des capacités de type Électrik est diminuée !",
@@ -4667,7 +4791,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"(The sandstorm is raging.)": "(La tempête de sable fait rage.)",
 	"The sunlight turned harsh!": "Les rayons du soleil brillent !",
 	"The harsh sunlight faded.": "Les rayons du soleil s'affaiblissent !",
-	"(The sunlight is strong.)": "Les rayons du soleil brilllent !",
+	"(The sunlight is strong.)": "Les rayons du soleil brillent !",
 	"It started to rain!": "Il commence à pleuvoir !",
 	"The rain stopped.": "La pluie s'est arrêtée !",
 	"(Rain continues to fall.)": "(La pluie continue de tomber.)",
@@ -4682,7 +4806,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"The heavy rain has lifted!": "La pluie battante s'est arrêtée…",
 	"There is no relief from this heavy rain!": "Impossible de dissiper une telle pluie !",
 	"The Fire-type attack fizzled out in the heavy rain!": "La pluie battante empêche toute attaque de type Feu !",
-	"Mysterious strong winds are protecting Flying-type Pok\u00E9mon!": "Un vent mystérieux enveloppe les Pokémon de type Vol !",
+	"Mysterious strong winds are protecting Flying-type Pokémon!": "Un vent mystérieux enveloppe les Pokémon de type Vol !",
 	"The mysterious strong winds have dissipated!": "Le vent mystérieux s'est dissipé…",
 	"The mysterious strong winds weakened the attack!": "Le vent mystérieux affaiblit l'attaque !",
 	"The mysterious strong winds blow on regardless!": "Impossible de ramener l'atmosphère à la normale !",
@@ -4697,8 +4821,8 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 
 	"Automatic center!": "Réinitialisation !",
 	"But there was no target...": "Mais il n'y a pas de cible ! ",
-	"It's a one-hit KO!": "K.O. en un coup !",
-	"The Pok\u00E9mon was hit 1 time!": "Touché 1 fois !",
+	"It's a one-hit KO!": "KO en un coup !",
+	"The Pokémon was hit 1 time!": "Touché 1 fois !",
 	"But there was no PP left for the move!": "Mais il n'y a plus de PP pour cette capacité !",
 	"The move was blocked by the power of Dynamax!": "La puissance du Dynamax a bloqué l'attaque !",
 	" won the battle!": " remporte le match !",
@@ -4719,11 +4843,11 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Everyone is caught up in the happy atmosphere!": "L'ambiance est euphorique !",
 	"A bell chimed!": "Un grelot sonne !",
 	"Coins were scattered everywhere!": "Une pluie de pièces !",
-	"All Pok\u00E9mon that heard the song will faint in three turns!": "Tous les Pokémon ayant entendu le Requiem seront K.O. après trois tours.",
+	"All Pokémon that heard the song will faint in three turns!": "Tous les Pokémon ayant entendu le Requiem seront KO après trois tours.",
 	"All STATUS changes are eliminated!": "Les changements de STATUT ont tous été annulés !",
 	"All stat changes were eliminated!": "Les changements de stats ont tous été annulés !",
 	"The battlers shared their pain!": "Les adversaires partagent leurs PV !",
-	"Both Pok\u00E9mon will faint in three turns!": "Les deux Pokémon seront K.O. dans trois tours !",
+	"Both Pokémon will faint in three turns!": "Les deux Pokémon seront KO dans trois tours !",
 	"You sense the presence of many!": "Vous sentez la présence d'un grand nombre d'individus !",
 	"Shields Down deactivated!": "Le Bouclier-Carcan n'est plus actif !",
 	"Shields Down activated!": "Le Bouclier-Carcan est actif !",
@@ -4731,7 +4855,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Changed to Shield Forme!": "Passage en Forme Parade !",
 	"Zen Mode triggered!": "Mode Transe !",
 	"Zen Mode ended!": "Mode Normal !",
-	"When the flame touched the powder on the Pok\u00E9mon, it exploded!": "La Nuée de Poudre entre en réaction avec la flamme et explose !",
+	"When the flame touched the powder on the Pokémon, it exploded!": "La Nuée de Poudre entre en réaction avec la flamme et explose !",
 	"Its disguise served it as a decoy!": "Le déguisement absorbe l'attaque !",
 	"But it failed!": "Mais cela échoue !",
 	"All players are inactive.": "Tous les joueurs sont inactifs.",
@@ -4744,8 +4868,13 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Nicknames no longer ignored.": "Les surnoms ne sont plus ignorés.",
 	"Hardcore mode ON: Information not available in-game is now hidden.": "Mode Hardcore activé : Les informations non présentes dans le jeu sont maintenant cachées.",
 	"Hardcore mode OFF: Information not available in-game is now shown.": "Mode Hardcore désactivé : Les informations non présentes dans le jeu sont maintenant affichées.",
+	"Ladder isn't responding, score probably updated but might not have (Request timeout).": "Le Ladder ne répond pas, le score est probablement à jour, mais peut ne pas l'être (temps de réponse dépassé).",
+	"Ladder updating...": "Mise à jour du Ladder...",
 	"[Invalid choice] There's nothing to cancel": "[Choix invalide] Il n'y a rien à annuler",
+	"[Unavailable choice] Can't switch: The active Pokémon is trapped": "[Choix indisponible] Impossible de switcher : le Pokémon actif est piégé !",
 	"Challenge cancelled because they changed their username.": "Défi annulé car l'adversaire a changé son pseudo.",
+	"This room is already public.": "Ce salon est déjà public.",
+	"This room is already hidden.": "Ce salon est déjà masqué.",
 	"Go! ": "En avant ! ",
 	")!": ") !",
 	"!": " !",
@@ -4846,11 +4975,11 @@ export const CosmeticForms: Array<string> = [
 ]
 
 const MainDico: Array<{ [englishName: string]: string; }>  = [
-	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, EffectsDico, WeatherDicos, MoveEffectDicos, HeadersDico, MenuDico, FiltersDico, ValidatorDico, LogMessagesDico
+	PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, NaturesDico, StatsDico, EffectsDico, WeatherDico, BoostEffectDico, MoveEffectDico, HeadersDico, MenuDico, FiltersDico, PopupMessagesDico, LogMessagesDico
 ]
 
 const LogTranslationType: Array<string> = [
-	"pokémon", "ability", "move", "item", "type", "nature", "stat", "effect", "weather", "moveeffect", "header", "menu", "filter", "validator", "logmessage"
+	"pokémon", "ability", "move", "item", "type", "nature", "stat", "effect", "weather", "boosteffect", "moveeffect", "header", "menu", "filter", "popupmessage", "logmessage"
 ]
 
 function translateToFrench(englishWord: string, translationType: number)
@@ -4947,6 +5076,10 @@ export function translateWeather(englishWeather: string) {
 	return translateToFrench(englishWeather, WEATHER);
 }
 
+export function translateBoostEffect(englishBoostEffect: string) {
+	return translateToFrench(englishBoostEffect, BOOSTEFFECT);
+}
+
 export function translateMoveEffect(englishMoveEffect: string) {
 	return translateToFrench(englishMoveEffect, MOVEEFFECT);
 }
@@ -4963,8 +5096,8 @@ export function translateFilter(englishFilter: string) {
 	return translateToFrench(englishFilter, FILTER);
 }
 
-export function translateValidator(englishValidator: string) {
-	return translateToFrench(englishValidator, VALIDATOR);
+export function translatePopupMessage(englishPopupMessage: string) {
+	return translateToFrench(englishPopupMessage, POPUPMESSAGE);
 }
 
 export function translateLogMessage(englishLogMessage: string) {
@@ -5009,6 +5142,10 @@ export function translateWeatherToEnglish(frenchWeather: string) {
 	return translateToEnglish(frenchWeather, WEATHER);
 }
 
+export function translateBoostEffectToEnglish(frenchBoostEffect: string) {
+	return translateToEnglish(frenchBoostEffect, BOOSTEFFECT);
+}
+
 export function translateMoveEffectToEnglish(frenchMoveEffect: string) {
 	return translateToEnglish(frenchMoveEffect, MOVEEFFECT);
 }
@@ -5025,8 +5162,8 @@ export function translateFilterToEnglish(frenchFilter: string) {
 	return translateToEnglish(frenchFilter, FILTER);
 }
 
-export function translateValidatorToEnglish(frenchValidator: string) {
-	return translateToEnglish(frenchValidator, VALIDATOR);
+export function translatePopupMessageToEnglish(frenchPopupMessage: string) {
+	return translateToEnglish(frenchPopupMessage, POPUPMESSAGE);
 }
 
 export function translateLogMessageToEnglish(frenchLogMessage: string) {
@@ -5079,6 +5216,10 @@ export function isValidFrenchHeader(frenchHeader: string) {
 	return translateToEnglish(frenchHeader, HEADER) != frenchHeader;
 }
 
+export function isValidFrenchBoostEffect(frenchBoostEffect: string) {
+	return translateToEnglish(frenchBoostEffect, BOOSTEFFECT) != frenchBoostEffect;
+}
+
 export function isValidFrenchMenu(frenchMenu: string) {
 	return translateToEnglish(frenchMenu, MENU) != frenchMenu;
 }
@@ -5087,8 +5228,8 @@ export function isValidFrenchFilter(frenchFilter: string) {
 	return translateToEnglish(frenchFilter, FILTER) != frenchFilter;
 }
 
-export function isValidFrenchValidator(frenchValidator: string) {
-	return translateToEnglish(frenchValidator, VALIDATOR) != frenchValidator;
+export function isValidFrenchPopupMessage(frenchPopupMessage: string) {
+	return translateToEnglish(frenchPopupMessage, POPUPMESSAGE) != frenchPopupMessage;
 }
 
 export function isValidFrenchLogMessage(frenchLogMessage: string) {
@@ -5130,11 +5271,15 @@ export function isValidEnglishEffect(englishEffect: string) {
 }
 
 export function isValidEnglishWeather(englishWeather: string) {
-	return WeatherDicos[englishWeather];
+	return WeatherDico[englishWeather];
+}
+
+export function isValidEnglishBoostEffect(englishBoostEffect: string) {
+	return BoostEffectDico[englishBoostEffect];
 }
 
 export function isValidEnglishMoveEffect(englishMoveEffect: string) {
-	return MoveEffectDicos[englishMoveEffect];
+	return MoveEffectDico[englishMoveEffect];
 }
 
 export function isValidEnglishHeader(englishHeader: string) {
@@ -5149,8 +5294,8 @@ export function isValidEnglishFilter(englishFilter: string) {
 	return FiltersDico[englishFilter];
 }
 
-export function isValidEnglishValidator(englishValidator: string) {
-	return ValidatorDico[englishValidator];
+export function isValidEnglishPopupMessage(englishPopupMessage: string) {
+	return PopupMessagesDico[englishPopupMessage];
 }
 
 export function isValidEnglishLogMessage(englishLogMessage: string) {
@@ -5184,8 +5329,8 @@ export function translatePokemonTeam(teamName: string)
 	return translatedName + teamName;
 }
 
-export function translateRegexValidatorMessage(originalString: string) {
-	return translateRegexMessage(originalString, VALIDATOR)
+export function translateRegexPopupMessage(originalString: string) {
+	return translateRegexMessage(originalString, POPUPMESSAGE)
 }
 
 export function translateRegexBattleMessage(originalString: string) {
@@ -5208,10 +5353,10 @@ export function translateRegexMessage(originalString: string, translationType: n
 
         if (translated.length > 0)
         {
+			console.log("Translated Regex message : " + translated[1]);
+
             var englishMessage = translated[0].source.split("(.*)");
             var variablesToTranslate = translated[1].match(/{(.*?)}/g);
-
-            console.log(englishMessage);
 
             // If a SWAP parameter is present in the template variable, order them by swap id
             if (variablesToTranslate[0].includes("SWAP")) 
@@ -5235,8 +5380,6 @@ export function translateRegexMessage(originalString: string, translationType: n
                 // Get english variable from the original string
                 var variableName = originalString.slice((i == 0 && englishMessage[i] == "" ? 0 : originalString.indexOf(englishMessage[i]) + englishMessage[i].length),
                                                               (englishMessage[i + 1] == "" ? originalString.length : originalString.indexOf(englishMessage[i + 1])));
-
-                console.log(variableName);
 
                 // Replace the template variable by the translated value
                 if (variablesToTranslate[i].includes("{POKEMON"))
@@ -5285,17 +5428,36 @@ export function translateRegexMessage(originalString: string, translationType: n
 				}
 				else if (variablesToTranslate[i] == "{STATS}") {
 					if (["Attack", "Sp. Atk", "evasiveness"].includes(variableName)) {
-						translated[1] = translated[1].replace("{STATS}", "L'" + translateStat(variableName));
+						translated[1] = translated[1].replace(
+							"{STATS}",
+							(isFirstWord("{STATS}", translated[1]) ? "L'" : "l'") + translateStat(variableName)
+						);
 					}
 					else {
-						translated[1] = translated[1].replace("{STATS}", "La " + translateStat(variableName));
+						translated[1] = translated[1].replace(
+							"{STATS}",
+							(isFirstWord("{STATS}", translated[1]) ? "La " : "la ") + translateStat(variableName)
+						);
 					}
 				}
+				else if (variablesToTranslate[i] == "{SELF_STATS}") {
+					if (["Attack", "Sp. Atk", "evasiveness"].includes(variableName)) {
+						translated[1] = translated[1].replace("{SELF_STATS}", "son " + translateStat(variableName));
+					}
+					else {
+						translated[1] = translated[1].replace("{SELF_STATS}", "sa " + translateStat(variableName));
+					}
+				}
+				else if (variablesToTranslate[i] == "{MOVE}") {
+					if (variableName.startsWith("Z-")) {
+						translated[1] = translated[1].replace("{MOVE}", translateMove(variableName.slice(2)) + " Z");
+					}
+					else {
+						translated[1] = translated[1].replace("{MOVE}", translateMove(variableName));
+					}
+                }
                 else if (variablesToTranslate[i] == "{ABILITY}") {
                     translated[1] = translated[1].replace("{ABILITY}", translateAbility(variableName));
-                }
-                else if (variablesToTranslate[i] == "{MOVE}") {
-                    translated[1] = translated[1].replace("{MOVE}", translateMove(variableName));
                 }
 				else if (variablesToTranslate[i] == "{ITEM}") {
                     translated[1] = translated[1].replace("{ITEM}", translateItem(variableName));
@@ -5335,7 +5497,7 @@ export function translateRegexMessage(originalString: string, translationType: n
 
 export function translateRegex(messageString: string, translationType: number)
 {
-	var RegexMap = translationType == VALIDATOR ? RegexValidatorMap : 
+	var RegexMap = translationType == POPUPMESSAGE ? RegexPopupMessagesMap : 
 					translationType == LOGMESSAGE ? RegexLogMessagesMap : [];
 
 	for (let RegexTranslation of RegexMap)
@@ -5521,7 +5683,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Defend Order": "Augmente la Défense et la Déf. Spé du lanceur de 1.",
     "Defense Curl": "Augmente la Défense du lanceur de 1.",
     "Defog": "-1 Esquive. Enlève Champ et hazards des deux côtés.",
-    "Destiny Bond": "Si un adversaire K.O. le lanceur, il tombe aussi K.O.",
+    "Destiny Bond": "Si un adversaire KO le lanceur, il tombe aussi KO",
     "Detect": "Protège le lanceur des capacités ce tour.",
     "Devastating Drake": "La puissance dépend de la capacité de base.",
     "Diamond Storm": "50% de chance d'augmenter la Défense de 2.",
@@ -5580,7 +5742,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Eruption": "Puissance proportionnelle aux PV du lanceur. (Zone)",
     "Eternabeam": "Le lanceur ne peut rien faire au prochain tour.",
     "Expanding Force": "Champ Psychique : puissance x1.5. Touche en zone.",
-    "Explosion": "Le lanceur tombe K.O. Touche en zone.",
+    "Explosion": "Le lanceur tombe KO Touche en zone.",
     "Extrasensory": "10% de chance d'apeurer la cible.",
     "Extreme Evoboost": "Augmente l'Atq, Déf, Atq Spé, Déf. Spé et Vit de 2.",
     "Extreme Speed": "Frappe en priorité +2.",
@@ -5594,10 +5756,10 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Feather Dance": "Baisse l'Attaque de la cible de 2.",
     "Feint": "Ignore Détection, Abri, Prévention et Garde Large.",
     "Feint Attack": "Cette capacité n'échoue jamais.",
-    "Fell Stinger": "Augmente l'Attaque du lanceur de 3 s'il K.O. la cible.",
+    "Fell Stinger": "Augmente l'Attaque du lanceur de 3 s'il KO la cible.",
     "Fiery Dance": "50% de chance d'augmenter l'Atq. Spé de 1.",
     "Fiery Wrath": "20% de chance d'apeurer les ennemis.",
-    "Final Gambit": "Dégâts infligés = PV du lanceur, puis tombe K.O.",
+    "Final Gambit": "Dégâts infligés = PV du lanceur, puis tombe KO",
     "Fire Blast": "10% de chance de brûler la cible.",
     "Fire Fang": "10% de chance de brûler. 10% de chance d'apeurer.",
     "Fire Lash": "100% de chance de baisser la Défense de 1.",
@@ -5699,7 +5861,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Gravity": "Pas d'immunité Sol. Précision x1.67. (5 tours)",
     "Growl": "Baisse l'Attaque des ennemis de 1.",
     "Growth": "Augmente l'Attaque et l'Atq. Spé de 1 ; 2 sous Soleil.",
-    "Grudge": "Si lanceur tombe K.O. : capacité utilisée perd ses PP.",
+    "Grudge": "Si lanceur tombe KO : capacité utilisée perd ses PP.",
     "Guardian of Alola": "Inflige 3/4 des PV actuels de la cible.",
     "Guard Split": "Équilibre Défense et Déf. Spé entre lanceur et cible.",
     "Guard Swap": "Échange les changements de Déf/SpD avec la cible.",
@@ -5717,7 +5879,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Head Smash": "50% de recul.",
     "Heal Bell": "Soigne l'équipe de tout problème de statut.",
     "Heal Block": "Les ennemis ne peuvent pas se soigner. (5 tours)",
-    "Healing Wish": "Lanceur tombe K.O. Prochain allié blessé est soigné.",
+    "Healing Wish": "Lanceur tombe KO Prochain allié blessé est soigné.",
     "Heal Order": "Soigne le lanceur de 50% de ses PV max.",
     "Heal Pulse": "Soigne la cible de 50% de ses PV max.",
     "Heart Stamp": "30% de chance d'apeurer la cible.",
@@ -5800,7 +5962,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Low Kick": "Dégâts proportionnels au poids de la cible.",
     "Low Sweep": "100% de chance de baisser la Vitesse de 1.",
     "Lucky Chant": "Protège l'équipe des coups critiques. (5 tours)",
-    "Lunar Dance": "Lanceur K.O. Allié blessé envoyé entièrement soigné.",
+    "Lunar Dance": "Lanceur KO Allié blessé envoyé entièrement soigné.",
     "Lunge": "100% de chance de baisser l'Attaque de 1.",
     "Luster Purge": "50% de chance de baisser la Déf. Spé de 1.",
     "Mach Punch": "Frappe en priorité +1.",
@@ -5842,7 +6004,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Megahorn": "Pas d'effet additionnel.",
     "Mega Kick": "Pas d'effet additionnel.",
     "Mega Punch": "Pas d'effet additionnel.",
-    "Memento": "Lanceur K.O. Baisse l'Attaque et l'Atq. Spé de 2.",
+    "Memento": "Lanceur KO Baisse l'Attaque et l'Atq. Spé de 2.",
     "Menacing Moonraze Maelstrom": "Ignore les Talents des autres Pokémon.",
     "Metal Burst": "Si touché par une attaque, renvoie dégâts x1.5.",
     "Metal Claw": "10% de chance d'augmenter l'Attaque de 1.",
@@ -5862,7 +6024,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Mirror Shot": "30% de chance de baisser la Précision de 1.",
     "Mist": "Protège l'équipe des baisses de stats. (5 tours)",
     "Mist Ball": "50% de chance de baisser l'Atq. Spé de 1.",
-    "Misty Explosion": "Lanceur K.O. Champ Brumeux : puissance x1.5.",
+    "Misty Explosion": "Lanceur KO Champ Brumeux : puissance x1.5.",
     "Misty Terrain": "Pas statut, Au sol : -puissance Dragon. (5 tours)",
     "Moonblast": "30% de chance de baisser l'Atq. Spé de 1.",
     "Moongeist Beam": "Ignore les Talents des autres Pokémon.",
@@ -5905,7 +6067,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Payback": "Puissance x2 si le lanceur agit après la cible.",
     "Pay Day": "Une pluie de pièces !",
     "Peck": "Pas d'effet additionnel.",
-    "Perish Song": "Tous les Pokémon actifs tombent K.O. dans 3 tours.",
+    "Perish Song": "Tous les Pokémon actifs tombent KO dans 3 tours.",
     "Petal Blizzard": "Pas d'effet additionnel. Touche en zone.",
     "Petal Dance": "Dure 2-3 tours puis rend le lanceur confus.",
     "Phantom Force": "Disparaît tour 1. Attaque tour 2. Ignore protections.",
@@ -5972,7 +6134,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Refresh": "Le lanceur soigne sa brûlure, paralysie ou poison.",
     "Relic Song": "10% pour endormir (Zone). Meloetta se transforme.",
     "Rest": "Lanceur dort 2 tours et soigne tous ses PV et statut.",
-    "Retaliate": "Puissance x2 si un allié est tombé K.O. dernier tour.",
+    "Retaliate": "Puissance x2 si un allié est tombé KO dernier tour.",
     "Return": "Puissance max de 102 avec Bonheur maximum.",
     "Revelation Dance": "Type varie en fonction du type principal du lanceur.",
     "Revenge": "Puissance x2 si le lanceur est touché par la cible.",
@@ -6015,7 +6177,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Seed Bomb": "Pas d'effet additionnel.",
     "Seed Flare": "40% de chance de baisser la Déf. Spé de 2.",
     "Seismic Toss": "Inflige des dégâts équivalents au niveau du lanceur.",
-    "Self-Destruct": "Le lanceur tombe K.O. Touche en zone.",
+    "Self-Destruct": "Le lanceur tombe KO Touche en zone.",
     "Shadow Ball": "20% de chance de baisser la Déf. Spé de 1.",
     "Shadow Bone": "20% de chance de baisser la Défense de 1.",
     "Shadow Claw": "Haut taux de critique.",
@@ -6650,7 +6812,7 @@ export const MovesLongDescDico: { [index: string]: string; } = {
 	"Meteor Assault": "Le lanceur inflige des dégâts au premier tour et se repose au second tour, ce qui l'empêche d'attaquer.",
 	"Meteor Beam": "Cette attaque se charge au premier tour et s'exécute au second. Elle augmente l'Attaque Spéciale de l'utilisateur d'1 cran au premier tour. Si l'utilisateur tient une Herbe Pouvoir, l'attaque s'effectue en un tour.",
 	"Meteor Mash": "Cette capacité a 20% de chances d'augmenter l'Attaque du lanceur d'1 cran.",
-	"Metronome": "Une capacité aléatoire est choisie pour être utilisée, autre que Après Vous, Acide Malique, Assistance, Éclat Spectral, Roue Libre, Blockhaus, Bec-Canon, Aegis Maxima, Gladius Maximus, Éructation, Passe-Cadeau, Big Splash, Tapotige, Abattage, Célébration, Babil, Dracacophonie, Photocopie, Riposte, Implore, Vigilance, Nappage, Lien du Destin, Détection, Orage Adamantin, Écrous d'Poing, Draco-Ascension, Draco-Énergie, Draco-Marteau, Tambour Battant, Canon Dynamax, Ténacité, Laser Infinimax, Fourbette, Ruse, Fureur Ardente, Canon Floral, Mitra-Poing, Par Ici, Éclair Gelé, Regard Glaçant, Lance de Glace, Force G, Coup d'Main, Mains Jointes, Furie Dimension, TrouDimensionnel, Feu Glacé, Sommation, Selve Salvatrice, Bouclier Royal, Fontaine de Vie, Lumière du Néant, Tatamigaeshi, Moi d'Abord, Joute Astrale, Métronome, Copie, Caboche-Kaboum, Voile Miroir, Mimique, Rayon Spectral, Force Nature, Ire de la Nature, Blocage, Onde Originelle, Overdrive, Photo-Geyser, Plasma Punch, Lame Pangéenne, Abri, Ballon Brûlant, À la Queue, Prévention, Poudre Fureur, Chant Antique, Lame Ouinte, Carapiège, Gribouille, Blabla Dodo, Troquenard, Aboiement, Saisie, Ronflement, Clepto-Mânes, Pico-Défense, Choc Émotionnel, Projecteur, Jet de Vapeur, Métalaser, Vapeur Féérique, Lutte, Choc Météore, Torrent de Coups, Passe-Passe, Techno-Buster, Larcin, Myria-Flèches, Myria-Vagues, Voltageôle, Coup Fulgurant, Morphing, Tour de Magie, Coup Victoire, Poing Obscur ou Garde Large. Si l'utilisateur est affecté par Provoc, il ne peut pas utiliser Métronome.",
+	"Metronome": "Une capacité aléatoire est choisie pour être utilisée, autre que Après Vous, Acide Malique, Assistance, Éclat Spectral, Roue Libre, Blockhaus, Bec-Canon, Aegis Maxima, Gladius Maximus, Éructation, Passe-Cadeau, Big Splash, Tapotige, Abattage, Célébration, Babil, Dracacophonie, Photocopie, Riposte, Implore, Vigilance, Nappage, Lien du Destin, Détection, Orage Adamantin, Écrous d'Poing, Draco-Ascension, Draco-Énergie, Draco-Marteau, Tambour Battant, Canon Dynamax, Ténacité, Laser Infinimax, Fourbette, Ruse, Fureur Ardente, Canon Floral, Mitra-Poing, Par Ici, Éclair Gelé, Regard Glaçant, Lance de Glace, Force G, Coup d'Main, Mains Jointes, Furie Dimension, TrouDimensionnel, Feu Glacé, Sommation, Selve Salvatrice, Bouclier Royal, Fontaine de Vie, Lumière du Néant, Tatamigaeshi, Moi d'Abord, Joute Astrale, Métronome, Copie, Caboche-Kaboum, Voile Miroir, Mimique, Rayon Spectral, Force Nature, Ire de la Nature, Blocage, Onde Originelle, Overdrive, Photo-Geyser, Plasma Punch, Lame Pangéenne, Abri, Ballon Brûlant, À la Queue, Prévention, Poudre Fureur, Chant Antique, Lame Ointe, Carapiège, Gribouille, Blabla Dodo, Troquenard, Aboiement, Saisie, Ronflement, Clepto-Mânes, Pico-Défense, Choc Émotionnel, Projecteur, Jet de Vapeur, Métalaser, Vapeur Féérique, Lutte, Choc Météore, Torrent de Coups, Passe-Passe, Techno-Buster, Larcin, Myria-Flèches, Myria-Vagues, Voltageôle, Coup Fulgurant, Morphing, Tour de Magie, Coup Victoire, Poing Obscur ou Garde Large. Si l'utilisateur est affecté par Provoc, il ne peut pas utiliser Métronome.",
 	"Milk Drink": "L'utilisateur récupère la moitié de ses PVs maximums, arrondie à la moitié supérieure.",
 	"Mimic": "Cette capacité est remplacée par la dernière capacité utilisée par la cible. La capacité copiée a ses PPs au maximum et demeure tant que le Pokémon l'ayant copiée ne quitte le terrain. Échoue si la cible n'a pas utilisé d'attaque, si l'utilisateur s'est transformé, si l'utilisateur connaît déjà la capacité, ou si la capacité est Babil, Gladius Maximus, Aegis Maxima, Canon Dynamax, Métronome, Copie, Gribouille, Morphing, Lutte ou une capacité Z.",
 	"Mind Blown": "Que la capacité touche ou non, l'utilisateur perd la moitié de ses PVs max, arrondis au supérieur. Si le lanceur a moins de la moitié de ses PVs il tombe KO après l'attaque. L'utilisateur ne perd pas de PVs s'il a le talent Garde Magik. L'attaque échoue, n'infligeant aucun dégât ni au lanceur ni à sa cible, si un Pokémon sur le terrain possède le talent Moiteur, si le lanceur est affecté par l'attaque Nuée de Poudre ou si le climat est Mer Primaire.",
@@ -6702,7 +6864,7 @@ export const MovesLongDescDico: { [index: string]: string; } = {
 	"Parting Shot": "Réduit l'Attaque et l'Attaque Spéciale de la cible d'1 cran. Si cette capacité réussit, l'utilisateur quitte le terrain même s'il est piégé et est immédiatement remplacé par un membre de l'équipe sélectionné. L'utilisateur ne quitte pas le terrain si l'Attaque et l'Attaque Spéciale de la cible n'ont pas changé ou s'il n'y a plus d'autres Pokémon dans l'équipe.",
 	"Pay Day": "Aucun effet supplémentaire.",
 	"Payback": "La puissance double si le lanceur attaque après la cible pendant ce tour. Échanger le Pokémon actif ne compte pas comme une attaque.",
-	"Perish Song": "Chaque Pokémon sur le terrain reçoit un compteur de mort de 4. À la fin de chaque tour, y compris le tour utilisé, le compteur de tous les Pokémon sur le terrain diminue de 1 et les Pokémon tombent K.O. lorsque leur compteur atteint 0. Le compteur est retiré des Pokémon qui quittent le terrain. Si un Pokémon utilise Relais alors qu'il a un compteur, le remplaçant recevra son compteur.",
+	"Perish Song": "Chaque Pokémon sur le terrain reçoit un compteur de mort de 4. À la fin de chaque tour, y compris le tour utilisé, le compteur de tous les Pokémon sur le terrain diminue de 1 et les Pokémon tombent KO lorsque leur compteur atteint 0. Le compteur est retiré des Pokémon qui quittent le terrain. Si un Pokémon utilise Relais alors qu'il a un compteur, le remplaçant recevra son compteur.",
 	"Petal Blizzard": "Aucun effet supplémentaire.",
 	"Petal Dance": "Le lanceur passe 2 ou 3 tours bloqué sur cette capacité et cible un Pokémon adverse au hasard à chaque tour, puis devient confus à la fin du dernier tour. Si l'utilisateur ne peut pas attaquer, s'il est endormi au début d'un tour, ou si l'attaque ne réussit pas contre la cible, il n'est pas confus. Si cette capacité est utilisée par Blabla Dodo, elle se déroule sur un tour et ne plonge pas l'utilisateur dans la Confusion.",
 	"Phantom Force": "Si cette attaque réussit, elle brise le Blockhaus, la Détection, le Bouclier Royal, l'Abri ou la Pico-Défense de la cible pour ce tour, permettant aux autres Pokémon d'attaquer la cible normalement. Si la cible est protégée par Vigilance, Tatamigaeshi, Prévention, ou Garde Large, cette protection est également brisée pour ce tour et les autres Pokémon peuvent attaquer la cible normalement. Cette attaque se charge au premier tour et s'exécute au second. Au premier tour, l'utilisateur évite toutes les attaques. Si l'utilisateur tient une Herbe Pouvoir, l'attaque s'exécute en un tour.",
@@ -7129,8 +7291,8 @@ export const ItemsLongDescDico: { [index: string]: string; } = {
     "Flying Gem": "Puissance de la première capacité Vol du porteur +30%. Usage unique.",
     "Flying Memory": "Coup Varia-Type du porteur devient de type Vol.",
     "Flyinium Z": "Si le porteur a une capacité Vol, lui permet d'utiliser une capacité Z Vol.",
-    "Focus Band": "Le porteur a 10% de chance de survivre avec 1 PV un coup qui devrait le mettre K.O.",
-    "Focus Sash": "Si le porteur a tous ses PV, survit avec 1 PV un coup qui devrait le K.O. Usage unique.",
+    "Focus Band": "Le porteur a 10% de chance de survivre avec 1 PV un coup qui devrait le mettre KO",
+    "Focus Sash": "Si le porteur a tous ses PV, survit avec 1 PV un coup qui devrait le KO Usage unique.",
     "Fossilized Bird": "Peut être ranimé en Galvagon avec Fossile Dragon ou Galvagla avec Fossile Aileron.",
     "Fossilized Dino": "Peut être ranimé en Hydragla avec Fossile Poisson ou Galvagla avec Fossile Oiseau.",
     "Fossilized Drake": "Peut être ranimé en Galvagon avec Fossile Oiseau ou Hydragon avec Fossile Poisson.",
@@ -7526,7 +7688,7 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
     "No Ability": "Ne fait rien.",
     "Adaptability": "Le STAB de ce Pokémon est de 2 à la place de 1.5.",
     "Aerilate": "Les capacités Normal du Pokémon deviennent Vol, leur puissance augmente de 20%.",
-    "Aftermath": "Si ce Pokémon est mis K.O. avec une capacité de contact, l'attaquant perd 25% PV max.",
+    "Aftermath": "Si ce Pokémon est mis KO avec une capacité de contact, l'attaquant perd 25% PV max.",
     "Air Lock": "Tant que ce Pokémon est actif, les effets de la météo sont désactivés.",
     "Analytic": "La puissance des capacités du Pokémon est augmentée de de 30% s'il agit en dernier.",
     "Anger Point": "Si ce Pokémon (pas son clone) subit un coup critique, augmente son Attaque de 12 crans.",
@@ -7541,14 +7703,14 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
     "Ball Fetch": "Pas d'utilisation compétitive.",
     "Battery": "La puissance des capacités spéciales des Pokémon alliés est augmentée de 30%.",
     "Battle Armor": "Ce Pokémon ne peut pas subir de coups critiques.",
-    "Battle Bond": "Après avoir K.O. un Pokémon : devient Sachanobi. Sheauriken : 20 puissance, touche 3x.",
-    "Beast Boost": "La plus haute stat du Pokémon est augmentée de 1 s'il attaque et K.O. un autre Pokémon.",
+    "Battle Bond": "Après avoir KO un Pokémon : devient Sachanobi. Sheauriken : 20 puissance, touche 3x.",
+    "Beast Boost": "La plus haute stat du Pokémon est augmentée de 1 s'il attaque et KO un autre Pokémon.",
     "Berserk": "L'Atq. Spé du Pokémon est augmentée de 1 lorsqu'il atteint 50% ou moins de ses PV max.",
     "Big Pecks": "Empêche les autres Pokémon de baisser la Défense de ce Pokémon.",
     "Blaze": "Si PV < 33% PV max, augmente la puissance des capacités Feu du Pokémon de 50%.",
     "Bulletproof": "Immunise le Pokémon aux capacités projectiles (Ball'Ombre, Bomb-Beurk, Exploforce, etc)",
     "Cheek Pouch": "Si le Pokémon mange une Baie, il regagne 33% des PV max en plus des effets de la Baie.",
-    "Chilling Neigh": "L'Attaque de ce Pokémon est augmentée de 1 s'il attaque et K.O. un autre Pokémon.",
+    "Chilling Neigh": "L'Attaque de ce Pokémon est augmentée de 1 s'il attaque et KO un autre Pokémon.",
     "Chlorophyll": "La Vitesse de ce Pokémon est doublée sous le Soleil.",
     "Clear Body": "Ce Pokémon est immunisé aux baisses de stats de son adversaire.",
     "Cloud Nine": "Tant que ce Pokémon est actif, les effets de la météo sont désactivés.",
@@ -7602,7 +7764,7 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
     "Gorilla Tactics": "Augmente l'Attaque du Pokémon de 50%, mais ne peut utilser que la 1ère capacité choisie.",
     "Grass Pelt": "La Défense du Pokémon est augmentée de 50% sur un Champ Herbu.",
     "Grassy Surge": "Le Pokémon crée un Champ Herbu au moment où il entre au combat.",
-    "Grim Neigh": "L'Atq. Spé de ce Pokémon est augmentée de 1 s'il attaque et K.O. un autre Pokémon.",
+    "Grim Neigh": "L'Atq. Spé de ce Pokémon est augmentée de 1 s'il attaque et KO un autre Pokémon.",
     "Gulp Missile": "Si touché après Surf/Plongée, l'attaquant subit 25% PV max et -1 Défense/Paralysie.",
     "Guts": "Si le Pokémon subit un statut,  Attaque +50%. Ignore baisse d'attaque de brûlure.",
     "Harvest": "Si l'objet utilisé est une Baie, 50% de chance de la récupérer chaque tour. Soleil : 100%.",
@@ -7623,7 +7785,7 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
     "Immunity": "Le Pokémon ne peut pas être empoisonné. Gagner ce Talent soigne le poison.",
     "Imposter": "Lorsque le Pokémon entre en combat, il prend l'apparence du Pokémon adverse.",
     "Infiltrator": "Les capacités ignorent clones/Protection/Mur Lumière/Rune Protect/Brume/Voile Aurore.",
-    "Innards Out": "Si le Pokémon est mis K.O. par une capacité, le lanceur perd le même nombre de PV.",
+    "Innards Out": "Si le Pokémon est mis KO par une capacité, le lanceur perd le même nombre de PV.",
     "Inner Focus": "Le Pokémon ne peut pas être apeuré. Immunisé à Intimidation.",
     "Insomnia": "Le Pokémon ne peut pas s'endormir. Gagner ce Talent réveille le Pokémon.",
     "Intimidate": "Baisse l'Attaque des Pokémon adjacents de 1 quand le Pokémon arrive au combat.",
@@ -7657,7 +7819,7 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
     "Mold Breaker": "Les capacités du Pokémon et leurs effets ignorent les Talents des autres Pokémon.",
     "Moody": "Chaque fin de tour, boost une stat aléatoire (pas Pré/Esq) de +2 et une autre de -1.",
     "Motor Drive": "Augmente la Vitesse du Pokémon si touché par une capacité Électrik. Immunité Électrik.",
-    "Moxie": "L'Attaque de ce Pokémon est augmentée de 1 s'il attaque et K.O. un autre Pokémon.",
+    "Moxie": "L'Attaque de ce Pokémon est augmentée de 1 s'il attaque et KO un autre Pokémon.",
     "Multiscale": "Si le Pokémon a tous ses PV, les dégâts subis par des attaques sont divisés par 2.",
     "Multitype": "Si le Pokémon est Arceus, change son type en fonction de la Plaque/Cristal Z porté.",
     "Mummy": "Change le Talent de l'attaquant en Momie si le Pokémon subit une attaque de contact.",
@@ -7681,7 +7843,7 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
     "Poison Point": "A 30% de chance d'empoisonner l'attaquant si le Pokémon subit une attaque de contact.",
     "Poison Touch": "Les attaques de contact du Pokémon ont 30% de chance d'empoisonner.",
     "Power Construct": "Si Zygarde 10%/50%, transforme en Complet si 50% PV max ou moins à la fin du tour.",
-    "Power of Alchemy": "Le Pokémon obtient le Talent d'un allié qui tombe K.O.",
+    "Power of Alchemy": "Le Pokémon obtient le Talent d'un allié qui tombe KO",
     "Power Spot": "Augmente la puissance des capacités des alliés de 30%.",
     "Prankster": "Augmente la priorité des capacités de statut de 1, mais type Ténèbres sont immunisés.",
     "Pressure": "Les capacités ennemies ciblant le Pokémon perdent un PP supplémentaire.",
@@ -7697,7 +7859,7 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
     "Quick Feet": "Vitesse +50% si le Pokémon souffre d'un statut. Ignore la baisse de Vitesse de paralysie.",
     "Rain Dish": "Sous la Pluie, restaure 1/16 des PV max du Pokémon chaque tour.",
     "Rattled": "Vitesse +1 si touché par une capacité Insecte, Spectre, Ténèbres, ou Intimiation.",
-    "Receiver": "Le Pokémon obtient le Talent d'un allié qui tombe K.O.",
+    "Receiver": "Le Pokémon obtient le Talent d'un allié qui tombe KO",
     "Reckless": "Les capacités avec contrecoup et leur contrecoup ont leur puissance +20%. (sauf Lutte)",
     "Refrigerate": "Les capacités Normal du Pokémon deviennent Glace, leur puissance augmente de 20%.",
     "Regenerator": "Le Pokémon récupère 33% de ses PV max lorsqu'il se retire du combat.",
@@ -7733,7 +7895,7 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
     "Snow Warning": "Déclenche une tempête de Grêle quand le Pokémon entre au combat.",
     "Solar Power": "Augmente l'Atq. Spé du Pokémon de 50% sous le Soleil, inflige 1/8 des PV max par tour.",
     "Solid Rock": "Le Pokémon reçoit 75% des dégâts d'une attaque super efficace.",
-    "Soul-Heart": "Augmente l'Atq. Spé du Pokémon de 1 quand un autre Pokémon tombe K.O.",
+    "Soul-Heart": "Augmente l'Atq. Spé du Pokémon de 1 quand un autre Pokémon tombe KO",
     "Soundproof": "Le Pokémon est immunisé aux capacités de son, y compris Glas de Soin.",
     "Speed Boost": "La Vitesse du Pokémon est augmentée de 1 à la fin de chaque tour.",
     "Stakeout": "Inflige le double de dégâts contre une cible ayant switch-in ce tour.",

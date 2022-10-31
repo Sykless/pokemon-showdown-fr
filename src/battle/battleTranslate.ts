@@ -1,5 +1,6 @@
-import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico } from "../translator";
+import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, isValidEnglishMenu, isValidEnglishAbility, isValidEnglishWeather, isValidEnglishBoostEffect, translateBoostEffect } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
+import { PLAY_SHOWDOWN_HOST, REPLAYS_SHOWDOWN_HOST } from "../translator";
 
 console.log("BattleTranslate successfully loaded !");
 
@@ -7,7 +8,12 @@ const HP = 0, ABILITY = 1, POSSIBLE_ABILITIES = 2, ITEM = 3, STATS = 4, SPEED = 
 
 // If a Battle is reloaded, the original code is not counted as a page change
 // So we need to translate it if needed
-translateBattleHomePage();
+if (window.location.host == PLAY_SHOWDOWN_HOST) {
+    translateBattleHomePage();
+}
+else if (window.location.host == REPLAYS_SHOWDOWN_HOST) {
+    translateReplayBattlePage();
+}
 
 // The injected script cannot access chrome.runtime.getURL
 // So we need to catch an event from the content script that sends it
@@ -31,7 +37,7 @@ observer.observe(document, {
 // Everytime a new element is added to the page, onMutation method is called
 function onMutation(mutations: MutationRecord[])
 {
-	// If the Teambuilding tab is not visible, stop the mutation observation
+	// If the Battle tab is not visible, stop the mutation observation
 	if (!isBattleOpen()) {
 		return;
 	}
@@ -57,7 +63,7 @@ function onMutation(mutations: MutationRecord[])
                 // so instead we add a boolean that changes when no match is found
                 var translatedElement = true;
 
-                //console.log(newElement.outerHTML);
+                console.log(newElement.outerHTML);
 
                 if (newElement.id)
                 {
@@ -74,6 +80,19 @@ function onMutation(mutations: MutationRecord[])
                     if (elementClasses.contains("innerbattle"))
                     {
                         // console.log("Whole room, rien d'intéressant : " + newElement.outerHTML);
+                    }
+                    // Whole replay has been loaded
+                    else if (elementClasses.contains("pfx-body")) {
+                        var uploadDate = document.getElementsByClassName("uploaddate");
+
+                        if (uploadDate.length > 0) {
+                            updateUploadDateLabel(uploadDate[0])
+                        }
+                    }
+                    // Trainer sprite has been loaded
+                    else if (elementClasses.contains("trainer"))
+                    {
+                        updateTrainerElement(newElement);
                     }
                     // Tooltip has been opened
                     else if (elementClasses.contains("tooltipinner"))
@@ -119,6 +138,22 @@ function onMutation(mutations: MutationRecord[])
                             updateControlPanel(newElement);
                         }
                     }
+                    // Replays options button (Speed, Music, etc)
+                    else if (elementClasses.contains("chooser"))
+                    {
+                        updateReplayChooser(newElement)
+                    }
+                    // Replays action button (Play, Go to turn, Download, etc)
+                    else if (elementClasses.contains("replayDownloadButton")
+                        || (newElement.tagName == "BUTTON" && newElement.getAttribute("data-action")))
+                    {
+                        updateActionButton(newElement);
+                    }
+                    // Replays Play buttons
+                    else if (elementClasses.contains("playbutton"))
+                    {
+                        updateReplayPlayButtons(newElement);
+                    }
                     // Pokémon name and status
                     else if (elementClasses.contains("statbar"))
                     {
@@ -155,7 +190,7 @@ function onMutation(mutations: MutationRecord[])
                     // Chat message
                     else if (elementClasses.contains("chat"))
                     {
-                        updateCommand(newElement);
+                        updateChatElement(newElement);
                     }
                     // Battle Options button
                     else if (elementClasses.contains("battle-options"))
@@ -166,6 +201,16 @@ function onMutation(mutations: MutationRecord[])
                     else if (elementClasses.contains("turn"))
                     {
                         updateTurnCounter(newElement);
+                    }
+                    // Rated Battle Label
+                    else if (elementClasses.contains("rated"))
+                    {
+                        updateRatedBattle(newElement);
+                    }
+                    // Upload date label
+                    else if (newElement.tagName == "P" && newElement.firstElementChild?.classList?.contains("uploaddate"))
+                    {
+                        updateUploadDateLabel(newElement.firstElementChild);
                     }
                     else {
                         // No translation found
@@ -224,7 +269,13 @@ function isBattleOpen()
 {
     // Get all battle rooms
 	var teambuilderElement = document.querySelectorAll('[id^=room-battle-]');
+    var replayElement = document.querySelectorAll('.replay-wrapper')
+
     var battleOpen = false;
+
+    if (replayElement.length > 0) {
+        return true;
+    }
 
     teambuilderElement.forEach(function (battleRoomNode) {
         var battleRoomElement = battleRoomNode as Element;
@@ -258,8 +309,30 @@ function updatePokemonTooltip(tooltip: Element)
                 {
                     if (pokemonInfo.textContent)
                     {
-                        if (pokemonInfo.textContent.includes("(")) {
-                            pokemonInfo.textContent = "(" + translatePokemonName(pokemonInfo.textContent.slice(1,-1)) + ")";
+                        if (pokemonInfo.textContent.includes("("))
+                        {
+                            var parenthesisContent = pokemonInfo.textContent.slice(1,-1);
+
+                            // Alternate form
+                            if (isValidEnglishPokemonName(parenthesisContent)) {
+                                parenthesisContent = translatePokemonName(parenthesisContent);
+                            }
+                            // Transformed Pokémon 
+                            else if (parenthesisContent.startsWith("Transformed into ")) {
+                                parenthesisContent = translateMenu("Transformed into ")
+                                    + translatePokemonName(parenthesisContent.replace("Transformed into ", ""));
+                            }
+                            // New forme
+                            else if (parenthesisContent.startsWith("Changed forme: ")) {
+                                parenthesisContent = translateMenu("Changed forme: ")
+                                    + translatePokemonName(parenthesisContent.replace("Changed forme: ", ""));
+                            }
+                            // Default try to transalte as Menu element
+                            else {
+                                parenthesisContent = translateMenu(parenthesisContent);
+                            }
+
+                            pokemonInfo.textContent = "(" + parenthesisContent + ")";
                         }
                         else {
                             pokemonInfo.textContent = pokemonInfo.textContent.replace("L","N");
@@ -272,11 +345,11 @@ function updatePokemonTooltip(tooltip: Element)
                     if (pokemonInfo.textContent)
                     {
                         // If the next element is not a line break, a space has been added at the end of the name
-                        if ((pokemonInfo.nextSibling as Element).tagName != "BR"){
-                            pokemonInfo.textContent = translatePokemonName(pokemonInfo.textContent.slice(0,-1)) + " ";
+                        if ((pokemonInfo.nextSibling as Element).tagName != "BR") {
+                            pokemonInfo.textContent = translatePokemonBattleName(pokemonInfo.textContent.slice(0,-1)) + " ";
                         }
                         else {
-                            pokemonInfo.textContent = translatePokemonName(pokemonInfo.textContent);
+                            pokemonInfo.textContent = translatePokemonBattleName(pokemonInfo.textContent);
                         }
                     }
                 }
@@ -289,17 +362,34 @@ function updatePokemonTooltip(tooltip: Element)
                 var moveElement = moveNode as Element;
 
                 // Every non-small or line break element is a move
-                if (!["BR", "SMALL"].includes(moveElement.tagName) && moveElement.textContent) {
-                    if (moveElement.textContent.slice(-1) == " ") {
-                        moveElement.textContent = "• " + translateMove(moveElement.textContent.slice(2,-1)) + " ";
+                if (!["BR", "SMALL"].includes(moveElement.tagName) && moveElement.textContent)
+                {
+                    // Some moves have a • character at the beginning of their name
+                    if (moveElement.textContent.startsWith("• ")) {
+                        if (moveElement.textContent.endsWith(" ")) {
+                            moveElement.textContent = "• " + translateMove(moveElement.textContent.slice(2,-1)) + " ";
+                        }
+                        else {
+                            moveElement.textContent = "• " + translateMove(moveElement.textContent.slice(2));
+                        }
                     }
-                    else {
-                        moveElement.textContent = "• " + translateMove(moveElement.textContent.slice(2));
+                    // Some moves have the • character in another tag, but the space is still there
+                    else if (moveElement.textContent.startsWith(" ")) {
+                        if (moveElement.textContent.endsWith(" ")) {
+                            moveElement.textContent = " " + translateMove(moveElement.textContent.slice(1,-1)) + " ";
+                        }
+                        else {
+                            moveElement.textContent = " " + translateMove(moveElement.textContent.slice(1));
+                        }
+                    }
+                    // Move-related message (Zoroark)
+                    else if (moveElement.textContent.startsWith("(")) {
+                        moveElement.textContent = translateMenu(moveElement.textContent);
                     }
                 }
             })
         }
-        // Sub infos (Item, Ability, Moves, etc)
+        // Sub infos (Item, Ability, etc)
         else if (tooltipContent.tagName == "P")
         {
             var currentDisplayedInfo = UNKNOWN;
@@ -333,74 +423,89 @@ function updatePokemonTooltip(tooltip: Element)
                         // Translate status
                         tooltipSubInfoElement.textContent = translateEffect(tooltipSubInfoElement.textContent)
                     }
-                    // Info value
-                    else
+                    // Estimated speed
+                    else if (currentDisplayedInfo == SPEED) {
+                        tooltipSubInfoElement.textContent = tooltipSubInfoElement.textContent.replace(" to "," à ");
+                    }
+                    // Possible Ability
+                    else if (currentDisplayedInfo == POSSIBLE_ABILITIES)
                     {
-                        // Estimated speed
-                        if (currentDisplayedInfo == SPEED) {
-                            tooltipSubInfoElement.textContent = tooltipSubInfoElement.textContent.replace(" to "," à ");
-                        }
-                        // Possible Ability
-                        else if (currentDisplayedInfo == POSSIBLE_ABILITIES)
-                        {
-                            var possibleAbilities = tooltipSubInfoElement.textContent.split(",");
-                            var translatedAbilities = "";
+                        var possibleAbilities = tooltipSubInfoElement.textContent.split(",");
+                        var translatedAbilities = "";
 
-                            // Remove the space at the beggining of each ability, translate it and reformat it
-                            for (var i = 0 ; i < possibleAbilities.length ; i++) {
-                                translatedAbilities += " " + translateAbility(possibleAbilities[i].slice(1))
-                                translatedAbilities += i == possibleAbilities.length - 1 ? "" : ",";
-                            }
-
-                            tooltipSubInfoElement.textContent = translatedAbilities;
+                        // Remove the space at the beggining of each ability, translate it and reformat it
+                        for (var i = 0 ; i < possibleAbilities.length ; i++) {
+                            translatedAbilities += " " + translateAbility(possibleAbilities[i].slice(1))
+                            translatedAbilities += i == possibleAbilities.length - 1 ? "" : ",";
                         }
-                        // Ability
-                        else if (currentDisplayedInfo == ABILITY)
-                        {
-                            if (tooltipSubInfoElement.textContent.includes(" / ")) {
-                                // Remove all styling, translate the ability and reformat it
-                                tooltipSubInfoElement.textContent = " " + translateAbility(tooltipSubInfoElement.textContent
-                                    .replace(" / ","")
-                                    .slice(1)) + " / ";
-                            }
-                            else
+
+                        tooltipSubInfoElement.textContent = translatedAbilities;
+                    }
+                    // Ability
+                    else if (currentDisplayedInfo == ABILITY)
+                    {
+                        // Changed Ability (through Transform for example)
+                        if (tooltipSubInfoElement.textContent.includes(" (base: ")) {
+                            var abilities = tooltipSubInfoElement.textContent.split(" (base: ");
+
+                            tooltipSubInfoElement.textContent = " " + translateAbility(abilities[0].slice(1)) // Current Ability
+                                + translateMenu(" (base: ") // Separator
+                                + translateAbility(abilities[1].slice(0,-1)) + ")"
+                        }
+                        // Ability is on the same line as Item for the switches tooltips so it ends with " / "
+                        // Remove all styling, translate the ability and reformat it
+                        else if (tooltipSubInfoElement.textContent.includes(" / ")) { 
+                            tooltipSubInfoElement.textContent = " " + translateAbility(
+                                tooltipSubInfoElement.textContent.replace(" / ","").slice(1)) + " / ";
+                        }
+                        // Just remove the space at the beginning
+                        else {
+                            tooltipSubInfoElement.textContent = " " + translateAbility(tooltipSubInfoElement.textContent.slice(1))
+                        }
+                    }
+                    // Item
+                    else if (currentDisplayedInfo == ITEM)
+                    {
+                        if (tooltipSubInfoElement.textContent.includes(" (")) {
+                            var itemInfos = tooltipSubInfoElement.textContent.split(" (");
+                            var itemEffect = itemInfos[1].split("was ");
+
+                            if (itemEffect.length > 1)
                             {
-                                // Just remove the space
-                                tooltipSubInfoElement.textContent = " " + translateAbility(tooltipSubInfoElement.textContent.slice(1))
-                            }
-                        }
-                        // Item
-                        else if (currentDisplayedInfo == ITEM)
-                        {
-                            if (tooltipSubInfoElement.textContent.includes(" (")) {
-                                var itemInfos = tooltipSubInfoElement.textContent.split(" (");
-                                var itemEffect = itemInfos[1].split(" was ");
-
-                                if (itemEffect.length > 1) {
+                                // Old item
+                                if (itemEffect[0] == "") {
                                     tooltipSubInfoElement.textContent = " " + translateItem(itemInfos[0].slice(1))
-                                    + " (" + translateItem(itemEffect[0]) + " a été " + translateMenu(itemEffect[1].slice(0,-1)) + ")"
+                                        + " (était " + translateItem(itemEffect[1].slice(0,-1)) + ")"
                                 }
+                                // Old item + effect
                                 else {
                                     tooltipSubInfoElement.textContent = " " + translateItem(itemInfos[0].slice(1))
-                                    + " (" + translateMenu(itemEffect[0].slice(0,-1)) + ")";
+                                        + " (" + translateItem(itemEffect[0].slice(0,-1)) + " a été " + translateMenu(itemEffect[1].slice(0,-1)) + ")";
                                 }
                             }
                             else {
-                                tooltipSubInfoElement.textContent = " " + translateItem(tooltipSubInfoElement.textContent.slice(1));
+                                tooltipSubInfoElement.textContent = " " + translateItem(itemInfos[0].slice(1))
+                                + " (" + translateMenu(itemEffect[0].slice(0,-1)) + ")";
                             }
                         }
-                        // Stats, don't translate values - however status specific cases could be present
-                        else if (currentDisplayedInfo == STATS)
-                        {
-                            // Deal with specific cases
-                            if (tooltipSubInfoElement.textContent.startsWith(" Next damage: ")) {
-                                tooltipSubInfoElement.textContent = translateMenu(" Next damage: ")
-                                    + tooltipSubInfoElement.textContent.replace(" Next damage: ", "");
-                            }
-                            else if (tooltipSubInfoElement.textContent.startsWith(" Turns asleep: ")) {
-                                tooltipSubInfoElement.textContent = translateMenu(" Turns asleep: ")
-                                    + tooltipSubInfoElement.textContent.replace(" Turns asleep: ", "");
-                            }
+                        else {
+                            tooltipSubInfoElement.textContent = " " + translateItem(tooltipSubInfoElement.textContent.slice(1));
+                        }
+                    }
+                    // HP, don't translate values - however status specific cases could be present
+                    else if (currentDisplayedInfo == HP)
+                    {
+                        // Deal with specific cases
+                        if (tooltipSubInfoElement.textContent.startsWith(" Next damage: ")) {
+                            tooltipSubInfoElement.textContent = translateMenu(" Next damage: ")
+                                + tooltipSubInfoElement.textContent.replace(" Next damage: ", "");
+                        }
+                        else if (tooltipSubInfoElement.textContent.startsWith(" Turns asleep: ")) {
+                            tooltipSubInfoElement.textContent = translateMenu(" Turns asleep: ")
+                                + tooltipSubInfoElement.textContent.replace(" Turns asleep: ", "");
+                        }
+                        else if (tooltipSubInfoElement.textContent == " (fainted)") {
+                            tooltipSubInfoElement.textContent = translateMenu(" (fainted)");
                         }
                     }
                 }
@@ -423,9 +528,18 @@ function updateMoveTooltip(tooltip: Element)
                 var moveHeader = moveHeaderNode as Element;
 
                 // Raw text element : move name
-                if (!moveHeader.tagName && moveHeader.textContent?.trim()) {
-                    moveName = moveHeader.textContent;
-                    moveHeader.textContent = translateMove(moveHeader.textContent);
+                if (!moveHeader.tagName && moveHeader.textContent?.trim())
+                {
+                    // Get original move if Z-Move
+                    if (moveHeader.textContent.startsWith("Z-")) {
+                        moveName = moveHeader.textContent.slice(2);
+                    }
+                    // Regular move
+                    else {
+                        moveName = moveHeader.textContent;
+                    }
+                    
+                    moveHeader.textContent = translateBattleMove(moveHeader.textContent);
                 }
                 // Move type
                 else if (moveHeader.tagName == "IMG") {
@@ -457,8 +571,8 @@ function updateMoveTooltip(tooltip: Element)
                         }
                         // Not a priority move : section element is the move description
                         else if (sectionElement.textContent != ".") {
-                            // In hardcore mode, display short desc
-                            var frenchDesc = app.curRoom?.battle?.hardcoreMode ? 
+                            // In hardcore mode or if there's no long desc, display short desc
+                            var frenchDesc = app.curRoom?.battle?.hardcoreMode || !MovesLongDescDico[moveName] ? 
                                 MovesShortDescDico[moveName] : MovesLongDescDico[moveName];
                             
                             if (frenchDesc) {
@@ -466,8 +580,6 @@ function updateMoveTooltip(tooltip: Element)
                             }
                         }
                     }
-
-                    
                 })
             }
             // Move tags (priority, sound, etc)
@@ -500,17 +612,93 @@ function updateMoveTooltip(tooltip: Element)
                 }
                 // Accuracy, translate title and potential label (can't miss, etc)
                 else if (tooltipElement.textContent.startsWith("Accuracy: ")) {
-                    tooltipElement.textContent = translateMenu("Accuracy: ")
-                        + translateMenu(tooltipElement.textContent.replace("Accuracy: ", ""));
+                    var baseAccuracy = tooltipElement.textContent.replace("Accuracy: ", "");
+                    var baseAccuracyEffect = baseAccuracy.split(" (");
+
+                    if (baseAccuracyEffect.length > 1)
+                    {
+                        tooltipElement.textContent = translateMenu("Accuracy: ") // Accuracy label
+                            + translateMenu(baseAccuracyEffect[0]) + " (" // Accuracy value (could also be a label - can't miss)
+                            + updateBoostEffect(baseAccuracyEffect); // Translated boost effect
+                    }
+                    else {
+                        tooltipElement.textContent = translateMenu("Accuracy: ") // Accuracy label
+                            + translateMenu(baseAccuracy); // Accuracy value (could also be a label - can't miss)
+                    }
                 }
                 // Base Power, translate title and potential label
                 else if (tooltipElement.textContent.startsWith("Base power: ")) {
-                    tooltipElement.textContent = translateMenu("Base power: ")
-                        + translateMenu(tooltipElement.textContent.replace("Base power: ", ""));
+                    var basePower = tooltipElement.textContent.replace("Base power: ", "");
+                    var basePowerEffect = basePower.split(" (");
+
+                    if (basePowerEffect.length > 1)
+                    {
+                        tooltipElement.textContent = translateMenu("Base power: ") // Base power label
+                            + basePowerEffect[0] + " (" // Base power value
+                            + updateBoostEffect(basePowerEffect); // Translated boost effect
+                    }
+                    else {
+                        tooltipElement.textContent = translateMenu("Base power: ") // Base power label
+                            + basePower // Base power value
+                    }
+                }
+                // Z-Effect, translate title and label
+                else if (tooltipElement.textContent.startsWith("Z-Effect: ")) {
+                    var zEffect = tooltipElement.textContent.replace("Z-Effect: ", "");
+                    var zTranslatedEffect = "";
+
+                    // Predetermined Z-Effect
+                    if (isValidEnglishMenu(zEffect)) {
+                        zTranslatedEffect = translateMenu(zEffect);
+                    }
+                    // Stats boost
+                    else if (zEffect.includes("+")) {
+                        var statsBoosts = zEffect.split(", ");
+
+                        for (var i = 0 ; i < statsBoosts.length ; i++) {
+                            zTranslatedEffect += translateStat(statsBoosts[i].slice(0,-3)) // Boosted Stat
+                                + statsBoosts[i].slice(-3) // Boost value
+                                + (i < statsBoosts.length - 1 ? ", " : "") // Comma, if needed
+                        }
+                    }
+                    // Default : keep the Z-Effect in english
+                    else {
+                        zTranslatedEffect = zEffect;
+                    }
+
+                    tooltipElement.textContent = translateMenu("Z-Effect: ") + zTranslatedEffect;
                 }
             }
         }
     })
+}
+
+function updateBoostEffect(effectArray: String[])
+{
+    var translatedBoosts = "";
+
+    for (var i = 1 ; i < effectArray.length ; i++)
+    {
+        var boostEffect = effectArray[i].split("× from " );
+
+        // Boost value provided
+        if (boostEffect.length > 1)
+        {
+            var translatedBoostEffect = translatePossibleBoostOrigin(boostEffect[1].slice(0,-1)) // Remove parenthesis at the end
+            
+            translatedBoosts += "×" + boostEffect[0] + " grâce à " + translatedBoostEffect + ")" // Boost effect
+                + (i < effectArray.length - 1 ? " (" : ""); // Add parenthesis for next boost if needed
+        }
+        // No boost value, only the boost effect
+        else {
+            var translatedBoostEffect = translatePossibleBoostOrigin(effectArray[i].slice(0,-1)) // Remove parenthesis at the end
+
+            translatedBoosts += translatedBoostEffect + ")" // Boost effect
+                + (i < effectArray.length - 1 ? " (" : ""); // Add parenthesis for next boost if needed
+        }
+    }
+
+    return translatedBoosts;
 }
 
 function updateFieldTooltip(tooltip: Element)
@@ -651,8 +839,17 @@ function updateControlPanel(newElement: Element)
                         else if (moveButtonElement.tagName == "BUTTON") {
                             updateMove(moveButtonElement)
                         }
-                        
-                        
+                        // Gen mechanic (Mega Evolution, Z-Move, Dynamax) or message
+                        else if (["LABEL", "EM"].includes(moveButtonElement.tagName)) {
+                            moveButtonElement.childNodes.forEach(function (mechanicNode) {
+                                var mechanicElement = mechanicNode as Element;
+
+                                // Only translate raw or strong text element
+                                if (mechanicElement.textContent && (!mechanicElement.tagName || mechanicElement.tagName == "STRONG")) {
+                                    mechanicElement.textContent = translateMenu(mechanicElement.textContent);
+                                }
+                            })
+                        }
                     })
                 }
             })
@@ -671,15 +868,32 @@ function updateControlPanel(newElement: Element)
                 }
                 else if (switchOption.className == "switchmenu")
                 {
-                    switchOption.childNodes.forEach(function (pokemonMainNode) {
-                        pokemonMainNode.childNodes.forEach(function (pokemonButtonNode) {
-                            var pokemonButton = pokemonButtonNode as Element;
+                    switchOption.childNodes.forEach(function (switchNode)
+                    {
+                        var switchElement = switchNode as Element;
 
-                            // The only non-span element is the Pokémon name
-                            if (pokemonButton.tagName != "SPAN" && pokemonButton.textContent) {
-                                pokemonButton.textContent = translatePokemonName(pokemonButton.textContent);
-                            }
-                        })
+                        // Switch option
+                        if (switchElement.tagName == "BUTTON") {
+                            switchElement.childNodes.forEach(function (pokemonButtonNode) {
+                                var pokemonButton = pokemonButtonNode as Element;
+    
+                                // The only non-span element is the Pokémon name
+                                if (pokemonButton.tagName != "SPAN" && pokemonButton.textContent) {
+                                    pokemonButton.textContent = translatePokemonName(pokemonButton.textContent);
+                                }
+                            })
+                        }
+                        // Trapped message
+                        else if (switchElement.tagName == "EM") {
+                            switchElement.childNodes.forEach(function (switchMessageNode) {
+                                var switchMessage = switchMessageNode as Element;
+
+                                // Only translate raw or strong text element
+                                if (switchMessage.textContent && (!switchMessage.tagName || switchMessage.tagName == "STRONG")) {
+                                    switchMessage.textContent = translateMenu(switchMessage.textContent);
+                                }
+                            })
+                        }
                     })
                 }
             })
@@ -718,7 +932,94 @@ function updateMove(moveMainNode: Node)
             }
             // Move
             else if (moveButton.tagName != "BR") {
-                moveButton.textContent = translateMove(moveButton.textContent);
+                moveButton.textContent = translateBattleMove(moveButton.textContent);
+            }
+        }
+    })
+}
+
+function updateTrainerElement(trainerElement: Element)
+{
+    trainerElement.childNodes.forEach(function (trainerContentNode) {
+        var trainerContent = trainerContentNode as HTMLDivElement;
+
+        // Only translate ranking if present
+        if (trainerContent.classList?.contains("trainersprite") && trainerContent.title?.startsWith("Rating: ")) {
+            trainerContent.title = translateMenu("Rating: ") + trainerContent.title.replace("Rating: ", "");
+        }
+    })
+}
+
+function updateReplayChooser(chooserElement: Element)
+{
+    chooserElement.childNodes.forEach(function (chooserContentNode) {
+        var chooserContent = chooserContentNode as Element;
+
+        // Name label
+        if (chooserContent.tagName == "EM" && chooserContent.textContent) {
+            chooserContent.textContent = translateMenu(chooserContent.textContent);
+        }
+        // Action buttons node, iterate on children to translate labels
+        else if (chooserContent.tagName == "DIV") {
+            chooserContent.childNodes.forEach(function (actionButtonNode) {
+                var actionButton = actionButtonNode as Element;
+
+                if (actionButton.tagName == "BUTTON" && actionButton.textContent) {
+                    actionButton.textContent = translateMenu(actionButton.textContent);
+                }
+            })
+        }
+    })
+}
+
+function updateActionButton(actionButtonElement: Element)
+{
+    actionButtonElement.childNodes.forEach(function (actionButtonContentNode) {
+        var actionButtonContent = actionButtonContentNode as Element;
+
+        // Only translate raw text (Action label)
+        if (!actionButtonContent.tagName && actionButtonContent.textContent) {
+            actionButtonContent.textContent = translateMenu(actionButtonContent.textContent);
+        }
+    })
+}
+
+function updateReplayPlayButtons(playButtonElement: Element)
+{
+    playButtonElement.childNodes.forEach(function (playButtonContentNode) {
+        playButtonContentNode.childNodes.forEach(function (buttonNode) {
+            var buttonElement = buttonNode as Element;
+
+            // Only translate raw text (Play label)
+            if (!buttonElement.tagName && buttonElement.textContent) {
+                buttonElement.textContent = translateMenu(buttonElement.textContent);
+            }
+        })
+    })
+}
+
+function updateUploadDateLabel(uploadLabel: Element)
+{
+    uploadLabel.childNodes.forEach(function (uploadDateNode) {
+        var uploadDateElement = uploadDateNode as Element;
+
+        if (uploadDateElement.textContent)
+        {
+            // Raw text label
+            if (uploadDateElement.tagName == "EM") {
+                uploadDateElement.textContent = translateMenu(uploadDateElement.textContent);
+            }
+            // Actual upload date
+            else if (!uploadDateElement.tagName) {
+                var uploadDate = uploadDateElement.textContent.split(" ");
+
+                // Less than 3 spaces is the elo rating, we don't translate that
+                if (uploadDate.length > 3) {
+                    uploadDateElement.textContent = " " + uploadDate[2].slice(0,-1) // Day (without the comma at the end)
+                        + " " + translateMenu(uploadDate[1]) // Translated Month
+                        + " " + uploadDate[3] // Year
+                        + (uploadDate.length > 4 ? " " + uploadDate[4] + " " : "") // Separator
+                }
             }
         }
     })
@@ -911,7 +1212,7 @@ function updatePokemonResult(newElement: Element)
         else
         {
             // Most likely in EffectDico
-            if (isValidEnglishEffect(textInfoTag.textContent)) {
+            if (isValidEnglishEffect(textInfoTag.textContent.replace(" ", " "))) {
                 textInfoTag.textContent = translateEffect(textInfoTag.textContent.replace(" ", " "));
             }
             // If not, the result could be a stolen/recycled item
@@ -930,6 +1231,62 @@ function updatePokemonResult(newElement: Element)
     }
 }
 
+function translatePossibleBoostOrigin(boostOrigin: string)
+{
+    if (isValidEnglishBoostEffect(boostOrigin)) {
+        return translateBoostEffect(boostOrigin);
+    }
+    else if (isValidEnglishItem(boostOrigin)) {
+        return translateItem(boostOrigin);
+    }
+    else if (isValidEnglishAbility(boostOrigin)) {
+        return translateAbility(boostOrigin);
+    }
+    else if (isValidEnglishWeather(boostOrigin)) {
+        return translateWeather(boostOrigin);
+    }
+    // Default : keep english translation
+    else {
+        return boostOrigin;
+    }
+}
+
+function translatePokemonBattleName(pokemonName: string)
+{
+    // Alternate form could be hidden in team preview (Urshifu for exemple)
+    if (pokemonName.endsWith("-*")) {
+        return translatePokemonName(pokemonName.slice(0,-2)) + "-*"
+    }
+    // Regular Pokémon name
+    else {
+        return translatePokemonName(pokemonName);
+    }
+}
+
+function translateBattleMove(moveName: string)
+{
+    // Could be a Z-move
+    if (moveName.startsWith("Z-")) {
+        return translateMove(moveName.slice(2)) + " Z"
+    }
+    // Regular Pokémon name
+    else {
+        return translateMove(moveName);
+    }
+}
+
+function isValidEnglishBattleMove(moveName: string)
+{
+    // Could be a Z-move
+    if (moveName.startsWith("Z-")) {
+        return isValidEnglishMove(moveName.slice(2))
+    }
+    // Regular Pokémon name
+    else {
+        return isValidEnglishMove(moveName);
+    }
+}
+
 function updateShowdownMessage(messageElement: Element)
 {
     messageElement.childNodes.forEach(function (messagePartNode) {
@@ -945,8 +1302,8 @@ function updateShowdownMessage(messageElement: Element)
                     messagePart.textContent = translatePokemonName(messagePart.textContent);
                 }
                 // Move used
-                else if (isValidEnglishMove(messagePart.textContent)) {
-                    messagePart.textContent = translateMove(messagePart.textContent);
+                else if (isValidEnglishBattleMove(messagePart.textContent)) {
+                    messagePart.textContent = translateBattleMove(messagePart.textContent);
                 }
                 // Specific case : trainer's team
                 else if (messagePart.textContent.endsWith("'s team:")) {
@@ -961,7 +1318,7 @@ function updateShowdownMessage(messageElement: Element)
                 // Translate each Pokémon name
                 for (var i = 0 ; i < splittedTeam.length ; i++)
                 {
-                    translatedTeam += translatePokemonName(splittedTeam[i])
+                    translatedTeam += translatePokemonBattleName(splittedTeam[i])
                         + (i < splittedTeam.length - 1 ? " / " : "");
                 }
 
@@ -975,7 +1332,7 @@ function updateShowdownMessage(messageElement: Element)
     })
 }
 
-function updateCommand(messageElement: Element)
+function updateChatElement(messageElement: Element)
 {
     // Chat message sent by player
     if (isChatMessage(messageElement))
@@ -990,7 +1347,7 @@ function updateCommand(messageElement: Element)
         })
     }
     // Not a message, check if the message could be a command result
-    else if (app.curRoom.chatHistory.lines?.length > 0)
+    else if (app.curRoom?.chatHistory?.lines?.length > 0)
     {
         // Commands are processed on the back-end, so we can't modify the data in order to add french names
         // We could intercept the webSocket message but it seems a bit too hacky
@@ -1110,6 +1467,16 @@ function updateDefaultChatMessage(messageElement: Element)
         else if (messageElement.childElementCount == 1 && messageElement.firstElementChild?.tagName == "SMALL" && messageElement.firstElementChild.textContent) {
             messageElement.firstElementChild.textContent = translateRegexBattleMessage(messageElement.firstElementChild.textContent);
         }
+        // Default (Rating) : Translate raw text element
+        else {
+            messageElement.childNodes.forEach(function (chatNode) {
+                var charElement = chatNode as Element;
+
+                if (charElement.textContent && !charElement.tagName) {
+                    charElement.textContent = translateRegexBattleMessage(charElement.textContent);
+                }
+            })
+        }
     }
 }
 
@@ -1132,11 +1499,103 @@ function updateBattleRules(messageElement: Element)
     })
 }
 
+function translateReplayBattlePage()
+{
+    var replayWrapper = document.getElementsByClassName("replay-wrapper");
+
+    if (replayWrapper.length > 0) {
+        replayWrapper[0].childNodes.forEach(function (replayWrapperNode) {
+            var replayWrapperElement = replayWrapperNode as Element;
+
+            // Download button
+            if (replayWrapperElement.classList?.contains("replayDownloadButton")) {
+                updateActionButton(replayWrapperElement)
+            }
+            // Back to Home button
+            else if (replayWrapperElement.classList?.contains("pfx-backbutton")) {
+                updateActionButton(replayWrapperElement);
+            }
+            // Upload date label
+            else if (replayWrapperElement.tagName == "P" && replayWrapperElement.firstElementChild?.classList?.contains("uploaddate")) {
+                updateUploadDateLabel(replayWrapperElement.firstElementChild);
+            }
+            // Action buttons (Play, Next turn, etc)
+            else if (replayWrapperElement.className == "replay-controls") {
+                replayWrapperElement.childNodes.forEach(function (actionButtonNode) {
+                    var actionButton = actionButtonNode as Element;
+
+                    if (actionButton.tagName == "BUTTON" && actionButton.getAttribute("data-action")) {
+                        updateActionButton(actionButton);
+                    }
+                })
+            }
+            // Options button (Speed, Music, etc)
+            else if (replayWrapperElement.className == "replay-controls-2") {
+                replayWrapperElement.childNodes.forEach(function (chooserButtonNode) {
+                    var chooserButton = chooserButtonNode as Element;
+
+                    if (chooserButton.classList?.contains("chooser")) {
+                        updateReplayChooser(chooserButton);
+                    }
+                })
+            }
+            // Battle element
+            else if (replayWrapperElement.className == "battle") {
+                replayWrapperElement.childNodes.forEach(function (battleNode) {
+                    var battleElement = battleNode as Element;
+
+                    // Actual battle, only translate trainer title (rating)
+                    if (battleElement.className == "innerbattle") {
+                        var trainersElements = battleElement.getElementsByClassName("trainer");
+
+                        for (var i = 0 ; i < trainersElements.length ; i++) {
+                            updateTrainerElement(trainersElements[i]);
+                        }
+                    }
+                    // Battle options (Play button)
+                    else if (battleElement.className == "playbutton") {
+                        updateReplayPlayButtons(battleElement);
+                    }
+                })
+            }
+            // Battle logs element
+            else if (replayWrapperElement.className == "battle-log") {
+                replayWrapperElement.childNodes.forEach(function (battleLogNode) {
+                    var battleLogElement = battleLogNode as Element;
+
+                    if (battleLogElement.classList?.contains("message-log")) {
+                        battleLogElement.childNodes.forEach(function (originalLogNode) {
+                            var originalLog = originalLogNode as Element;
+
+                            // Battle rules
+                            if (originalLog.className == "") {
+                                updateBattleRules(originalLog);
+                            }
+                            // Rated battle label
+                            else if (originalLog.className == "rated") {
+                                updateRatedBattle(originalLog);
+                            }
+                            // Showdown battle message
+                            else if (originalLog.classList?.contains("battle-history")) {
+                                updateShowdownMessage(originalLog);
+                            }
+                            // Default : chat message
+                            else {
+                                updateChatElement(originalLog);
+                            }
+                        })
+                    }
+                })
+            }
+        })   
+    }
+}
+
 function translateBattleHomePage()
 {
     var battlePage = document.querySelectorAll('*[id^="room-battle-"]');
 
-    if (battlePage.length) {
+    if (battlePage.length > 0) {
         battlePage[0].childNodes.forEach(function (battleNode) {
             var battleElement = battleNode as Element;
 
@@ -1195,10 +1654,23 @@ function updateTurnCounter(turnCounterElement: Element)
     }
 }
 
+function updateRatedBattle(ratedBattleElement: Element)
+{
+    var ratedTextElement = ratedBattleElement.firstElementChild;
+
+    if (ratedTextElement?.textContent
+        && ratedTextElement.tagName == "STRONG"
+        && ratedTextElement.childElementCount == 0)
+    {
+        // Translate strong child
+        ratedTextElement.textContent = translateMenu(ratedTextElement.textContent);
+    }
+}
+
 function getCurrentDisplayedInfo(infoTitle: string)
 {
     if (infoTitle.includes("HP")) {
-        return STATS;
+        return HP;
     }
     else if (infoTitle.includes("Ability")) {
         return ABILITY;
