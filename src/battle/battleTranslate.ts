@@ -309,8 +309,30 @@ function updatePokemonTooltip(tooltip: Element)
                 {
                     if (pokemonInfo.textContent)
                     {
-                        if (pokemonInfo.textContent.includes("(")) {
-                            pokemonInfo.textContent = "(" + translatePokemonName(pokemonInfo.textContent.slice(1,-1)) + ")";
+                        if (pokemonInfo.textContent.includes("("))
+                        {
+                            var parenthesisContent = pokemonInfo.textContent.slice(1,-1);
+
+                            // Alternate form
+                            if (isValidEnglishPokemonName(parenthesisContent)) {
+                                parenthesisContent = translatePokemonName(parenthesisContent);
+                            }
+                            // Transformed Pokémon 
+                            else if (parenthesisContent.startsWith("Transformed into ")) {
+                                parenthesisContent = translateMenu("Transformed into ")
+                                    + translatePokemonName(parenthesisContent.replace("Transformed into ", ""));
+                            }
+                            // New forme
+                            else if (parenthesisContent.startsWith("Changed forme: ")) {
+                                parenthesisContent = translateMenu("Changed forme: ")
+                                    + translatePokemonName(parenthesisContent.replace("Changed forme: ", ""));
+                            }
+                            // Default try to transalte as Menu element
+                            else {
+                                parenthesisContent = translateMenu(parenthesisContent);
+                            }
+
+                            pokemonInfo.textContent = "(" + parenthesisContent + ")";
                         }
                         else {
                             pokemonInfo.textContent = pokemonInfo.textContent.replace("L","N");
@@ -340,17 +362,34 @@ function updatePokemonTooltip(tooltip: Element)
                 var moveElement = moveNode as Element;
 
                 // Every non-small or line break element is a move
-                if (!["BR", "SMALL"].includes(moveElement.tagName) && moveElement.textContent) {
-                    if (moveElement.textContent.slice(-1) == " ") {
-                        moveElement.textContent = "• " + translateMove(moveElement.textContent.slice(2,-1)) + " ";
+                if (!["BR", "SMALL"].includes(moveElement.tagName) && moveElement.textContent)
+                {
+                    // Some moves have a • character at the beginning of their name
+                    if (moveElement.textContent.startsWith("• ")) {
+                        if (moveElement.textContent.endsWith(" ")) {
+                            moveElement.textContent = "• " + translateMove(moveElement.textContent.slice(2,-1)) + " ";
+                        }
+                        else {
+                            moveElement.textContent = "• " + translateMove(moveElement.textContent.slice(2));
+                        }
                     }
-                    else {
-                        moveElement.textContent = "• " + translateMove(moveElement.textContent.slice(2));
+                    // Some moves have the • character in another tag, but the space is still there
+                    else if (moveElement.textContent.startsWith(" ")) {
+                        if (moveElement.textContent.endsWith(" ")) {
+                            moveElement.textContent = " " + translateMove(moveElement.textContent.slice(1,-1)) + " ";
+                        }
+                        else {
+                            moveElement.textContent = " " + translateMove(moveElement.textContent.slice(1));
+                        }
+                    }
+                    // Move-related message (Zoroark)
+                    else if (moveElement.textContent.startsWith("(")) {
+                        moveElement.textContent = translateMenu(moveElement.textContent);
                     }
                 }
             })
         }
-        // Sub infos (Item, Ability, Moves, etc)
+        // Sub infos (Item, Ability, etc)
         else if (tooltipContent.tagName == "P")
         {
             var currentDisplayedInfo = UNKNOWN;
@@ -405,15 +444,22 @@ function updatePokemonTooltip(tooltip: Element)
                     // Ability
                     else if (currentDisplayedInfo == ABILITY)
                     {
-                        if (tooltipSubInfoElement.textContent.includes(" / ")) {
-                            // Remove all styling, translate the ability and reformat it
-                            tooltipSubInfoElement.textContent = " " + translateAbility(tooltipSubInfoElement.textContent
-                                .replace(" / ","")
-                                .slice(1)) + " / ";
+                        // Changed Ability (through Transform for example)
+                        if (tooltipSubInfoElement.textContent.includes(" (base: ")) {
+                            var abilities = tooltipSubInfoElement.textContent.split(" (base: ");
+
+                            tooltipSubInfoElement.textContent = " " + translateAbility(abilities[0].slice(1)) // Current Ability
+                                + translateMenu(" (base: ") // Separator
+                                + translateAbility(abilities[1].slice(0,-1)) + ")"
                         }
-                        else
-                        {
-                            // Just remove the space
+                        // Ability is on the same line as Item for the switches tooltips so it ends with " / "
+                        // Remove all styling, translate the ability and reformat it
+                        else if (tooltipSubInfoElement.textContent.includes(" / ")) { 
+                            tooltipSubInfoElement.textContent = " " + translateAbility(
+                                tooltipSubInfoElement.textContent.replace(" / ","").slice(1)) + " / ";
+                        }
+                        // Just remove the space at the beginning
+                        else {
                             tooltipSubInfoElement.textContent = " " + translateAbility(tooltipSubInfoElement.textContent.slice(1))
                         }
                     }
