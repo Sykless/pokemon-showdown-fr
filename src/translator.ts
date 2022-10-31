@@ -4873,6 +4873,8 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"[Invalid choice] There's nothing to cancel": "[Choix invalide] Il n'y a rien à annuler",
 	"[Unavailable choice] Can't switch: The active Pokémon is trapped": "[Choix indisponible] Impossible de switcher : le Pokémon actif est piégé !",
 	"Challenge cancelled because they changed their username.": "Défi annulé car l'adversaire a changé son pseudo.",
+	"This room is already public.": "Ce salon est déjà public.",
+	"This room is already hidden.": "Ce salon est déjà masqué.",
 	"Go! ": "En avant ! ",
 	")!": ") !",
 	"!": " !",
