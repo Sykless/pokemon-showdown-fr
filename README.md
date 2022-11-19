@@ -3,8 +3,11 @@
 # Pokémon Showdown FR
 
 ### Installation
+#### Chrome
+Se rendre sur la page [Pokémon Showdown FR](https://chrome.google.com/webstore/detail/pok%C3%A9mon-showdown-fr/jfnmkihlclfepcjmfeobaijabammoegd) et cliquer sur "Ajouter à Chrome". C'est tout !
 
-Se rendre sur la page [Pokémon Showdown FR](placeholder) et cliquer sur "Ajouter à Chrome". C'est tout !
+#### Firefox
+Se rendre sur la page [Pokémon Showdown FR](https://addons.mozilla.org/fr/firefox/addon/pok%C3%A9mon-showdown-fr/) et cliquer sur "Ajouter à Firefox". C'est tout !
 
 ### Demande de modifications 
 
