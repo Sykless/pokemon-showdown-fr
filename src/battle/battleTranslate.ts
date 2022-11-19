@@ -63,7 +63,7 @@ function onMutation(mutations: MutationRecord[])
                 // so instead we add a boolean that changes when no match is found
                 var translatedElement = true;
 
-                console.log(newElement.outerHTML);
+                // console.log(newElement.outerHTML);
 
                 if (newElement.id)
                 {
@@ -848,6 +848,10 @@ function updateControlPanel(newElement: Element)
                                 if (mechanicElement.textContent && (!mechanicElement.tagName || mechanicElement.tagName == "STRONG")) {
                                     mechanicElement.textContent = translateMenu(mechanicElement.textContent);
                                 }
+                                // Terastallize type
+                                else if (mechanicElement.tagName == "IMG") {
+                                    updatePokemonTypeSprite(mechanicElement as HTMLImageElement);
+                                }
                             })
                         }
                     })
@@ -1225,7 +1229,7 @@ function updatePokemonResult(newElement: Element)
                 textInfoTag.textContent = boostedStat[0].replace("already ", "déjà ") + " " + translateStat(boostedStat[1]);
             }
             else {
-                console.log("Unknown result " + newElement.outerHTML)
+                // console.log("Unknown result " + newElement.outerHTML)
             }
         }
     }

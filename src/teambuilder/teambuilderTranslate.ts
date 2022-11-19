@@ -102,7 +102,7 @@ function onMutation(mutations: MutationRecord[])
 				var parentElement = mutations[i].target as Element;
 				var elementClasses = newElement.classList;
 
-				console.log(newElement.outerHTML);
+				// console.log(newElement.outerHTML);
 
 				// Teambuilder home : teams list
 				// Teampane element is only updated on page init, so we need to check the children mutations
