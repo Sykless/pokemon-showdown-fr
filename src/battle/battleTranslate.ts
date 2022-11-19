@@ -848,6 +848,10 @@ function updateControlPanel(newElement: Element)
                                 if (mechanicElement.textContent && (!mechanicElement.tagName || mechanicElement.tagName == "STRONG")) {
                                     mechanicElement.textContent = translateMenu(mechanicElement.textContent);
                                 }
+                                // Terastallize type
+                                else if (mechanicElement.tagName == "IMG") {
+                                    updatePokemonTypeSprite(mechanicElement as HTMLImageElement);
+                                }
                             })
                         }
                     })
