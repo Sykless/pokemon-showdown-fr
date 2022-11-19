@@ -5543,14 +5543,14 @@ export function translateRegexMessage(originalString: string, translationType: n
     }
     // The message probably contains a variable english name (Pokémon name, move, etc)
     else  {
-        console.log("Regex message : " + originalString);
+        // console.log("Regex message : " + originalString);
 
         // Use a Regex match in order to translate the message
         var translated = translateRegex(originalString, translationType);
 
         if (translated.length > 0)
         {
-			console.log("Translated Regex message : " + translated[1]);
+			// console.log("Translated Regex message : " + translated[1]);
 
             var englishMessage = translated[0].source.split("(.*)");
             var variablesToTranslate = translated[1].match(/{(.*?)}/g);

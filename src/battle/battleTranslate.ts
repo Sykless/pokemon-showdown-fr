@@ -63,7 +63,7 @@ function onMutation(mutations: MutationRecord[])
                 // so instead we add a boolean that changes when no match is found
                 var translatedElement = true;
 
-                console.log(newElement.outerHTML);
+                // console.log(newElement.outerHTML);
 
                 if (newElement.id)
                 {
@@ -1229,7 +1229,7 @@ function updatePokemonResult(newElement: Element)
                 textInfoTag.textContent = boostedStat[0].replace("already ", "déjà ") + " " + translateStat(boostedStat[1]);
             }
             else {
-                console.log("Unknown result " + newElement.outerHTML)
+                // console.log("Unknown result " + newElement.outerHTML)
             }
         }
     }
