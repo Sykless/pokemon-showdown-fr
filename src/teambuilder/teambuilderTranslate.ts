@@ -1814,7 +1814,11 @@ function updateInputPokemonName()
 
 function convertPokemonNameToArray(pokemonName: string)
 {
-	const HyphenPokemonName = ["nidoran-f", "nidoran-d", "ho-oh", "porygon-z", "jangmo-o", "hakamo-o", "kommo-o", "ama-ama"]
+	const HyphenPokemonName = ["nidoran-f", "nidoran-m", "ho-oh", "porygon-z", "jangmo-o", "hakamo-o", "kommo-o", "ama-ama", "tag-tag",
+		"fort-ivoire", "fongus-furie", "pelage-sable", "hurle-queue", "flotte-meche", "rampe-ailes", "rugit-lune"]
+
+	const TwoHyphenPokemonName = ["roue-de-fer", "mite-de-fer", "paume-de-fer", "tetes-de-fer", "epine-de-fer", "hotte-de-fer", "garde-de-fer"]
+		
 	var pokemonRawName = pokemonName.split("-");
 
 	if (pokemonRawName.length == 1)
@@ -1825,15 +1829,23 @@ function convertPokemonNameToArray(pokemonName: string)
 	else
 	{
 		// Check if the "-" is present because there was one in the base name
-		var possibleHyphenPokemon = pokemonRawName[0] + "-" + pokemonRawName[1];
 		var basePokemonName = "";
 
-		if (HyphenPokemonName.includes(removeDiacritics(possibleHyphenPokemon.toLowerCase()))) {
+		if (HyphenPokemonName.includes(removeDiacritics((pokemonRawName[0] + "-" + pokemonRawName[1]).toLowerCase()))) {
 			// There is a "-" in the base Pokémon name
-			basePokemonName = possibleHyphenPokemon;
+			basePokemonName = pokemonRawName[0] + "-" + pokemonRawName[1];
 
 			// If the only "-" in the whole name was in the raw name, there is no alternate form
 			if (pokemonRawName.length == 2) {
+				return [basePokemonName, ""];
+			}
+		}
+		else if (TwoHyphenPokemonName.includes(removeDiacritics((pokemonRawName[0] + "-" + pokemonRawName[1] + "-" + pokemonRawName[2]).toLowerCase()))) {
+			// There is a "-" in the base Pokémon name
+			basePokemonName = pokemonRawName[0] + "-" + pokemonRawName[1] + "-" + pokemonRawName[2];
+
+			// If the only "-" in the whole name was in the raw name, there is no alternate form
+			if (pokemonRawName.length == 3) {
 				return [basePokemonName, ""];
 			}
 		}
