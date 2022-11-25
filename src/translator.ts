@@ -4468,6 +4468,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Happiness": "Bonheur",
 	"Dmax Level": "Niv. Dmax",
 	"HP Type": "Type PC",
+	"Tera Type": "Type Téracristal",
 	"Hidden Power": "Pui. Cachée",
 	"Pokeball": "Ball",
 	"Genderless": "Asexué",

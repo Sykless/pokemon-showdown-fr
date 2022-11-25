@@ -1684,16 +1684,17 @@ function updatePokemonDetails(buttonDetailsElement: Element)
 {
 	buttonDetailsElement.childNodes.forEach(function (detailsContentNode) {
 		if (detailsContentNode.textContent) {
-			detailsContentNode.textContent = translateMenu(detailsContentNode.textContent);
-
 			// Translate Hidden Power type
-			if (detailsContentNode.textContent == "Type PC") {
-				var hiddenPowerType = detailsContentNode.nextSibling;
+			if (["HP Type", "Tera Type"].includes(detailsContentNode.textContent)) {
+				var typeNode = detailsContentNode.nextSibling;
 				
-				if (hiddenPowerType?.textContent) {
-					hiddenPowerType.textContent = translateType(hiddenPowerType.textContent);
+				if (typeNode?.textContent) {
+					typeNode.textContent = translateType(typeNode.textContent);
 				}
 			}
+
+			// Regular menu or parameter
+			detailsContentNode.textContent = translateMenu(detailsContentNode.textContent);
 		}
 	})
 }
@@ -1713,10 +1714,13 @@ function updatePokemonDetailsForm(resultElement: Element)
 
 				if (detailsElement.tagName == "LABEL")
 				{
-					if (detailsNode.textContent)
-					{
-						// Labels have a ":" character at the end, so we remove it and put it back again
-						detailsNode.textContent = translateMenu(detailsNode.textContent.slice(0,-1)) + " :"
+					// Override normal translation because it's too long
+					if (detailsNode.textContent == "Tera Type:") {
+						detailsNode.textContent = "Type Téracr. : ";
+					}
+					// Labels have a ":" character at the end, so we remove it and put it back again
+					else if (detailsNode.textContent) {
+						detailsNode.textContent = translateMenu(detailsNode.textContent.slice(0,-1)) + " : "
 					}
 				}
 				else if (detailsElement.tagName == "DIV")
@@ -1746,7 +1750,7 @@ function updatePokemonDetailsForm(resultElement: Element)
 								if (detailsSelect.name == "pokeball") {
 									detailsSelect.options[i].text = translateItem(detailsSelect.options[i].text);
 								}
-								else if (detailsSelect.name == "hptype") {
+								else if (["hptype", "teratype"].includes(detailsSelect.name)) {
 									detailsSelect.options[i].text = translateType(detailsSelect.options[i].text);
 								}
 							}
