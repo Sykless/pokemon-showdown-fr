@@ -15,6 +15,8 @@ const FILTER = 13;
 const POPUPMESSAGE = 14;
 const LOGMESSAGE = 15;
 
+export const DEBUG = true;
+
 export const PLAY_SHOWDOWN_HOST = "play.pokemonshowdown.com";
 export const REPLAYS_SHOWDOWN_HOST = "replay.pokemonshowdown.com";
 
@@ -5193,10 +5195,6 @@ function translateToFrench(englishWord: string, translationType: number)
 		return frenchWord;
 	}
 	else {
-		if (!isValidFrenchWord_NoLog(englishWord, translationType)){
-			console.log("Unable to translate english " + LogTranslationType[translationType] + " : " + englishWord);
-		}
-		
 		return englishWord;
 	}
 }
@@ -5215,20 +5213,12 @@ function translateToEnglish(frenchWord: string, translationType: number)
 		return englishWord;
 	}
 	else {
-		if (!isValidEnglishWord(frenchWord, translationType)) {
-			console.log("Unable to translate french " + LogTranslationType[translationType] + " : " + frenchWord);
-		}
-		
 		return frenchWord;
 	}
 }
 
 function isValidFrenchWord(frenchWord: string, translationType: number) {
 	return translateToEnglish(frenchWord, translationType) != frenchWord
-}
-
-function isValidFrenchWord_NoLog(frenchWord: string, translationType: number) {
-	return Object.keys(MainDico[translationType]).find(key => MainDico[translationType][key] === frenchWord) != frenchWord
 }
 
 function isValidEnglishWord(englishWord: string, translationType: number) {
@@ -5543,14 +5533,14 @@ export function translateRegexMessage(originalString: string, translationType: n
     }
     // The message probably contains a variable english name (Pokémon name, move, etc)
     else  {
-        // console.log("Regex message : " + originalString);
+        if (DEBUG) console.log("Regex message : " + originalString);
 
         // Use a Regex match in order to translate the message
         var translated = translateRegex(originalString, translationType);
 
         if (translated.length > 0)
         {
-			// console.log("Translated Regex message : " + translated[1]);
+			if (DEBUG) console.log("Translated Regex message : " + translated[1]);
 
             var englishMessage = translated[0].source.split("(.*)");
             var variablesToTranslate = translated[1].match(/{(.*?)}/g);

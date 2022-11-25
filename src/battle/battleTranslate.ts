@@ -1,4 +1,4 @@
-import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, isValidEnglishMenu, isValidEnglishAbility, isValidEnglishWeather, isValidEnglishBoostEffect, translateBoostEffect } from "../translator";
+import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, isValidEnglishMenu, isValidEnglishAbility, isValidEnglishWeather, isValidEnglishBoostEffect, translateBoostEffect, DEBUG } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 import { PLAY_SHOWDOWN_HOST, REPLAYS_SHOWDOWN_HOST } from "../translator";
 
@@ -63,7 +63,7 @@ function onMutation(mutations: MutationRecord[])
                 // so instead we add a boolean that changes when no match is found
                 var translatedElement = true;
 
-                // console.log(newElement.outerHTML);
+                if (DEBUG) console.log(newElement.outerHTML);
 
                 if (newElement.id)
                 {
@@ -1229,7 +1229,7 @@ function updatePokemonResult(newElement: Element)
                 textInfoTag.textContent = boostedStat[0].replace("already ", "déjà ") + " " + translateStat(boostedStat[1]);
             }
             else {
-                // console.log("Unknown result " + newElement.outerHTML)
+                console.log("Unknown result " + newElement.outerHTML)
             }
         }
     }

@@ -1,4 +1,4 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, MovesShortDescDico, ItemsShortDescDico, AbilitiesShortDescDico, ItemsLongDescDico, AliasDico, translateRawElement } from '../translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, MovesShortDescDico, ItemsShortDescDico, AbilitiesShortDescDico, ItemsLongDescDico, AliasDico, translateRawElement, DEBUG } from '../translator';
 	
 import { isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
 
@@ -102,7 +102,7 @@ function onMutation(mutations: MutationRecord[])
 				var parentElement = mutations[i].target as Element;
 				var elementClasses = newElement.classList;
 
-				// console.log(newElement.outerHTML);
+				if (DEBUG) console.log(newElement.outerHTML);
 
 				// Teambuilder home : teams list
 				// Teampane element is only updated on page init, so we need to check the children mutations
@@ -1413,7 +1413,7 @@ function updateHeader(headerElement: Element)
 	}
 	else if (!headerElement.classList.contains("result"))
 	{
-		// console.log("Unknown header element : " + headerElement.outerHTML);
+		if (DEBUG) console.log("Unknown header element : " + headerElement.outerHTML);
 	}
 }
 
@@ -1493,7 +1493,7 @@ function updateMoveAbilityFilter(resultElement: Element)
 	}
 	else if (!resultElement.classList.contains("result"))
 	{
-		// console.log("Unknown filter element in results : " + resultElement.outerHTML);
+		if (DEBUG) console.log("Unknown filter element in results : " + resultElement.outerHTML);
 	}
 }
 
@@ -1525,7 +1525,7 @@ function updateFilterElement(filterNode: Element)
 		filterButtonTag.textContent = translateMenu(filterButtonTag.textContent);
 	}
 	else {
-		// console.log("Unkown filter element : " + filterNode.outerHTML);
+		if (DEBUG) console.log("Unkown filter element : " + filterNode.outerHTML);
 	}
 }
 
@@ -1867,7 +1867,7 @@ function getDisplayedDataType(element: Element)
 					displayedDataType = attribute.split("|")[0];
 				}
 				else {
-					// console.log("No data-entry present in tag : " + childResult.outerHTML);
+					if (DEBUG) console.log("No data-entry present in tag : " + childResult.outerHTML);
 				}
 			}
 			// The result child is a header
@@ -1878,7 +1878,7 @@ function getDisplayedDataType(element: Element)
 	}
 	else
 	{
-		// console.log("Unknown result element : " + element.outerHTML);
+		if (DEBUG) console.log("Unknown result element : " + element.outerHTML);
 	}
 	
 	return displayedDataType;
