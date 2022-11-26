@@ -260,6 +260,7 @@ RegexLogMessagesMap.set(/(.*)'s (.*) fell!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON}
 RegexLogMessagesMap.set(/(.*)'s (.*) fell harshly!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} baisse beaucoup !");
 RegexLogMessagesMap.set(/(.*)'s (.*) fell severely!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} baisse énormément !");
 RegexLogMessagesMap.set(/(.*)'s (.*) won't go any lower!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} ne peut plus baisser !");
+RegexLogMessagesMap.set(/(.*)'s (.*) was heightened!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} est renforcée !");
 
 // POKEMON
 RegexLogMessagesMap.set(/Go! (.*) \(/, "En avant ! {POKEMON} (");
@@ -310,6 +311,8 @@ RegexLogMessagesMap.set(/(.*) restored PP to its move (.*) using its Leppa Berry
 RegexLogMessagesMap.set(/(.*) restored PP to its (.*) move using Mystery Berry!/, "La Baie Mystère du {POKEMON} restaure les PP de sa capacité {MOVE} !");
 RegexLogMessagesMap.set(/(.*) protected itself with its Protective Pads!/, "{POKEMON} évite l'effet grâce à son Pare-Effet !");
 RegexLogMessagesMap.set(/(.*) is not affected by (.*) thanks to its Safety Goggles!/, "{POKEMON} est protégé de la capacité {MOVE} par ses Lunettes Filtre !");
+RegexLogMessagesMap.set(/(.*) used its Booster Energy to activate its Quark Drive!/, "{POKEMON} a activé Charge Quantique grâce à son Énergie Booster !");
+RegexLogMessagesMap.set(/(.*) used its Booster Energy to activate Protosynthesis!/, "{POKEMON} a activé Paléosynthèse grâce à son Énergie Booster !");
 
 // MOVES
 RegexLogMessagesMap.set(/Pointed stones float in the air around (.*)!/, "Des pierres pointues lévitent autour de {TEAM} !");
@@ -591,6 +594,19 @@ RegexLogMessagesMap.set(/(.*) is loafing around!/, "{POKEMON} paresse !");
 RegexLogMessagesMap.set(/(.*) is radiating a blazing aura!/, "{POKEMON} dégage une aura de flammes incandescentes !");
 RegexLogMessagesMap.set(/(.*) is too nervous to eat Berries!/, "{TEAM} est tendue et ne peut plus manger de Baies !");
 RegexLogMessagesMap.set(/(.*) extends (.*) by 2 turns!/, "{POKEMON} prolonge {MOVE} de 2 tours !");
+RegexLogMessagesMap.set(/The harsh sunlight activated (.*)'s Protosynthesis!/, "{POKEMON} a activé Paléosynthèse grâce au soleil qui brille intensément !");
+RegexLogMessagesMap.set(/The Electric Terrain activated (.*)'s Quark Drive!/, "{POKEMON} a activé Charge Quantique grâce au champ électrifié !");
+RegexLogMessagesMap.set(/(.*) turned the sunlight harsh, sending its ancient pulse into a frenzy!/, "{POKEMON} intensifie les rayons du soleil et libère l'énergie d'une pulsation primitive !");
+RegexLogMessagesMap.set(/(.*) basked in the sunlight, sending its ancient pulse into a frenzy!/, "{POKEMON} tire profit des rayons du soleil et libère l'énergie d'une pulsation primitive !");
+RegexLogMessagesMap.set(/(.*) turned the ground into Electric Terrain, energizing its futuristic engine!/, "{POKEMON} crée un champ électrifié et active une machine du futur !");
+RegexLogMessagesMap.set(/(.*) used the Electric Terrain to energize its futuristic engine!/, "{POKEMON} active une machine du futur grâce au champ électrifié !");
+RegexLogMessagesMap.set(/(.*)'s Beads of Ruin weakened the Sp. Def of all surrounding Pokémon!/, "Les Perles du Fléau de {POKEMON} affaiblissent la Défense Spéciale des Pokémon alentour !");
+RegexLogMessagesMap.set(/(.*)'s Sword of Ruin weakened the Defense of all surrounding Pokémon!/, "L'Épée du Fléau de {POKEMON} affaiblit la Défense des Pokémon alentour !");
+RegexLogMessagesMap.set(/(.*)'s Tablets of Ruin weakened the Attack of all surrounding Pokémon!/, "Le Bois du Fléau de {POKEMON} affaiblit l'Attaque des Pokémon alentour !");
+RegexLogMessagesMap.set(/(.*)'s Vessel of Ruin weakened the Sp. Atk of all surrounding Pokémon!/, "L'Urne du Fléau de {POKEMON} affaiblit l'Attaque Spéciale des Pokémon alentour !");
+RegexLogMessagesMap.set(/The effects of (.*)'s (.*) wore off!/, "L'effet du talent {SWAP_1_ABILITY} de {SWAP_0_POKEMON} s'est dissipé !");
+RegexLogMessagesMap.set(/Being hit by (.*) charged (.*) with power!/, "{SWAP_1_POKEMON} a été touché par la capacité {SWAP_0_MOVE} et se charge en électricité !");
+RegexLogMessagesMap.set(/A lingering aroma clings to (.*)!/, "Une odeur tenace imprègne {POKEMON} !");
 
 // MISC
 RegexLogMessagesMap.set(/(.*) moved to the center!/, "{POKEMON} s'est déplacé au milieu !");

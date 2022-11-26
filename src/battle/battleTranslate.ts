@@ -1198,9 +1198,15 @@ function updatePokemonCondition(newElement: Element)
             var buffStatSplit = newElement.textContent.split(" ")
             newElement.textContent = buffStatSplit[0] + " " + translateStat(buffStatSplit[1]);
         }
+        // Boost from Paradox ability
+        else if (newElement.textContent.includes(": ")) {
+            // Translate stat
+            var buffStatSplit = newElement.textContent.split(": ");
+            newElement.textContent = translateAbility(buffStatSplit[0].replace(" ", " ")) + ": " + translateStat(buffStatSplit[1]);
+        }
         // Status condition
         else {
-            newElement.textContent = translateEffect(newElement.textContent.replace(" ", " "));
+            newElement.textContent = translateEffect(newElement.textContent.replace(/ /g, " "));
         }
     }
 }
