@@ -542,6 +542,7 @@ RegexLogMessagesMap.set(/(.*) braced itself!/, "{POKEMON} se prépare à encaiss
 RegexLogMessagesMap.set(/(.*) endured the hit!/, "{POKEMON} encaisse les coups !");
 RegexLogMessagesMap.set(/(.*) fell for the feint!/, "{POKEMON s'est fait avoir par une ruse !");
 RegexLogMessagesMap.set(/(.*) got trapped by a snap trap/, "{POKEMON} est tombé dans un Troquenard !");
+RegexLogMessagesMap.set(/(.*) became covered in salt!/, "{POKEMON} est couvert de sel !");
 
 // ABILITIES
 RegexLogMessagesMap.set(/(.*) was hurt!/, "{POKEMON} est blessé !");
@@ -5076,6 +5077,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"But nothing happened!": "Mais rien ne se passe !",
 	"Everyone is caught up in the happy atmosphere!": "L'ambiance est euphorique !",
 	"A bell chimed!": "Un grelot sonne !",
+	"Tidying up complete!": "Le grand nettoyage est terminé !",
 	"Coins were scattered everywhere!": "Une pluie de pièces !",
 	"All Pokémon that heard the song will faint in three turns!": "Tous les Pokémon ayant entendu le Requiem seront KO après trois tours.",
 	"All STATUS changes are eliminated!": "Les changements de STATUT ont tous été annulés !",
