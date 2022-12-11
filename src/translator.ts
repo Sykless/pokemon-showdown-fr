@@ -5087,6 +5087,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Changed to Shield Forme!": "Passage en Forme Parade !",
 	"Zen Mode triggered!": "Mode Transe !",
 	"Zen Mode ended!": "Mode Normal !",
+	"(Since gen 7, Dark is immune to Prankster moves.)": "(Depuis la Génération 7, le type Ténèbres est immunisé à Farceur.)",
 	"When the flame touched the powder on the Pokémon, it exploded!": "La Nuée de Poudre entre en réaction avec la flamme et explose !",
 	"Its disguise served it as a decoy!": "Le déguisement absorbe l'attaque !",
 	"But it failed!": "Mais cela échoue !",
