@@ -2195,7 +2195,7 @@ export const AbilitiesDico: { [englishName: string]: string; } = {
     "Cloud Nine": "Ciel Gris",
     "Compound Eyes": "Oeil Composé",
     "Insomnia": "Insomnia",
-    "Color Change": "Déguisement",
+    "Color Change": "Homochromie",
     "Immunity": "Vaccin",
     "Flash Fire": "Torche",
     "Shield Dust": "Écran Poudre",
