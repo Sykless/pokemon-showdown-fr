@@ -270,6 +270,7 @@ RegexLogMessagesMap.set(/(.*) will use (.*) at your (.*)\./, "{POKEMON_1} va uti
 RegexLogMessagesMap.set(/(.*) will use (.*) at (.*)\./, "{POKEMON_1} va utiliser {MOVE} sur {POKEMON_2}.");
 RegexLogMessagesMap.set(/(.*) will use (.*)\./, "{POKEMON_1} va utiliser {MOVE}.");
 RegexLogMessagesMap.set(/(.*) will Dynamax, then use (.*)\./, "{POKEMON} va Dynamaxer, puis utiliser {MOVE}.");
+RegexLogMessagesMap.set(/(.*) will Mega Evolve, then use (.*)\./, "{POKEMON} va Méga-Évoluer, puis utiliser {MOVE}.");
 RegexLogMessagesMap.set(/(.*) will Terastallize, then use (.*)\./, "{POKEMON} va Téracristalliser, puis utiliser {MOVE}.");
 RegexLogMessagesMap.set(/(.*) sent out (.*) \(/, "{TRAINER} a envoyé {POKEMON} (");
 RegexLogMessagesMap.set(/(.*) sent out /, "{TRAINER} a envoyé ");
