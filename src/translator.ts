@@ -4497,6 +4497,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Dmax Level": "Niv. Dmax",
 	"HP Type": "Type PC",
 	"Tera Type": "Type Téracristal",
+	"Terastallized": "Téracristallisé",
 	"Hidden Power": "Pui. Cachée",
 	"Pokeball": "Ball",
 	"Genderless": "Asexué",
