@@ -1,4 +1,4 @@
-import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, isValidEnglishMenu, isValidEnglishAbility, isValidEnglishWeather, isValidEnglishBoostEffect, translateBoostEffect } from "../translator";
+import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, isValidEnglishMenu, isValidEnglishAbility, isValidEnglishWeather, isValidEnglishBoostEffect, translateBoostEffect, DEBUG } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 import { PLAY_SHOWDOWN_HOST, REPLAYS_SHOWDOWN_HOST } from "../translator";
 
@@ -63,7 +63,7 @@ function onMutation(mutations: MutationRecord[])
                 // so instead we add a boolean that changes when no match is found
                 var translatedElement = true;
 
-                // console.log(newElement.outerHTML);
+                if (DEBUG) console.log(newElement.outerHTML);
 
                 if (newElement.id)
                 {
@@ -304,40 +304,53 @@ function updatePokemonTooltip(tooltip: Element)
                 if (pokemonInfo.tagName == "IMG") {
                     updatePokemonTypeSprite(pokemonInfo as HTMLImageElement);
                 }
-                // Level/Alternate form
+                // Level/Alternate form/Tera Type
                 else if (pokemonInfo.tagName == "SMALL")
                 {
-                    if (pokemonInfo.textContent)
-                    {
-                        if (pokemonInfo.textContent.includes("("))
+                    pokemonInfo.childNodes.forEach(function (pokemonSubInfoNode) {
+                        var pokemonSubInfo = pokemonSubInfoNode as Element;
+
+                        // Tera Type sprite
+                        if (pokemonSubInfo.tagName == "IMG") {
+                            updatePokemonTypeSprite(pokemonSubInfo as HTMLImageElement);
+                        }
+                        // Text content
+                        else if (pokemonSubInfo.textContent)
                         {
-                            var parenthesisContent = pokemonInfo.textContent.slice(1,-1);
+                            if (pokemonSubInfo.textContent.startsWith("(") && pokemonSubInfo.textContent.endsWith(")"))
+                            {
+                                var parenthesisContent = pokemonSubInfo.textContent.slice(1,-1);
 
-                            // Alternate form
-                            if (isValidEnglishPokemonName(parenthesisContent)) {
-                                parenthesisContent = translatePokemonName(parenthesisContent);
+                                // Alternate form
+                                if (isValidEnglishPokemonName(parenthesisContent)) {
+                                    parenthesisContent = translatePokemonName(parenthesisContent);
+                                }
+                                // Transformed Pokémon 
+                                else if (parenthesisContent.startsWith("Transformed into ")) {
+                                    parenthesisContent = translateMenu("Transformed into ")
+                                        + translatePokemonName(parenthesisContent.replace("Transformed into ", ""));
+                                }
+                                // New forme
+                                else if (parenthesisContent.startsWith("Changed forme: ")) {
+                                    parenthesisContent = translateMenu("Changed forme: ")
+                                        + translatePokemonName(parenthesisContent.replace("Changed forme: ", ""));
+                                }
+                                // Default try to transalte as Menu element
+                                else {
+                                    parenthesisContent = translateMenu(parenthesisContent);
+                                }
+
+                                pokemonSubInfo.textContent = "(" + parenthesisContent + ")";
                             }
-                            // Transformed Pokémon 
-                            else if (parenthesisContent.startsWith("Transformed into ")) {
-                                parenthesisContent = translateMenu("Transformed into ")
-                                    + translatePokemonName(parenthesisContent.replace("Transformed into ", ""));
+                            // Tera Type label
+                            else if (pokemonSubInfo.textContent == "(Tera Type: ") {
+                                pokemonSubInfo.textContent = "(" + translateMenu("Tera Type") + " : ";
                             }
-                            // New forme
-                            else if (parenthesisContent.startsWith("Changed forme: ")) {
-                                parenthesisContent = translateMenu("Changed forme: ")
-                                    + translatePokemonName(parenthesisContent.replace("Changed forme: ", ""));
-                            }
-                            // Default try to transalte as Menu element
                             else {
-                                parenthesisContent = translateMenu(parenthesisContent);
+                                pokemonSubInfo.textContent = pokemonSubInfo.textContent.replace("L","N");
                             }
-
-                            pokemonInfo.textContent = "(" + parenthesisContent + ")";
                         }
-                        else {
-                            pokemonInfo.textContent = pokemonInfo.textContent.replace("L","N");
-                        }
-                    }
+                    })
                 }
                 // Pokémon name
                 else if (pokemonInfo.tagName != "BR")
@@ -1198,9 +1211,15 @@ function updatePokemonCondition(newElement: Element)
             var buffStatSplit = newElement.textContent.split(" ")
             newElement.textContent = buffStatSplit[0] + " " + translateStat(buffStatSplit[1]);
         }
+        // Boost from Paradox ability
+        else if (newElement.textContent.includes(": ")) {
+            // Translate stat
+            var buffStatSplit = newElement.textContent.split(": ");
+            newElement.textContent = translateAbility(buffStatSplit[0].replace(" ", " ")) + ": " + translateStat(buffStatSplit[1]);
+        }
         // Status condition
         else {
-            newElement.textContent = translateEffect(newElement.textContent.replace(" ", " "));
+            newElement.textContent = translateEffect(newElement.textContent.replace(/ /g, " "));
         }
     }
 }
@@ -1229,7 +1248,7 @@ function updatePokemonResult(newElement: Element)
                 textInfoTag.textContent = boostedStat[0].replace("already ", "déjà ") + " " + translateStat(boostedStat[1]);
             }
             else {
-                // console.log("Unknown result " + newElement.outerHTML)
+                console.log("Unknown result " + newElement.outerHTML)
             }
         }
     }

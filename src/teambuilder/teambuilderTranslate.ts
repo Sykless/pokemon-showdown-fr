@@ -1,4 +1,4 @@
-import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, MovesShortDescDico, ItemsShortDescDico, AbilitiesShortDescDico, ItemsLongDescDico, AliasDico, translateRawElement } from '../translator';
+import { PokemonDico, AbilitiesDico, MovesDico, ItemsDico, TypesDico, StatsDico, MovesShortDescDico, ItemsShortDescDico, AbilitiesShortDescDico, ItemsLongDescDico, AliasDico, translateRawElement, DEBUG } from '../translator';
 	
 import { isValidFrenchPokemonName, isValidFrenchItem, isValidFrenchAbility, isValidFrenchMove } from '../translator';
 
@@ -102,7 +102,7 @@ function onMutation(mutations: MutationRecord[])
 				var parentElement = mutations[i].target as Element;
 				var elementClasses = newElement.classList;
 
-				// console.log(newElement.outerHTML);
+				if (DEBUG) console.log(newElement.outerHTML);
 
 				// Teambuilder home : teams list
 				// Teampane element is only updated on page init, so we need to check the children mutations
@@ -1413,7 +1413,7 @@ function updateHeader(headerElement: Element)
 	}
 	else if (!headerElement.classList.contains("result"))
 	{
-		// console.log("Unknown header element : " + headerElement.outerHTML);
+		if (DEBUG) console.log("Unknown header element : " + headerElement.outerHTML);
 	}
 }
 
@@ -1493,7 +1493,7 @@ function updateMoveAbilityFilter(resultElement: Element)
 	}
 	else if (!resultElement.classList.contains("result"))
 	{
-		// console.log("Unknown filter element in results : " + resultElement.outerHTML);
+		if (DEBUG) console.log("Unknown filter element in results : " + resultElement.outerHTML);
 	}
 }
 
@@ -1525,7 +1525,7 @@ function updateFilterElement(filterNode: Element)
 		filterButtonTag.textContent = translateMenu(filterButtonTag.textContent);
 	}
 	else {
-		// console.log("Unkown filter element : " + filterNode.outerHTML);
+		if (DEBUG) console.log("Unkown filter element : " + filterNode.outerHTML);
 	}
 }
 
@@ -1684,16 +1684,17 @@ function updatePokemonDetails(buttonDetailsElement: Element)
 {
 	buttonDetailsElement.childNodes.forEach(function (detailsContentNode) {
 		if (detailsContentNode.textContent) {
-			detailsContentNode.textContent = translateMenu(detailsContentNode.textContent);
-
 			// Translate Hidden Power type
-			if (detailsContentNode.textContent == "Type PC") {
-				var hiddenPowerType = detailsContentNode.nextSibling;
+			if (["HP Type", "Tera Type"].includes(detailsContentNode.textContent)) {
+				var typeNode = detailsContentNode.nextSibling;
 				
-				if (hiddenPowerType?.textContent) {
-					hiddenPowerType.textContent = translateType(hiddenPowerType.textContent);
+				if (typeNode?.textContent) {
+					typeNode.textContent = translateType(typeNode.textContent);
 				}
 			}
+
+			// Regular menu or parameter
+			detailsContentNode.textContent = translateMenu(detailsContentNode.textContent);
 		}
 	})
 }
@@ -1713,10 +1714,13 @@ function updatePokemonDetailsForm(resultElement: Element)
 
 				if (detailsElement.tagName == "LABEL")
 				{
-					if (detailsNode.textContent)
-					{
-						// Labels have a ":" character at the end, so we remove it and put it back again
-						detailsNode.textContent = translateMenu(detailsNode.textContent.slice(0,-1)) + " :"
+					// Override normal translation because it's too long
+					if (detailsNode.textContent == "Tera Type:") {
+						detailsNode.textContent = "Type Téracr. : ";
+					}
+					// Labels have a ":" character at the end, so we remove it and put it back again
+					else if (detailsNode.textContent) {
+						detailsNode.textContent = translateMenu(detailsNode.textContent.slice(0,-1)) + " : "
 					}
 				}
 				else if (detailsElement.tagName == "DIV")
@@ -1746,7 +1750,7 @@ function updatePokemonDetailsForm(resultElement: Element)
 								if (detailsSelect.name == "pokeball") {
 									detailsSelect.options[i].text = translateItem(detailsSelect.options[i].text);
 								}
-								else if (detailsSelect.name == "hptype") {
+								else if (["hptype", "teratype"].includes(detailsSelect.name)) {
 									detailsSelect.options[i].text = translateType(detailsSelect.options[i].text);
 								}
 							}
@@ -1810,7 +1814,11 @@ function updateInputPokemonName()
 
 function convertPokemonNameToArray(pokemonName: string)
 {
-	const HyphenPokemonName = ["nidoran-f", "nidoran-d", "ho-oh", "porygon-z", "jangmo-o", "hakamo-o", "kommo-o", "ama-ama"]
+	const HyphenPokemonName = ["nidoran-f", "nidoran-m", "ho-oh", "porygon-z", "jangmo-o", "hakamo-o", "kommo-o", "ama-ama", "tag-tag",
+		"fort-ivoire", "fongus-furie", "pelage-sable", "hurle-queue", "flotte-meche", "rampe-ailes", "rugit-lune"]
+
+	const TwoHyphenPokemonName = ["roue-de-fer", "mite-de-fer", "paume-de-fer", "tetes-de-fer", "epine-de-fer", "hotte-de-fer", "garde-de-fer"]
+		
 	var pokemonRawName = pokemonName.split("-");
 
 	if (pokemonRawName.length == 1)
@@ -1821,15 +1829,23 @@ function convertPokemonNameToArray(pokemonName: string)
 	else
 	{
 		// Check if the "-" is present because there was one in the base name
-		var possibleHyphenPokemon = pokemonRawName[0] + "-" + pokemonRawName[1];
 		var basePokemonName = "";
 
-		if (HyphenPokemonName.includes(removeDiacritics(possibleHyphenPokemon.toLowerCase()))) {
+		if (HyphenPokemonName.includes(removeDiacritics((pokemonRawName[0] + "-" + pokemonRawName[1]).toLowerCase()))) {
 			// There is a "-" in the base Pokémon name
-			basePokemonName = possibleHyphenPokemon;
+			basePokemonName = pokemonRawName[0] + "-" + pokemonRawName[1];
 
 			// If the only "-" in the whole name was in the raw name, there is no alternate form
 			if (pokemonRawName.length == 2) {
+				return [basePokemonName, ""];
+			}
+		}
+		else if (TwoHyphenPokemonName.includes(removeDiacritics((pokemonRawName[0] + "-" + pokemonRawName[1] + "-" + pokemonRawName[2]).toLowerCase()))) {
+			// There is a "-" in the base Pokémon name
+			basePokemonName = pokemonRawName[0] + "-" + pokemonRawName[1] + "-" + pokemonRawName[2];
+
+			// If the only "-" in the whole name was in the raw name, there is no alternate form
+			if (pokemonRawName.length == 3) {
 				return [basePokemonName, ""];
 			}
 		}
@@ -1867,7 +1883,7 @@ function getDisplayedDataType(element: Element)
 					displayedDataType = attribute.split("|")[0];
 				}
 				else {
-					// console.log("No data-entry present in tag : " + childResult.outerHTML);
+					if (DEBUG) console.log("No data-entry present in tag : " + childResult.outerHTML);
 				}
 			}
 			// The result child is a header
@@ -1878,7 +1894,7 @@ function getDisplayedDataType(element: Element)
 	}
 	else
 	{
-		// console.log("Unknown result element : " + element.outerHTML);
+		if (DEBUG) console.log("Unknown result element : " + element.outerHTML);
 	}
 	
 	return displayedDataType;

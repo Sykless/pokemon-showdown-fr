@@ -15,6 +15,8 @@ const FILTER = 13;
 const POPUPMESSAGE = 14;
 const LOGMESSAGE = 15;
 
+export const DEBUG = false;
+
 export const PLAY_SHOWDOWN_HOST = "play.pokemonshowdown.com";
 export const REPLAYS_SHOWDOWN_HOST = "replay.pokemonshowdown.com";
 
@@ -258,6 +260,7 @@ RegexLogMessagesMap.set(/(.*)'s (.*) fell!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON}
 RegexLogMessagesMap.set(/(.*)'s (.*) fell harshly!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} baisse beaucoup !");
 RegexLogMessagesMap.set(/(.*)'s (.*) fell severely!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} baisse énormément !");
 RegexLogMessagesMap.set(/(.*)'s (.*) won't go any lower!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} ne peut plus baisser !");
+RegexLogMessagesMap.set(/(.*)'s (.*) was heightened!/, "{SWAP_1_STATS} du {SWAP_0_POKEMON} est renforcée !");
 
 // POKEMON
 RegexLogMessagesMap.set(/Go! (.*) \(/, "En avant ! {POKEMON} (");
@@ -267,6 +270,7 @@ RegexLogMessagesMap.set(/(.*) will use (.*) at your (.*)\./, "{POKEMON_1} va uti
 RegexLogMessagesMap.set(/(.*) will use (.*) at (.*)\./, "{POKEMON_1} va utiliser {MOVE} sur {POKEMON_2}.");
 RegexLogMessagesMap.set(/(.*) will use (.*)\./, "{POKEMON_1} va utiliser {MOVE}.");
 RegexLogMessagesMap.set(/(.*) will Dynamax, then use (.*)\./, "{POKEMON} va Dynamaxer, puis utiliser {MOVE}.");
+RegexLogMessagesMap.set(/(.*) will Mega Evolve, then use (.*)\./, "{POKEMON} va Méga-Évoluer, puis utiliser {MOVE}.");
 RegexLogMessagesMap.set(/(.*) will Terastallize, then use (.*)\./, "{POKEMON} va Téracristalliser, puis utiliser {MOVE}.");
 RegexLogMessagesMap.set(/(.*) sent out (.*) \(/, "{TRAINER} a envoyé {POKEMON} (");
 RegexLogMessagesMap.set(/(.*) sent out /, "{TRAINER} a envoyé ");
@@ -308,6 +312,8 @@ RegexLogMessagesMap.set(/(.*) restored PP to its move (.*) using its Leppa Berry
 RegexLogMessagesMap.set(/(.*) restored PP to its (.*) move using Mystery Berry!/, "La Baie Mystère du {POKEMON} restaure les PP de sa capacité {MOVE} !");
 RegexLogMessagesMap.set(/(.*) protected itself with its Protective Pads!/, "{POKEMON} évite l'effet grâce à son Pare-Effet !");
 RegexLogMessagesMap.set(/(.*) is not affected by (.*) thanks to its Safety Goggles!/, "{POKEMON} est protégé de la capacité {MOVE} par ses Lunettes Filtre !");
+RegexLogMessagesMap.set(/(.*) used its Booster Energy to activate its Quark Drive!/, "{POKEMON} a activé Charge Quantique grâce à son Énergie Booster !");
+RegexLogMessagesMap.set(/(.*) used its Booster Energy to activate Protosynthesis!/, "{POKEMON} a activé Paléosynthèse grâce à son Énergie Booster !");
 
 // MOVES
 RegexLogMessagesMap.set(/Pointed stones float in the air around (.*)!/, "Des pierres pointues lévitent autour de {TEAM} !");
@@ -537,6 +543,7 @@ RegexLogMessagesMap.set(/(.*) braced itself!/, "{POKEMON} se prépare à encaiss
 RegexLogMessagesMap.set(/(.*) endured the hit!/, "{POKEMON} encaisse les coups !");
 RegexLogMessagesMap.set(/(.*) fell for the feint!/, "{POKEMON s'est fait avoir par une ruse !");
 RegexLogMessagesMap.set(/(.*) got trapped by a snap trap/, "{POKEMON} est tombé dans un Troquenard !");
+RegexLogMessagesMap.set(/(.*) became covered in salt!/, "{POKEMON} est couvert de sel !");
 
 // ABILITIES
 RegexLogMessagesMap.set(/(.*) was hurt!/, "{POKEMON} est blessé !");
@@ -589,6 +596,19 @@ RegexLogMessagesMap.set(/(.*) is loafing around!/, "{POKEMON} paresse !");
 RegexLogMessagesMap.set(/(.*) is radiating a blazing aura!/, "{POKEMON} dégage une aura de flammes incandescentes !");
 RegexLogMessagesMap.set(/(.*) is too nervous to eat Berries!/, "{TEAM} est tendue et ne peut plus manger de Baies !");
 RegexLogMessagesMap.set(/(.*) extends (.*) by 2 turns!/, "{POKEMON} prolonge {MOVE} de 2 tours !");
+RegexLogMessagesMap.set(/The harsh sunlight activated (.*)'s Protosynthesis!/, "{POKEMON} a activé Paléosynthèse grâce au soleil qui brille intensément !");
+RegexLogMessagesMap.set(/The Electric Terrain activated (.*)'s Quark Drive!/, "{POKEMON} a activé Charge Quantique grâce au champ électrifié !");
+RegexLogMessagesMap.set(/(.*) turned the sunlight harsh, sending its ancient pulse into a frenzy!/, "{POKEMON} intensifie les rayons du soleil et libère l'énergie d'une pulsation primitive !");
+RegexLogMessagesMap.set(/(.*) basked in the sunlight, sending its ancient pulse into a frenzy!/, "{POKEMON} tire profit des rayons du soleil et libère l'énergie d'une pulsation primitive !");
+RegexLogMessagesMap.set(/(.*) turned the ground into Electric Terrain, energizing its futuristic engine!/, "{POKEMON} crée un champ électrifié et active une machine du futur !");
+RegexLogMessagesMap.set(/(.*) used the Electric Terrain to energize its futuristic engine!/, "{POKEMON} active une machine du futur grâce au champ électrifié !");
+RegexLogMessagesMap.set(/(.*)'s Beads of Ruin weakened the Sp. Def of all surrounding Pokémon!/, "Les Perles du Fléau de {POKEMON} affaiblissent la Défense Spéciale des Pokémon alentour !");
+RegexLogMessagesMap.set(/(.*)'s Sword of Ruin weakened the Defense of all surrounding Pokémon!/, "L'Épée du Fléau de {POKEMON} affaiblit la Défense des Pokémon alentour !");
+RegexLogMessagesMap.set(/(.*)'s Tablets of Ruin weakened the Attack of all surrounding Pokémon!/, "Le Bois du Fléau de {POKEMON} affaiblit l'Attaque des Pokémon alentour !");
+RegexLogMessagesMap.set(/(.*)'s Vessel of Ruin weakened the Sp. Atk of all surrounding Pokémon!/, "L'Urne du Fléau de {POKEMON} affaiblit l'Attaque Spéciale des Pokémon alentour !");
+RegexLogMessagesMap.set(/The effects of (.*)'s (.*) wore off!/, "L'effet du talent {SWAP_1_ABILITY} de {SWAP_0_POKEMON} s'est dissipé !");
+RegexLogMessagesMap.set(/Being hit by (.*) charged (.*) with power!/, "{SWAP_1_POKEMON} a été touché par la capacité {SWAP_0_MOVE} et se charge en électricité !");
+RegexLogMessagesMap.set(/A lingering aroma clings to (.*)!/, "Une odeur tenace imprègne {POKEMON} !");
 
 // MISC
 RegexLogMessagesMap.set(/(.*) moved to the center!/, "{POKEMON} s'est déplacé au milieu !");
@@ -875,6 +895,9 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Pinsir": "Scarabrute",
 	"Pinsir-Mega": "Scarabrute-Méga",
 	"Tauros": "Tauros",
+	"Tauros-Paldea": "Tauros-Paldea",
+	"Tauros-Paldea-Fire": "Tauros-Paldea-Feu",
+	"Tauros-Paldea-Water": "Tauros-Paldea-Eau",
 	"Magikarp": "Magicarpe",
 	"Gyarados": "Léviator",
 	"Gyarados-Mega": "Léviator-Méga",
@@ -955,6 +978,7 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Sunflora": "Héliatronc",
 	"Yanma": "Yanma",
 	"Wooper": "Axoloto",
+	"Wooper-Paldea": "Axoloto-Paldea",
 	"Quagsire": "Maraiste",
 	"Espeon": "Mentali",
 	"Umbreon": "Noctali",
@@ -2050,7 +2074,9 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Quaquaval": "Palmaval",
 	"Lechonk": "Gourmelet",
 	"Oinkologne": "Fragroin",
+	"Oinkologne-F": "Fragroin-F",
 	"Dudunsparce": "Deusolourdo",
+	"Dudunsparce-Three-Segment": "Deusolourdo-Triple",
 	"Tarountula": "Tissenboule",
 	"Spidops": "Filentrappe",
 	"Nymble": "Lilliterelle",
@@ -2068,6 +2094,7 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Veluza": "Délestin",
 	"Finizen": "Dofin",
 	"Palafin": "Superdofin",
+	"Palafin-Hero": "Superdofin-Super",
 	"Smoliv": "Olivini",
 	"Dolliv": "Olivado",
 	"Arboliva": "Arboliva",
@@ -2080,12 +2107,15 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Orthworm": "Ferdeter",
 	"Tandemaus": "Compagnol",
 	"Maushold": "Famignol",
+	"Maushold-Four": "Famignol-Quatre",
 	"Cetoddle": "Piétacé",
 	"Cetitan": "Balbalèze",
 	"Frigibax": "Frigodo",
 	"Arctibax": "Cryodo",
 	"Baxcalibur": "Glaivodo",
 	"Tatsugiri": "Nigirigon",
+	"Tatsugiri-Droopy": "Nigirigon-Affalé",
+	"Tatsugiri-Stretchy": "Nigirigon-Raide",
 	"Cyclizar": "Motorizard",
 	"Pawmi": "Pohm",
 	"Pawmo": "Pohmotte",
@@ -2094,6 +2124,9 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Kilowattrel": "Fulgulairo",
 	"Bombirdier": "Lestombaile",
 	"Squawkabilly": "Tapatoès",
+	"Squawkabilly-Blue": "Tapatoès-Bleu",
+	"Squawkabilly-Yellow": "Tapatoès-Jaune",
+	"Squawkabilly-White": "Tapatoès-Blanc",
 	"Flamigo": "Flamenroule",
 	"Klawf": "Craparoi",
 	"Nacli": "Selutin",
@@ -2110,6 +2143,7 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Bramblin": "Virovent",
 	"Brambleghast": "Virevorreur",
 	"Gimmighoul": "Mordudor",
+	"Gimmighoul-Roaming": "Mordudor-Marche",
 	"Gholdengo": "Gromago",
 	"Great Tusk": "Fort-Ivoire",
 	"Brute Bonnet": "Fongus-Furie",
@@ -2161,7 +2195,7 @@ export const AbilitiesDico: { [englishName: string]: string; } = {
     "Cloud Nine": "Ciel Gris",
     "Compound Eyes": "Oeil Composé",
     "Insomnia": "Insomnia",
-    "Color Change": "Déguisement",
+    "Color Change": "Homochromie",
     "Immunity": "Vaccin",
     "Flash Fire": "Torche",
     "Shield Dust": "Écran Poudre",
@@ -3902,18 +3936,13 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"Mint Berry": "Baie Menthe",
 	"Pink Bow": "Ruban Rose",
 	"Polkadot Bow": "Ruban à Pois",
-	"Booster Energy": "Énergie Boosters",
-	"Ability Shield": "Garde-Talents",
-	"Clear Amulet": "Talismans Sains",
-	"Mirror Herb": "Feuilles Copieuses",
-	"Punching Glove": "Gants de Boxe",
-	"Covert Cloak": "Capes Obscures",
-	"Loaded Dice": "Dés Pipés",
-	"Scroll of Darkness": "Rouleaux des Ténèbres",
-	"Scroll of Waters": "Rouleaux de l'Eau",
-	"Malicious Armor": "Armures de la Rancune",
-	"Auspicious Armor": "Armures de la Fortune",
-	"Leader's Crest": "Emblèmes du Général",
+	"Booster Energy": "Énergie Booster",
+	"Ability Shield": "Garde-Talent",
+	"Clear Amulet": "Talisman Sain",
+	"Mirror Herb": "Feuille Copieuse",
+	"Punching Glove": "Gant de Boxe",
+	"Covert Cloak": "Cape Obscure",
+	"Loaded Dice": "Dé Pipé",
 }
 
 export const AliasDico:  { [englishName: string]: string; } = {
@@ -4173,6 +4202,7 @@ export const WeatherDico: { [englishName: string]: string; } = {
 	"Rain": "Pluie",
 	"Sandstorm": "Tempête de sable",
 	"Hail": "Grêle",
+	"Snow": "Neige",
 	"Intense Sun": "Soleil intense",
 	"Heavy Rain": "Pluie battante",
 	"Strong Winds": "Vent mystérieux",
@@ -4466,6 +4496,8 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Happiness": "Bonheur",
 	"Dmax Level": "Niv. Dmax",
 	"HP Type": "Type PC",
+	"Tera Type": "Type Téracristal",
+	"Terastallized": "Téracristallisé",
 	"Hidden Power": "Pui. Cachée",
 	"Pokeball": "Ball",
 	"Genderless": "Asexué",
@@ -4995,6 +5027,9 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"It started to hail!": "Il commence à grêler !",
 	"The hail stopped.": "La grêle s'est arrêtée !",
 	"(The hail is crashing down.)": "(Il y a un déluge de grêle.)",
+	"It started to snow!": "Il commence à neiger !",
+	"(The snow is falling down.)": "(La neige continue de tomber.)",
+	"The snow stopped.": "La neige s'est arrêtée !",
 	"The sunlight turned extremely harsh!": "Les rayons du soleil s'intensifient !",
 	"The extremely harsh sunlight faded.": "Les rayons du soleil s'affaiblissent !",
 	"The extremely harsh sunlight was not lessened at all!": "Le soleil brille si intensément que rien ne peut l'obscurcir !",
@@ -5039,6 +5074,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"But nothing happened!": "Mais rien ne se passe !",
 	"Everyone is caught up in the happy atmosphere!": "L'ambiance est euphorique !",
 	"A bell chimed!": "Un grelot sonne !",
+	"Tidying up complete!": "Le grand nettoyage est terminé !",
 	"Coins were scattered everywhere!": "Une pluie de pièces !",
 	"All Pokémon that heard the song will faint in three turns!": "Tous les Pokémon ayant entendu le Requiem seront KO après trois tours.",
 	"All STATUS changes are eliminated!": "Les changements de STATUT ont tous été annulés !",
@@ -5052,6 +5088,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"Changed to Shield Forme!": "Passage en Forme Parade !",
 	"Zen Mode triggered!": "Mode Transe !",
 	"Zen Mode ended!": "Mode Normal !",
+	"(Since gen 7, Dark is immune to Prankster moves.)": "(Depuis la Génération 7, le type Ténèbres est immunisé à Farceur.)",
 	"When the flame touched the powder on the Pokémon, it exploded!": "La Nuée de Poudre entre en réaction avec la flamme et explose !",
 	"Its disguise served it as a decoy!": "Le déguisement absorbe l'attaque !",
 	"But it failed!": "Mais cela échoue !",
@@ -5168,7 +5205,9 @@ export const CosmeticForms: Array<string> = [
 	"Alcremie-Salted-Cream",
 	"Alcremie-Ruby-Swirl",
 	"Alcremie-Caramel-Swirl",
-	"Alcremie-Rainbow-Swirl"
+	"Alcremie-Rainbow-Swirl",
+	"Tatsugiri-Droopy",
+	"Tatsugiri-Stretchy"
 ]
 
 const MainDico: Array<{ [englishName: string]: string; }>  = [
@@ -5193,10 +5232,6 @@ function translateToFrench(englishWord: string, translationType: number)
 		return frenchWord;
 	}
 	else {
-		if (!isValidFrenchWord_NoLog(englishWord, translationType)){
-			console.log("Unable to translate english " + LogTranslationType[translationType] + " : " + englishWord);
-		}
-		
 		return englishWord;
 	}
 }
@@ -5215,20 +5250,12 @@ function translateToEnglish(frenchWord: string, translationType: number)
 		return englishWord;
 	}
 	else {
-		if (!isValidEnglishWord(frenchWord, translationType)) {
-			console.log("Unable to translate french " + LogTranslationType[translationType] + " : " + frenchWord);
-		}
-		
 		return frenchWord;
 	}
 }
 
 function isValidFrenchWord(frenchWord: string, translationType: number) {
 	return translateToEnglish(frenchWord, translationType) != frenchWord
-}
-
-function isValidFrenchWord_NoLog(frenchWord: string, translationType: number) {
-	return Object.keys(MainDico[translationType]).find(key => MainDico[translationType][key] === frenchWord) != frenchWord
 }
 
 function isValidEnglishWord(englishWord: string, translationType: number) {
@@ -5543,14 +5570,14 @@ export function translateRegexMessage(originalString: string, translationType: n
     }
     // The message probably contains a variable english name (Pokémon name, move, etc)
     else  {
-        // console.log("Regex message : " + originalString);
+        if (DEBUG) console.log("Regex message : " + originalString);
 
         // Use a Regex match in order to translate the message
         var translated = translateRegex(originalString, translationType);
 
         if (translated.length > 0)
         {
-			// console.log("Translated Regex message : " + translated[1]);
+			if (DEBUG) console.log("Translated Regex message : " + translated[1]);
 
             var englishMessage = translated[0].source.split("(.*)");
             var variablesToTranslate = translated[1].match(/{(.*?)}/g);
@@ -5966,7 +5993,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "First Impression": "Frappe en priorité +1. Utilisable qu'au 1er tour.",
     "Fishious Rend": "Puissance x2 si le lanceur agit avant la cible.",
     "Fissure": "OHKO la cible. Échoue si lanceur est plus bas niveau.",
-    "Flail": "PV de la cible bas : puissance augmente.",
+    "Flail": "PV du lanceur bas : puissance augmente.",
     "Flame Burst": "Blesse aussi les Pokémon adjacents à la cible.",
     "Flame Charge": "100% de chance d'augmenter la Vitesse de 1.",
     "Flame Wheel": "10% de chance de brûler la cible. Dégèle le lanceur.",
@@ -6335,7 +6362,7 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Return": "Puissance max de 102 avec Bonheur maximum.",
     "Revelation Dance": "Type varie en fonction du type principal du lanceur.",
     "Revenge": "Puissance x2 si le lanceur est touché par la cible.",
-    "Reversal": "PV de la cible bas : puissance augmente.",
+    "Reversal": "PV du lanceur bas : puissance augmente.",
     "Rising Voltage": "Champ Électrifié : puissance x2 si la cible est au sol.",
     "Roar": "Force la cible à switcher avec un allié aléatoire.",
     "Roar of Time": "Le lanceur ne peut rien faire au prochain tour.",
@@ -6577,7 +6604,55 @@ export const MovesShortDescDico: { [index: string]: string; } = {
     "Zap Cannon": "100% de chance de paralyser la cible.",
     "Zen Headbutt": "20% de chance d'apeurer la cible.",
     "Zing Zap": "30% de chance d'apeurer la cible.",
-    "Zippy Zap": "Frappe en priorité +1. Augmente l'Esquive de 1."
+    "Zippy Zap": "Frappe en priorité +1. Augmente l'Esquive de 1.",
+	"Pounce": "100% de chance de baisser la Vitesse de 1.",
+	"Armor Cannon": "Baisse la Défense et la Déf. Spé du lanceur de 1.",
+	"Ruination": "Dégâts égaux à la motiié des PV actuels de la cible.",
+	"Torch Song": "Augmente l'Attaque Spéciale de l'utilisateur d'1 cran.",
+	"Glaive Rush": "Prochain tour : capacité subie x2 et n'échoue pas.",
+	"Snowscape": "Invoque la neige. Déf type Glace +50%. (5 tours)",
+	"Blazing Torque": "30% de chance de brûler la cible.",
+	"Magical Torque": "30% de chance de rendre la cible confuse.",
+	"Combat Torque": "30% de chance de paralyser la cible.",
+	"Wicked Torque": "10% de chance d'endormir la cible.",
+	"Noxious Torque": "30% de chance d'empoisonner la cible.",
+	"Ice Spinner": "Enlève les Champs sur le terrain",
+	"Aqua Step": "100% de chance d'augmenter la Vitesse de 1.",
+	"Doodle": "Talent du Pokémon et allié devient celui de la cible.",
+	"Fillet Away": "Sacrifie 50% des PV max. +2 à Atq, Atq Spé, Vit.",
+	"Spin Out": "Baisse la Vitesse du lanceur de 2.",
+	"Trailblaze": "Augmente la Vitesse de l'utilisateur d'1 cran.",
+	"Double Shock": "Le lanceur perd son type Électrik.",
+	"Twin Beam": "Touche 2 fois en un tour.",
+	"Chilling Water": "100% de chance de baisser l'Attaque de 1.",
+	"Kowtow Cleave": "Cette capacité n'échoue jamais.",
+	"Tidy Up": "Lanceur : +1 Atq et Vit. Enlève clones et hazards.",
+	"Spicy Extract": "Attaque du lanceur +2 et Défense du lanceur -2.",
+	"Last Respects": "Puissance augmente de 50 par allié KO.",
+	"Hyper Drill": "Annule les effets d'Abri et équivalent.",
+	"Bitter Blade": "Le lanceur se soigne de 50% des dommages infligés.",
+	"Lumina Crash": "100% de chance de baisser la Déf. Spé de 2.",
+	"Flower Trick": "Inflige toujours un coup critique. N'échoue jamais.",
+	"Gigaton Hammer": "Ne peut pas être utilisé deux fois d'affilée.",
+	"Chilly Reception": "Fait tomber la Neige puis switch out.",
+	"Collision Course": "Dégâts +30% si la capacité est super efficace.",
+	"Silk Trap": "Protège des capacités. Contact : -1 Vit.",
+	"Order Up": "+1 dans une stat selon la couleur de Nigirigon.",
+	"Rage Fist": "Puissance augmente de 50 à chaque capacité subie.",
+	"Jet Punch": "Frappe en priorité +1.",
+	"Population Bomb": "Touche 10 fois. Chaque coup peut rater.",
+	"Shed Tail": "Sacrifie 50% des PV max, crée un clone et switch.",
+	"Make It Rain": "Baisse l'Atq. Spé du lanceur de 1.",
+	"Salt Cure": "Inflige 1/8 PV max chaque tour, 1/4 si Acier ou Eau.",
+	"Revival Blessing": "Ranime un Pokémon KO à 50% de ses PV max.",
+	"Axe Kick": "Subit 50% des PV max si échoue. 30% confusion.",
+	"Raging Bull": "Détruit les protections. Type dépend de la forme.",
+	"Tera Blast": "Téracristal : Phys si Atq > SpA, Type = Type Teracr.",
+	"Mortal Spin": "Enlève hazards/ligotages/Vampigraine. Empoisonne.",
+	"Aqua Cutter": "Haut taux de critique.",
+	"Triple Dive": "Touche trois fois.",
+	"Electro Drift": "Dégâts +30% si la capacité est super efficace.",
+	"Comeuppance": "Si touché par attaque, renvoie dégâts x1.5.",
 }
 
 export const MovesLongDescDico: { [index: string]: string; } = {
@@ -6821,39 +6896,39 @@ export const MovesLongDescDico: { [index: string]: string; } = {
 	"Fusion Bolt": "La puissance est doublée si la dernière capacité utilisée par un Pokémon ce tour était Flamme Croix.",
 	"Fusion Flare": "La puissance est doublée si la dernière capacité utilisée par un Pokémon ce tour était Éclair Croix.",
 	"Future Sight": "Cette attaque inflige des dégâts de type Psy et peut être un coup critique deux tours après l'utilisation de cette capacité. Les dégâts sont calculés contre la cible lors de l'utilisation, et à la fin du dernier tour, ces dégâts sont infligés au Pokémon à la position que la cible originale avait à ce moment-là. Si l'utilisateur n'est plus sur le terrain, les dégâts sont calculés à partir de l'Attaque Spéciale, du type et du niveau de base, sans tenir compte de l'objet. Échoue si cette capacité ou Voeu Destructeur est déjà en cours d'utilisation sur la cible.",
-	"G-Max Befuddle": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon du camp adverse devient soit paralysé, soit empoisonné, soit endormi, même s'il se trouve derrière un clone.",
-	"G-Max Cannonade": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, pendant 4 tours chaque Pokémon adverse qui n'est pas de type Eau prend des dégâts équivalents à 1/6 de ses PVs totaux à la fin de chaque tour, même s'il se trouve derrière un clone.",
-	"G-Max Centiferno": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, elle empêche chaque Pokémon adverse de quitter le terrain pendant 4 ou 5 tours (7 tours si l'utilisateur tient l'Accro Griffe). Elle inflige aussi à la cible des dégâts égaux à 1/8 de ses PVs maximums (1/6 si l'utilisateur tient la Bande Étreinte), arrondis à l'unité inférieure, à la fin de chaque tour pendant l'effet. La cible peut toujours se retirer si elle tient la Carapace Mue ou utilise Relais, Eau Revoir, Dernier Mot, Téléport, Demi-Tour, ou Change Éclair. L'effet prend fin si l'utilisateur ou la cible quitte le terrain, ou si la cible utilise Tour Rapide ou Clonage avec succès. Cet effet n'est pas cumulable ou réinitialisé par l'utilisation de cette attaque ou d'une autre attaque piégeant un Pokémon sur le terrain.",
-	"G-Max Chi Strike": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, le taux de coup critique de chaque Pokémon du camp allié est augmenté d'1 cran, même s'ils se trouvent derrière un clone.",
-	"G-Max Cuddle": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon du camp adverse est rendu amoureux, même s'il est derrière un clone. Cet effet ne se produit pas si la cible est du sexe opposé à l'utilisateur ou si la cible est déjà amoureuse.",
-	"G-Max Depletion": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon du camp adverse voit les PPs de sa dernière attaque utilisée diminués de 2, même s'il se trouve derrière un clone. ",
+	"G-Max Befuddle": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Illusion G-Max. Si la capacité réussit, chaque Pokémon du camp adverse devient soit paralysé, soit empoisonné, soit endormi, même s'il se trouve derrière un clone.",
+	"G-Max Cannonade": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Canonnade G-Max. Si la capacité réussit, pendant 4 tours chaque Pokémon adverse qui n'est pas de type Eau prend des dégâts équivalents à 1/6 de ses PVs totaux à la fin de chaque tour, même s'il se trouve derrière un clone.",
+	"G-Max Centiferno": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Combustion G-Max. Si la capacité réussit, elle empêche chaque Pokémon adverse de quitter le terrain pendant 4 ou 5 tours (7 tours si l'utilisateur tient l'Accro Griffe). Elle inflige aussi à la cible des dégâts égaux à 1/8 de ses PVs maximums (1/6 si l'utilisateur tient la Bande Étreinte), arrondis à l'unité inférieure, à la fin de chaque tour pendant l'effet. La cible peut toujours se retirer si elle tient la Carapace Mue ou utilise Relais, Eau Revoir, Dernier Mot, Téléport, Demi-Tour, ou Change Éclair. L'effet prend fin si l'utilisateur ou la cible quitte le terrain, ou si la cible utilise Tour Rapide ou Clonage avec succès. Cet effet n'est pas cumulable ou réinitialisé par l'utilisation de cette attaque ou d'une autre attaque piégeant un Pokémon sur le terrain.",
+	"G-Max Chi Strike": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Frappe G-Max. Si la capacité réussit, le taux de coup critique de chaque Pokémon du camp allié est augmenté d'1 cran, même s'ils se trouvent derrière un clone.",
+	"G-Max Cuddle": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Câlin G-Max. Si la capacité réussit, chaque Pokémon du camp adverse est rendu amoureux, même s'il est derrière un clone. Cet effet ne se produit pas si la cible est du sexe opposé à l'utilisateur ou si la cible est déjà amoureuse.",
+	"G-Max Depletion": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Usure G-Max. Si la capacité réussit, chaque Pokémon du camp adverse voit les PPs de sa dernière attaque utilisée diminués de 2, même s'il se trouve derrière un clone. ",
 	"G-Max Drum Solo": "La puissance de cette attaque est égale à 160 peu importe la puissance de l'attaque de base. Cette attaque et ses effets ignorent les talents des autres Pokémon.",
-	"G-Max Finale": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon du camp allié est soigné de 1/6 de ses PVs totaux, même s'il se trouve derrière un clone.",
+	"G-Max Finale": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Cure G-Max. Si la capacité réussit, chaque Pokémon du camp allié est soigné de 1/6 de ses PVs totaux, même s'il se trouve derrière un clone.",
 	"G-Max Fireball": "La puissance de cette attaque est égale à 160 peu importe la puissance de l'attaque de base. Cette attaque et ses effets ignorent les talents des autres Pokémon.",
-	"G-Max Foam Burst": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, la Vitesse de chaque Pokémon du camp adverse est diminuée de 2 crans, même s'ils se trouvent derrière un clone.",
-	"G-Max Gold Rush": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon du camp adverse devient confus, même s'il se trouve derrière un clone.",
-	"G-Max Gravitas": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, elle déclenche la capacité Gravité.",
+	"G-Max Foam Burst": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Bulles G-Max. Si la capacité réussit, la Vitesse de chaque Pokémon du camp adverse est diminuée de 2 crans, même s'ils se trouvent derrière un clone.",
+	"G-Max Gold Rush": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pactole G-Max. Si la capacité réussit, chaque Pokémon du camp adverse devient confus, même s'il se trouve derrière un clone.",
+	"G-Max Gravitas": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Ondes G-Max. Si la capacité réussit, elle déclenche la capacité Gravité.",
 	"G-Max Hydrosnipe": "La puissance de cette attaque est égale à 160 peu importe la puissance de l'attaque de base. Cette attaque et ses effets ignorent les talents des autres Pokémon.",
-	"G-Max Malodor": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon du camp adverse est empoisonné, même s'il se trouve derrière un clone.",
-	"G-Max Meltdown": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon du camp adverse est affecté par la Tourmente, même s'il se trouve derrière un clone.",
-	"G-Max One Blow": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Cette attaque inflige les dégâts maximum même si l'adversaire se protège grâce à Abri, un équivalent ou Gardomax.",
-	"G-Max Rapid Flow": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Cette attaque inflige les dégâts maximum même si l'adversaire se protège grâce à Abri, un équivalent, ou Gardomax.",
-	"G-Max Replenish": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon du camp allié a 50% de chances de récupérer sa baie précédemment consommée, même s'il a un clone.",
-	"G-Max Resonance": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, elle déclenche la capacité Voile Aurore pour l'équipe alliée, même s'il se trouve derrière un clone.",
-	"G-Max Sandblast": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, elle empêche chaque Pokémon adverse de quitter le terrain pendant 4 ou 5 tours (7 tours si l'utilisateur tient l'Accro Griffe). Elle inflige aussi à la cible des dégâts égaux à 1/8 de ses PVs maximums (1/6 si l'utilisateur tient la Bande Étreinte), arrondis à l'unité inférieure, à la fin de chaque tour pendant l'effet. La cible peut toujours se retirer si elle tient la Carapace Mue ou utilise Relais, Eau Revoir, Dernier Mot, Téléport, Demi-Tour, ou Change Éclair. L'effet prend fin si l'utilisateur ou la cible quitte le terrain, ou si la cible utilise Tour Rapide ou Clonage avec succès. Cet effet n'est pas cumulable ou réinitialisé par l'utilisation de cette attaque ou d'une autre attaque piégeant un Pokémon sur le terrain.",
-	"G-Max Smite": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon du camp adverse est plongé dans la confusion, même s'il se trouve derrière un clone.",
-	"G-Max Snooze": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, l'effet de Bâillement commence sur la cible, même si elle est derrière un clone.",
-	"G-Max Steelsurge": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, des pics de métal pointus sont posés du côté adverse du terrain, blessant chaque Pokémon adverse qui est envoyé sur le terrain, même s'il se trouve derrière un clone. Échoue si l'effet est déjà actif sur le terrain adverse. Les ennemis perdent 1/32, 1/16, 1/8, 1/4, ou 1/2 de leurs PVs maximums, en fonction de leur faiblesse au type Acier; 0.25x, 0.5x, neutre, 2x, ou 4x, respectivement. Peut être retiré du terrain adverse si un Pokémon adverse utilise Tour Rapide ou Anti-Brume avec succès.",
-	"G-Max Stonesurge": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, pose les Pièges de Roc du côté adverse du terrain, blessant chaque Pokémon adverse qui est envoyé sur le terrain, même s'il se trouve derrière un clone. Échoue si l'effet est déjà actif sur le terrain adverse. Les ennemis perdent 1/32, 1/16, 1/8, 1/4, ou 1/2 de leurs PVs maximums, en fonction de leur faiblesse au type Roche; 0.25x, 0.5x, neutre, 2x, ou 4x, respectivement. Peut être retiré du terrain adverse si un Pokémon adverse utilise Tour Rapide ou Anti-Brume avec succès.",
-	"G-Max Stun Shock": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon du camp adverse devient soit paralysé soit empoisonné, même s'il se trouve derrière un clone.",
-	"G-Max Sweetness": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon de l'équipe a ses problèmes de statut soignés",
-	"G-Max Tartness": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, l'Esquive de chaque Pokémon adverse est diminuée d'1 cran, même s'il se trouve derrière un clone.",
-	"G-Max Terror": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, elle empêche chaque Pokémon adverse de quitter le terrain même s'il se trouve derrière un clone. Les cibles peuvent toujours partir si elle tiennent la Carapace Mue ou utilisent Relais, Demi-Tour, Dernier Mot, Eau Revoir, Télèport ou Change Éclair. Si la cible quitte le terrain en utilisant Relais, le remplaçant restera piégé. L'effet prend fin si le lanceur est retiré.",
-	"G-Max Vine Lash": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, pendant 4 tours chaque Pokémon adverse qui n'est pas de type Plante prend des dégâts équivalents à 1/6 de ses PVs totaux à la fin de chaque tour, même s'il se trouve derrière un clone.",
-	"G-Max Volcalith": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, pendant 4 tours chaque Pokémon adverse qui n'est pas de type Roche, prend des dégâts équivalents à 1/6 de ses PVs totaux à la fin de chaque tour, même s'il se trouve derrière un clone.",
-	"G-Max Volt Crash": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, chaque Pokémon du camp adverse devient paralysé, même s'il se trouve derrière un clone.",
-	"G-Max Wildfire": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, pendant 4 tours chaque Pokémon adverse qui n'est pas de type Feu prend des dégâts équivalents a 1/6 de ses PVs totaux à la fin de chaque tour, même s'il se trouve derrière un clone.",
-	"G-Max Wind Rage": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pugilomax. Si la capacité réussit, les effets de Protection, Mur Lumière, Rune Protect, Brume, Voile Aurore, Picots, Pics Toxik, Toile Gluante et Piège de Roc prennent fin du côté de la cible. Retire également Picots, Pics Toxik, Pièges de Roc et Toile Gluante du côté du lanceur. Si la cible est derrière un clone, son Esquive ne diminuera pas. Si un Champ est en place, cette capacité y met fin, même si les cibles ont un clone.",
+	"G-Max Malodor": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Pestilence G-Max. Si la capacité réussit, chaque Pokémon du camp adverse est empoisonné, même s'il se trouve derrière un clone.",
+	"G-Max Meltdown": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Fonte G-Max. Si la capacité réussit, chaque Pokémon du camp adverse est affecté par la Tourmente, même s'il se trouve derrière un clone.",
+	"G-Max One Blow": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Coup Final G-Max. Cette attaque inflige les dégâts maximum même si l'adversaire se protège grâce à Abri, un équivalent ou Gardomax.",
+	"G-Max Rapid Flow": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Multicoup G-Max. Cette attaque inflige les dégâts maximum même si l'adversaire se protège grâce à Abri, un équivalent, ou Gardomax.",
+	"G-Max Replenish": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Récolte G-Max. Si la capacité réussit, chaque Pokémon du camp allié a 50% de chances de récupérer sa baie précédemment consommée, même s'il a un clone.",
+	"G-Max Resonance": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Résonance G-Max. Si la capacité réussit, elle déclenche la capacité Voile Aurore pour l'équipe alliée, même s'il se trouve derrière un clone.",
+	"G-Max Sandblast": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Enlisement G-Max. Si la capacité réussit, elle empêche chaque Pokémon adverse de quitter le terrain pendant 4 ou 5 tours (7 tours si l'utilisateur tient l'Accro Griffe). Elle inflige aussi à la cible des dégâts égaux à 1/8 de ses PVs maximums (1/6 si l'utilisateur tient la Bande Étreinte), arrondis à l'unité inférieure, à la fin de chaque tour pendant l'effet. La cible peut toujours se retirer si elle tient la Carapace Mue ou utilise Relais, Eau Revoir, Dernier Mot, Téléport, Demi-Tour, ou Change Éclair. L'effet prend fin si l'utilisateur ou la cible quitte le terrain, ou si la cible utilise Tour Rapide ou Clonage avec succès. Cet effet n'est pas cumulable ou réinitialisé par l'utilisation de cette attaque ou d'une autre attaque piégeant un Pokémon sur le terrain.",
+	"G-Max Smite": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Sentence G-Max. Si la capacité réussit, chaque Pokémon du camp adverse est plongé dans la confusion, même s'il se trouve derrière un clone.",
+	"G-Max Snooze": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Torpeur G-Max. Si la capacité réussit, l'effet de Bâillement commence sur la cible, même si elle est derrière un clone.",
+	"G-Max Steelsurge": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Récif G-Max. Si la capacité réussit, des pics de métal pointus sont posés du côté adverse du terrain, blessant chaque Pokémon adverse qui est envoyé sur le terrain, même s'il se trouve derrière un clone. Échoue si l'effet est déjà actif sur le terrain adverse. Les ennemis perdent 1/32, 1/16, 1/8, 1/4, ou 1/2 de leurs PVs maximums, en fonction de leur faiblesse au type Acier; 0.25x, 0.5x, neutre, 2x, ou 4x, respectivement. Peut être retiré du terrain adverse si un Pokémon adverse utilise Tour Rapide ou Anti-Brume avec succès.",
+	"G-Max Stonesurge": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Percée G-Max. Si la capacité réussit, pose les Pièges de Roc du côté adverse du terrain, blessant chaque Pokémon adverse qui est envoyé sur le terrain, même s'il se trouve derrière un clone. Échoue si l'effet est déjà actif sur le terrain adverse. Les ennemis perdent 1/32, 1/16, 1/8, 1/4, ou 1/2 de leurs PVs maximums, en fonction de leur faiblesse au type Roche; 0.25x, 0.5x, neutre, 2x, ou 4x, respectivement. Peut être retiré du terrain adverse si un Pokémon adverse utilise Tour Rapide ou Anti-Brume avec succès.",
+	"G-Max Stun Shock": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Choc G-Max. Si la capacité réussit, chaque Pokémon du camp adverse devient soit paralysé soit empoisonné, même s'il se trouve derrière un clone.",
+	"G-Max Sweetness": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Nectar G-Max. Si la capacité réussit, chaque Pokémon de l'équipe a ses problèmes de statut soignés",
+	"G-Max Tartness": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Corrosion G-Max. Si la capacité réussit, l'Esquive de chaque Pokémon adverse est diminuée d'1 cran, même s'il se trouve derrière un clone.",
+	"G-Max Terror": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Hantise G-Max. Si la capacité réussit, elle empêche chaque Pokémon adverse de quitter le terrain même s'il se trouve derrière un clone. Les cibles peuvent toujours partir si elle tiennent la Carapace Mue ou utilisent Relais, Demi-Tour, Dernier Mot, Eau Revoir, Télèport ou Change Éclair. Si la cible quitte le terrain en utilisant Relais, le remplaçant restera piégé. L'effet prend fin si le lanceur est retiré.",
+	"G-Max Vine Lash": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Fouet G-Max. Si la capacité réussit, pendant 4 tours chaque Pokémon adverse qui n'est pas de type Plante prend des dégâts équivalents à 1/6 de ses PVs totaux à la fin de chaque tour, même s'il se trouve derrière un clone.",
+	"G-Max Volcalith": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Téphra G-Max. Si la capacité réussit, pendant 4 tours chaque Pokémon adverse qui n'est pas de type Roche, prend des dégâts équivalents à 1/6 de ses PVs totaux à la fin de chaque tour, même s'il se trouve derrière un clone.",
+	"G-Max Volt Crash": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Foudre G-Max. Si la capacité réussit, chaque Pokémon du camp adverse devient paralysé, même s'il se trouve derrière un clone.",
+	"G-Max Wildfire": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Fournaise G-Max. Si la capacité réussit, pendant 4 tours chaque Pokémon adverse qui n'est pas de type Feu prend des dégâts équivalents a 1/6 de ses PVs totaux à la fin de chaque tour, même s'il se trouve derrière un clone.",
+	"G-Max Wind Rage": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Rafale G-Max. Si la capacité réussit, les effets de Protection, Mur Lumière, Rune Protect, Brume, Voile Aurore, Picots, Pics Toxik, Toile Gluante et Piège de Roc prennent fin du côté de la cible. Retire également Picots, Pics Toxik, Pièges de Roc et Toile Gluante du côté du lanceur. Si la cible est derrière un clone, son Esquive ne diminuera pas. Si un Champ est en place, cette capacité y met fin, même si les cibles ont un clone.",
 	"Gastro Acid": "Rend le talent de la cible inefficace tant qu'elle reste sur le terrain. Si la cible utilise Relais, le remplaçant reste sous cet effet. Si le talent de la cible est Multitype, Déclic Tactique, Synergie, Hypersommeil, Fantômasque, Rassemblement, Système Alpha, Banc, Bouclier-Carcan, Mode Transe, Osmose Équine, Dégobage, Tête de Gel, cette capacité échoue.",
 	"Gear Grind": "Frappe 2 fois. Si le premier coup détruit le clone de la cible, celle-ci subit les dégâts du second coup.",
 	"Gear Up": "Cette capacité augmente l'Attaque et l'Attaque Spéciale des Pokémon du côté de l'utilisateur avec les capacités Plus ou Moins d'1 cran.",
@@ -6941,7 +7016,7 @@ export const MovesLongDescDico: { [index: string]: string; } = {
 	"Jungle Healing": "Chaque Pokémon du côté de l'utilisateur récupère 25% de ses PVs max, et voit son problème de statut guéri.",
 	"Karate Chop": "Cette capacité a plus de chance (12,5% soit 1/8) d'infliger un coup critique.",
 	"Kinesis": "Réduit la Précision de la cible d'1 cran.",
-	"King's Shield": "L'utilisateur est protégé de la plupart des attaques, tout contact direct avec le lanceur diminue l'Attaque de 2 crans. Les attaques non offensives passent à travers cette protection. La capacité réussit 1 fois sur X, et X commence à 1 et triple à chaque fois que l'attaque est utilisée avec succès. X revient à 1 si elle échoue, si la dernière attaque utilisée par l'utilisateur n'est pas Blockhaus, Détection, Ténacité, Bouclier Royal, Gardomax, Blocage, Abri, Prévention, Pico-Défense, ou Garde Large, ou si la protection d'une de ces attaques a été brisée par exemple par Ruse. Cette capacité échoue si l'utilisateur attaque en dernier pendant ce tour.",
+	"King's Shield": "L'utilisateur est protégé de la plupart des attaques, tout contact direct avec le lanceur diminue l'Attaque d'1 cran. Les attaques non offensives passent à travers cette protection. La capacité réussit 1 fois sur X, et X commence à 1 et triple à chaque fois que l'attaque est utilisée avec succès. X revient à 1 si elle échoue, si la dernière attaque utilisée par l'utilisateur n'est pas Blockhaus, Détection, Ténacité, Bouclier Royal, Gardomax, Blocage, Abri, Prévention, Pico-Défense, ou Garde Large, ou si la protection d'une de ces attaques a été brisée par exemple par Ruse. Cette capacité échoue si l'utilisateur attaque en dernier pendant ce tour.",
 	"Knock Off": "Si la cible tient un objet qu'elle peut perdre, sans prendre en compte le talent Glue, la puissance de cette capacité est augmentée de 50%. Si l'utilisateur n'est pas tombé KO, la cible perd l'objet qu'elle tient. Les Pokémon avec le talent Glue ne perdent pas leur objet, et un Kyogre, un Groudon, un Giratina, un Arceus, un Genesect, un Silvallié, un Zacian, ou un Zamazenta ne peuvent pas perdre leur Gemme Bleue, Gemme Rouge, Orbe Platiné, Plaque, Module, ROM, Épée Rouillée, ou Bouclier Rouillé respectivement. Les objets perdus à cause de cette attaque ne peuvent pas être récupérés avec Recyclage ou le talent Récolte.",
 	"Land's Wrath": "Aucun effet supplémentaire.",
 	"Laser Focus": "Jusqu'à la fin du prochain tour, les attaques de l'utilisateur feront obligatoirement des coups critiques.",
@@ -7341,7 +7416,46 @@ export const MovesLongDescDico: { [index: string]: string; } = {
 	"Zap Cannon": "Paralyse la cible.",
 	"Zen Headbutt": "Cette capacité a 20% de chances d'apeurer la cible.",
 	"Zing Zap": "A 30% de chances d'apeurer la cible.",
-	"Zippy Zap": "A 100% d'augmenter l'Esquive du lanceur de 1."
+	"Zippy Zap": "A 100% d'augmenter l'Esquive du lanceur de 1.",
+	"Pounce": "Réduit la Vitesse de la cible d'1 cran.",
+	"Armor Cannon": "Réduit la Défense et la Défense Spéciale de l'utilisateur d'1 cran.",
+	"Ruination": "Cette attaque inflige à la cible des dégâts égaux à la moitié de ses PVs actuels, arrondis à l'unité inférieure, mais pas en dessous de 1 PV.",
+	"Torch Song": "Augmente l'Attaque Spéciale de l'utilisateur d'1 cran.",
+	"Glaive Rush": "Si la capacité réussit, l'attaque de la cible au tour suivant inflige le double de dégâts et n'échoue jamais.",
+	"Snowscape": "Pendant 5 tours, le climat se change en Neige. Pendant l'effet, la Défense des Pokémon de type Glace est augmentée de 50% lorsqu'ils subissent des dégâts d'une attaque physique. Dure 8 tours si le lanceur tient une Roche Glace. Échoue si le climat actuel est déjà Neige.",
+	"Blazing Torque": "Cette capacité a 30% de chances de brûler la cible.",
+	"Magical Torque": "Cette capacité a 30% de chances de plonger la cible dans la Confusion.",
+	"Combat Torque": "Cette capacité a 30% de chances de paralyser la cible.",
+	"Wicked Torque": "Cette capacité a 10% de chances d'endormir la cible.",
+	"Noxious Torque": "Cette capacité a 30% de chances d'empoisonner la cible.",
+	"Ice Spinner": "Met fin aux capacités Champ Électrifié, Champ Herbu, Champ Brumeux et Champ Psychique.",
+	"Aqua Step": "Augmente la Vitesse du lanceur d'1 cran.",
+	"Doodle": "Les talents de l'utilisateur et de son allié changent pour correspondre au talent de la cible. Échoue si le talent de la cible est Osmose Équine, Synergie, Hypersommeil, Fantômasque, Dégobage, Tête de Gel, Multitype, Rassemblement, Système Alpha, Banc, Bouclier-Carcan, Déclic Tactique, Absentéisme, ou Mode Transe.",
+	"Fillet Away": "Cette capacité augmente l'Attaque, l'Attaque Spéciale et la Vitesse de l'utilisateur de 2 crans en échange de la perte de 50% de ses PVs maximum, arrondis à l'unité inférieure. Elle échoue si l'utilisateur tombe KO ou si ses stats d'Attaque, d'Attaque Spéciale, et de Vitesse ne changent pas.",
+	"Spin Out": "Réduit la Vitesse du lanceur de 2 crans.",
+	"Trailblaze": "Augmente la Vitesse de l'utilisateur d'1 cran.",
+	"Double Shock": "Cette attaque échoue si l'utilisateur n'est pas de type Électrik. Si l'attaque réussit, l'utilisateur perd son type Électrik tant qu'il est sur le terrain.",
+	"Twin Beam": "Frappe 2 fois. Si le premier coup détruit le clone de la cible, celle-ci subit les dégâts du second coup.",
+	"Chilling Water": "Réduit l'Attaque de la cible d'1 cran.",
+	"Tidy Up": "Augmente l'Attaque et la Vitesse du lanceur d'1 cran. Retire les clones, Picots, Pics Toxik, Pièges de Roc et Toile Gluante des deux côtés du terrain.",
+	"Spicy Extract": "Augmente l'Attaque de l'utilisateur de 2 crans et baisse la Défense de l'utilisateur de 2 crans.",
+	"Hyper Drill": "Si cette attaque réussit, elle annule les effets de Blockhaus, Détection, Bouclier Royal, Abri, Vigilance, Tatamigaeshi, Prévention, Garde Large, ou Pico-Défense de la cible pour ce tour, permettant aux autres Pokémon de l'attaquer normalement.",
+	"Bitter Blade": "L'utilisateur récupère la moitié des PVs perdus par la cible.",
+	"Lumina Crash": "Réduit la Défense Spéciale de la cible de 2 crans.",
+	"Flower Trick": "Cette capacité inflige toujours un coup critique, sauf si la cible est sous l'effet de Air Veinard ou possède le talent Armurbaston ou Coque Armure. Cette capacité ne peut pas échouer.",
+	"Chilly Reception": "Le lanceur déclenche la Neige, puis quitte le terrain, même s'il est piégé, et est immédiatement remplacé par le membre de l'équipe sélectionné. L'utilisateur ne retourne pas dans son équipe s'il est le seul Pokémon à ne pas être KO.",
+	"Silk Trap": "L'utilisateur est protégé de la plupart des attaques, tout contact direct avec le lanceur diminue la Vitesse d'1 cran. Les attaques non offensives passent à travers cette protection. La capacité réussit 1 fois sur X, et X commence à 1 et triple à chaque fois que l'attaque est utilisée avec succès. X revient à 1 si elle échoue, si la dernière attaque utilisée par l'utilisateur n'est pas Blockhaus, Détection, Ténacité, Bouclier Royal, Gardomax, Blocage, Abri, Prévention, Pico-Défense, ou Garde Large, ou si la protection d'une de ces attaques a été brisée par exemple par Ruse. Cette capacité échoue si l'utilisateur attaque en dernier pendant ce tour.",
+	"Rage Fist": "La puissance de cette capacité augmente de 50 à chaque fois que le lanceur est touché, y compris en se frappant dans sa confusion. La puissance n'est pas réinitialisée si le Pokémon switch ou tombe KO.",
+	"Jet Punch": "Aucun effet supplémentaire.",
+	"Population Bomb": "Frappe 10 fois. Cette capacité vérifie la précision de chaque coup, et l'attaque se termine si la cible évite l'un d'eux. Si l'un des coups brise le clone de la cible, celle-ci subit des dégâts pour les coups restants.",
+	"Shed Tail": "Le lanceur crée un clone en échange de la moitié de ses PVs maximums et quitte le terrain, même s'il est piégé, puis est remplacé par un membre de l'équipe au choix qui profitera du clone à sa place.",
+	"Make It Rain": "Réduit l'Attaque Spéciale du lanceur d'1 cran.",
+	"Axe Kick": "Cette capacité a 30% de chances de plonger la cible dans la Confusion. Si cette attaque manque sa cible, l'utilisateur perd la moitié de ses PVs maximums arrondis à l'unité inférieure, sous forme de dégâts de chute. Les Pokémon avec le talent Garde Magik ne sont pas affectés par les dégâts de chute.",
+	"Raging Bull": "Les effets de Voile Aurore, Protection et Mur Lumière prennent fin du côté de la cible, et ce avant le calcul des dégâts de l'attaque.",
+	"Tera Blast": "Si l'utilisateur est Téracristallisé, cette capacité devient physique si l'Attaque du lanceur est supérieure à son Attaque Spéciale, en prenant en compte les changements de stats, et son type devient le type Téracristal du lanceur.",
+	"Mortal Spin": "Si cette capacité est utilisée avec succès, les effets de Vampigraine et des capacités de piège sur le lanceur prennent fin. Tous les éléments sur le terrain tels que Picots, Pics Toxics, Piège de Roc, Toile Gluante sont supprimés du côté du terrain de l'utilisateur. Empoisonne le Pokémon adverse.",
+	"Aqua Cutter": "Cette capacité a plus de chance (12,5% soit 1/8) d'infliger un coup critique.",
+"Comeuppance": "Inflige au dernier Pokémon adverse à toucher l'utilisateur avec une attaque physique ou spéciale ce tour des dégâts égaux à 1.5x les PVs perdus par l'utilisateur suite à cette attaque. Si l'utilisateur n'a pas perdu de PV par l'attaque, cette capacité inflige 1 PV de dégâts à la place. Si la position de l'adversaire n'est plus utilisable et qu'un autre Pokémon adverse est sur le terrain, les dégâts sont infligés à ce Pokémon. Seul le dernier coup d'une attaque à plusieurs coups est comptabilisé. Échoue si l'utilisateur n'a pas été touché par une attaque physique ou spéciale d'un Pokémon adverse ce tour-ci.",
 }
 
 export const ItemsShortDescDico: { [index: string]: string; } = {
@@ -7418,9 +7532,9 @@ export const ItemsLongDescDico: { [index: string]: string; } = {
     "Chilan Berry": "Divise par 2 les dégâts subis par une capacité Normal. Usage unique.",
     "Chill Drive": "Techno-Buster du porteur devient de type Glace.",
     "Chipped Pot": "Fait évoluer Théffroi-Antique en Polthégeist-Antique.",
-    "Choice Band": "Augmente l'Attaque de 50%, mais ne peut utilser que la 1ère capacité choisie.",
-    "Choice Scarf": "Augmente la Vitesse de 50%, mais ne peut utilser que la 1ère capacité choisie.",
-    "Choice Specs": "Augmente l'Atq. Spé de 50%, mais ne peut utilser que la 1ère capacité choisie.",
+    "Choice Band": "Augmente l'Attaque de 50%, mais ne peut utiliser que la 1ère capacité choisie.",
+    "Choice Scarf": "Augmente la Vitesse de 50%, mais ne peut utiliser que la 1ère capacité choisie.",
+    "Choice Specs": "Augmente l'Atq. Spé de 50%, mais ne peut utiliser que la 1ère capacité choisie.",
     "Chople Berry": "Divise par 2 les dégâts subis par une capacité Combat super efficace. Usage unique.",
     "Claw Fossil": "Peut être ranimé en Anorith.",
     "Clover Sweet": "Si tenue par un Crèmy et que le joueur tourne sur lui-même, il évolue en Charmilly.",
@@ -7878,7 +7992,14 @@ export const ItemsLongDescDico: { [index: string]: string; } = {
     "Pink Bow": "(Gen 2) Augmente la puissance des capacités de type Normal de 10%.",
     "Polkadot Bow": "(Gen 2) Augmente la puissance des capacités de type Normal de 10%.",
     "PRZ Cure Berry": "(Gen 2) Une Baie qui soigne la paralysie. Usage unique.",
-    "PSN Cure Berry": "(Gen 2) Une Baie qui soigne le poison. Usage unique."
+    "PSN Cure Berry": "(Gen 2) Une Baie qui soigne le poison. Usage unique.",
+	"Booster Energy": "Active les talents Paléosynthèse ou Charge Quantique. Usage unique.", 
+	"Ability Shield": "Le Talent du porteur ne peut pas être changé par un autre Pokémon.",
+	"Clear Amulet": "Empêche les autres Pokémon de baisser les stats du porteur.",
+	"Mirror Herb": "Quand le Pokémon adverse boost ses stats, ces boosts sont copiés. Usage unique.",
+	"Punching Glove": "Puissance des capacités de poing +20% et empêche le contact. ",
+	"Covert Cloak": "Le porteur n'est pas affecté par les effets secondaires des capacités adverses.",
+	"Loaded Dice": "Les capacités multi-coups du lanceur touchent au moins 4 fois.",
 }
 
 export const AbilitiesShortDescDico: { [index: string]: string; } = {
@@ -7963,7 +8084,7 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
     "Grassy Surge": "Le Pokémon crée un Champ Herbu au moment où il entre au combat.",
     "Grim Neigh": "L'Atq. Spé de ce Pokémon est augmentée de 1 s'il attaque et KO un autre Pokémon.",
     "Gulp Missile": "Si touché après Surf/Plongée, l'attaquant subit 25% PV max et -1 Défense/Paralysie.",
-    "Guts": "Si le Pokémon subit un statut,  Attaque +50%. Ignore baisse d'attaque de brûlure.",
+    "Guts": "Si le Pokémon subit un statut, Attaque +50%. Ignore baisse d'attaque de brûlure.",
     "Harvest": "Si l'objet utilisé est une Baie, 50% de chance de la récupérer chaque tour. Soleil : 100%.",
     "Healer": "30% de chance soigner le statut d'un allié adjacent à la fin de chaque tour.",
     "Heatproof": "Dégâts subis par les capacités de type Feu et la brûlure divisés par deux.",
@@ -8150,7 +8271,38 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
     "Wimp Out": "Si les PV du Pokémon tombent en dessous de 50%, il switch automatiquement.",
     "Wonder Guard": "Le Pokémon ne peut être blessé qu'avec des capacités super efficaces ou dégâts indirects.",
     "Wonder Skin": "La Précision des capacités de statut dirigées contre le Pokémon est divisée par 2.",
-    "Zen Mode": "Darumacho : à la fin du tour, change sa Forme en Normal si PV max > 50%, sinon Transe."
+    "Zen Mode": "Darumacho : à la fin du tour, change sa Forme en Normal si PV max > 50%, sinon Transe.",
+	"Earth Eater": "Soigne 25% des PV max si touché par une capacité Sol. Immunité Sol.",
+	"Wind Rider": "Si touché par une capacité de vent : Attaque +1. Immunité aux capacités de vent.",
+	"Armor Tail": "Ce Pokémon et ses alliés sont immunisés aux capacités de priorité adverses.", 
+	"Well-Baked Body": "Si touché par une capacité Feu, augmente la Défense de 2. Immunisé aux capacités Feu.",
+	"Tablets of Ruin": "L'Attaque de tous les autres Pokémon actifs est réduite de 25%.",
+	"Quark Drive": "Si Champ Électrifié ou Énergie Booster est actif, meilleure stat +30%, +50% si Vitesse.",
+	"Guard Dog": "Immunité à Intimidation. Intimidation : +1 Attaque. Ne peut pas être forcé de switch out.",
+	"Costar": "En arrivant sur le terrain, le Pokémon copie les changements de stats d'un allié.",
+	"Commander": "Si l'allié est Oyacata, le Pokémon ne peut pas jouer ni être touché. +2 aux stats d'Oyacata.",
+	"Good as Gold": "Ce Pokémon est immunisé aux capacités de Statut.",
+	"Anger Shell": "À 50% des PVs max ou moins : +1 Atq, Atq Spé et Vit, -1 Déf et Déf Spé.",
+	"Toxic Debris": "Si le Pokémon est touché par une capacité physique, dépose des Pics Toxik sur le terrain adverse.",
+	"Sword of Ruin": "La Défense de tous les autres Pokémon actifs est réduite de 25%.",
+	"Mycelium Might": "Les capacités de Statut du Pokémon s'activent en dernier mais ignorent les Talents.",
+	"Supreme Overlord": "L'Attaque et l'Attaque Spéciale du lanceur augmentent de 10% par allié KO.",
+	"Electromorphosis": "Le Pokémon devient chargé s'il subit une capacité physique.",
+	"Sharpness": "Augmente la puissance des capacités tranchantes de 50%",
+	"Hadron Engine": "Invoque le Champ Électrifié. Augmente l'Attaque Spéciale de 30% sous Champ Électrifié.",
+	"Lingering Aroma": "Change le Talent de l'attaquant en Odeur Tenace si le Pokémon subit une attaque contact.", 
+	"Opportunist": "Quand l'adversaire reçoit des boosts de stats, le Pokémon récupère les mêmes boosts.",
+	"Protosynthesis": "Si le Soleil ou Énergie Booster est actif, meilleure stat +30%, +50% si Vitesse.",
+	"Beads of Ruin": "La Défense Spéciale de tous les autres Pokémon actifs est réduite de 25%.",
+	"Rocky Payload": "Augmente la puissance des capacités de type Roche du Pokémon de 50%.",
+	"Orichalcum Pulse": "Invoque le Soleil. Augmente l'Attaque de 30% sous le Soleil.",
+	"Cud Chew": "Si le Pokémon mange une baie, la baie est de nouveau mangée à la fin du prochain tour.",
+	"Purifying Salt": "Ne peut pas souffrir du statut et ne subit que la moitié des dégâts des capacités Spectre.",
+	"Seed Sower": "Si le Pokémon est touché par une capacité, invoque le Champ Herbu.",
+	"Zero to Hero": "Si le Pokémon est Superdofin, passe en forme Super lorsqu'il quitte le terrain.",
+	"Thermal Exchange": "Augmente l'Attaque du Pokémon de 1 si touché par une capacité Feu. Immunité Brûlure.",
+	"Wind Power": "Si le Pokémon est touché par une capacité de vent, il devient chargé.",
+	"Vessel of Ruin": "L'Attaque Spéciale de tous les autres Pokémon actifs est réduite de 25%.",
 }
 
 export const AbilitiesLongDescDico: { [index: string]: string; } = {

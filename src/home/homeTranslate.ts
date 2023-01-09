@@ -1,4 +1,4 @@
-import { isValidEnglishMenu, MenuDico, translateMenu, translatePokemonTeam, translateRawElement, translateRegexBattleMessage, translateRegexPopupMessage } from "../translator";
+import { DEBUG, isValidEnglishMenu, MenuDico, translateMenu, translatePokemonTeam, translateRawElement, translateRegexBattleMessage, translateRegexPopupMessage } from "../translator";
 import { PLAY_SHOWDOWN_HOST, REPLAYS_SHOWDOWN_HOST } from "../translator";
 
 console.log("HomeTranslate successfully loaded !");
@@ -28,7 +28,7 @@ function onMutation(mutations: MutationRecord[])
 	// Iterate over every mutated nodes
 	for (var i = 0, len = mutations.length; i < len ; i++)
 	{		
-		// console.log(mutations[i]);
+		// if (DEBUG) console.log(mutations[i]);
 
 		if (mutations[i].type == "childList")
 		{
@@ -43,7 +43,7 @@ function onMutation(mutations: MutationRecord[])
                 // so instead we add a boolean that changes when no match is found
                 var translatedElement = true;
 
-				// console.log(newElement.outerHTML);
+				if (DEBUG) console.log(newElement.outerHTML);
 
                 // Find element by ID
                 if (newElement.id)
