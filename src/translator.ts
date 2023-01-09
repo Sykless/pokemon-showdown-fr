@@ -15,7 +15,7 @@ const FILTER = 13;
 const POPUPMESSAGE = 14;
 const LOGMESSAGE = 15;
 
-export const DEBUG = true;
+export const DEBUG = false;
 
 export const PLAY_SHOWDOWN_HOST = "play.pokemonshowdown.com";
 export const REPLAYS_SHOWDOWN_HOST = "replay.pokemonshowdown.com";
