@@ -301,8 +301,19 @@ function updatePokemonTooltip(tooltip: Element)
             tooltipContent.childNodes.forEach(function (pokemonInfoNode) {
                 var pokemonInfo = pokemonInfoNode as Element;
 
+                // Pokemon type sprite
                 if (pokemonInfo.tagName == "IMG") {
                     updatePokemonTypeSprite(pokemonInfo as HTMLImageElement);
+                }
+                // Pokemon type sprite put inside a SPAN tag
+                else if (pokemonInfo.tagName == "SPAN" && pokemonInfo.classList.contains("textaligned-typeicons")) {
+                    pokemonInfo.childNodes.forEach(function (pokemonTypeNode) {
+                        var pokemonType = pokemonTypeNode as Element;
+
+                        if (pokemonType.tagName == "IMG") {
+                            updatePokemonTypeSprite(pokemonType as HTMLImageElement);
+                        }
+                    })
                 }
                 // Level/Alternate form/Tera Type
                 else if (pokemonInfo.tagName == "SMALL")
@@ -313,6 +324,16 @@ function updatePokemonTooltip(tooltip: Element)
                         // Tera Type sprite
                         if (pokemonSubInfo.tagName == "IMG") {
                             updatePokemonTypeSprite(pokemonSubInfo as HTMLImageElement);
+                        }
+                        // Tera Type sprite put inside a SPAN tag
+                        else if (pokemonSubInfo.tagName == "SPAN" && pokemonSubInfo.classList.contains("textaligned-typeicons")) {
+                            pokemonSubInfo.childNodes.forEach(function (pokemonTeraTypeNode) {
+                                var pokemonTeraType = pokemonTeraTypeNode as Element;
+
+                                if (pokemonTeraType.tagName == "IMG") {
+                                    updatePokemonTypeSprite(pokemonTeraType as HTMLImageElement);
+                                }
+                            })
                         }
                         // Text content
                         else if (pokemonSubInfo.textContent)
