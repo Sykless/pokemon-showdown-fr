@@ -1,4 +1,4 @@
-import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, isValidEnglishMenu, isValidEnglishAbility, isValidEnglishWeather, isValidEnglishBoostEffect, translateBoostEffect, DEBUG } from "../translator";
+import { isValidEnglishItem, isValidEnglishMove, isValidEnglishPokemonName, isValidEnglishEffect, isValidEnglishType, translateWeather, PokemonDico, ItemsDico, MovesDico, AbilitiesDico, NaturesDico, TypesDico, translateRegexBattleMessage, MovesLongDescDico, translateMoveEffect, isValidEnglishMoveEffect, MovesShortDescDico, isValidEnglishMenu, isValidEnglishAbility, isValidEnglishWeather, isValidEnglishBoostEffect, translateBoostEffect, DEBUG, filterWhitelistedUsernames } from "../translator";
 import { translateAbility, translateEffect, translateItem, translateMenu, translateMove, translatePokemonName, translateStat, translateType }  from "../translator"; 
 import { PLAY_SHOWDOWN_HOST, REPLAYS_SHOWDOWN_HOST } from "../translator";
 
@@ -70,7 +70,8 @@ function onMutation(mutations: MutationRecord[])
                     // New user joined
                     if (newElement.id.match(/^battle-(.*)-userlist-user-(.*)$/))
                     {
-                        updateUserCountFromUsername(parentElement)
+                        updateUserCountFromUsername(parentElement);
+                        hideUsername(newElement);
                     }
                 }
 
@@ -979,11 +980,20 @@ function updateMove(moveMainNode: Node)
 function updateTrainerElement(trainerElement: Element)
 {
     trainerElement.childNodes.forEach(function (trainerContentNode) {
-        var trainerContent = trainerContentNode as HTMLDivElement;
+        var trainerContent = trainerContentNode as Element;
 
-        // Only translate ranking if present
-        if (trainerContent.classList?.contains("trainersprite") && trainerContent.title?.startsWith("Rating: ")) {
-            trainerContent.title = translateMenu("Rating: ") + trainerContent.title.replace("Rating: ", "");
+        // Hide Trainer name
+        if (trainerContent.tagName == "STRONG" && trainerContent.textContent) {
+            trainerContent.textContent = filterWhitelistedUsernames(trainerContent.textContent);
+        }
+        // Translate ranking if present
+        else if (trainerContent.tagName == "DIV")
+        {
+            var trainerSprite = trainerContent as HTMLDivElement;
+
+            if (trainerSprite.classList?.contains("trainersprite") && trainerSprite.title?.startsWith("Rating: ")) {
+                trainerSprite.title = translateMenu("Rating: ") + trainerSprite.title.replace("Rating: ", "");
+            } 
         }
     })
 }
@@ -1384,7 +1394,19 @@ function updateChatElement(messageElement: Element)
         messageElement.childNodes.forEach(function (chatNode) {
             var chatElement = chatNode as Element;
 
-            if (chatElement.tagName == "EM" && chatElement.textContent && /!.* <".*">/.test(chatElement.textContent)) {
+            // Trainer name
+            if (chatElement.tagName == "STRONG") {
+                chatElement.childNodes.forEach(function (trainerElementNode) {
+                    var trainerElement = trainerElementNode as Element;
+
+                    // Hide non-Redemption trainer name
+                    if (trainerElement.tagName == "SPAN" && trainerElement.className == "username" && trainerElement.textContent) {
+                        trainerElement.textContent = filterWhitelistedUsernames(trainerElement.textContent);
+                    }
+                })
+            }
+            // Chat message
+            else if (chatElement.tagName == "EM" && chatElement.textContent && /!.* <".*">/.test(chatElement.textContent)) {
                 // '"<>"' is a tag indicating that we can remove the message
                 messageElement.parentElement?.removeChild(messageElement);
             }
@@ -1709,6 +1731,23 @@ function updateRatedBattle(ratedBattleElement: Element)
         // Translate strong child
         ratedTextElement.textContent = translateMenu(ratedTextElement.textContent);
     }
+}
+
+function hideUsername(trainerElement: Element)
+{
+    trainerElement.childNodes.forEach(function (trainerInfoNode) {
+        var trainerInfo = trainerInfoNode as Element;
+
+        if (trainerInfo.tagName == "BUTTON" && trainerInfo.classList.contains("username")) {
+            trainerInfo.childNodes.forEach(function (trainerNameNode) {
+                var trainerName = trainerNameNode as Element;
+
+                if (trainerName.tagName == "SPAN" && trainerName.textContent) {
+                    trainerName.textContent = filterWhitelistedUsernames(trainerName.textContent);
+                }
+            })
+        }
+    })
 }
 
 function getCurrentDisplayedInfo(infoTitle: string)

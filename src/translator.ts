@@ -177,18 +177,18 @@ RegexPopupMessagesMap.set(/- (.*)'s move (.*) is not in the list of allowed move
 RegexPopupMessagesMap.set(/- (.*)'s ability (.*) is not in the list of allowed abilities\./, "- Le talent {SWAP_1_ABILITY} de {SWAP_0_NICKNAME} n'est pas dans la liste des talents autorisés.");
 RegexPopupMessagesMap.set(/- (.*)'s nature (.*) is not in the list of allowed abilities\./, "- La nature {SWAP_1_NATURE} de {SWAP_0_NICKNAME} n'est pas dans la liste des natures autorisées.");
 RegexPopupMessagesMap.set(/The room "(.*)" does not exist\./, "Le salon {ROOM} n'existe pas.");
-RegexPopupMessagesMap.set(/The user '(.*)' was not found\./, "L'utilisateur '{TRAINER}' n'a pas été trouvé.");
+RegexPopupMessagesMap.set(/The user '(.*)' was not found\./, "L'utilisateur '{USER}' n'a pas été trouvé.");
 RegexPopupMessagesMap.set(/You are trapped and cannot select (.*)!/, "Tu es piégé, tu ne peux pas sélectionner {POKEMON} !");
 
 // TRAINER
-RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le match entre {TRAINER} et {TRAINER} a commencé !");
-RegexLogMessagesMap.set(/Tie between (.*) and (.*)!/, "Égalité entre {TRAINER} et {TRAINER} !");
+RegexLogMessagesMap.set(/Battle started between (.*) and (.*)!/, "Le match entre {TRAINER_1} et {TRAINER_2} a commencé !");
+RegexLogMessagesMap.set(/Tie between (.*) and (.*)!/, "Égalité entre {TRAINER_1} et {TRAINER_2} !");
 RegexLogMessagesMap.set(/(.*) forfeited\./, "{TRAINER} a déclaré forfait.");
 RegexLogMessagesMap.set(/(.*) disconnected and has (.*) seconds to reconnect!/, "{TRAINER} est déconnecté et a {NUMBER} secondes pour se reconnecter !");
 RegexLogMessagesMap.set(/(.*) has (.*) seconds to reconnect!/, "{TRAINER} a {NUMBER} secondes pour se reconnecter !");
 RegexLogMessagesMap.set(/(.*) reconnected and has (.*) seconds left/, "{TRAINER} n'a plus que {NUMBER} secondes.");
 RegexLogMessagesMap.set(/(.*) has (.*) seconds left\./, "{TRAINER} n'a plus que {NUMBER} secondes.");
-RegexLogMessagesMap.set(/(.*) and (.*) left/, "{TRAINER} et {TRAINER} sont partis");
+RegexLogMessagesMap.set(/(.*) and (.*) left/, "{TRAINER_1} et {TRAINER_2} sont partis");
 RegexLogMessagesMap.set(/(.*) and (.*) joined/, "{TRAINER_1} et {TRAINER_2} ont rejoint la partie");
 RegexLogMessagesMap.set(/(.*) left/, "{TRAINER} est parti");
 RegexLogMessagesMap.set(/(.*) joined/, "{TRAINER} a rejoint la partie");
@@ -5553,6 +5553,19 @@ export function translatePokemonTeam(teamName: string)
 	return translatedName + teamName;
 }
 
+export function filterWhitelistedUsernames(trainerName: string) {
+	if (isWhitelistedUsername(trainerName)) {
+		return trainerName;
+	}
+	else {
+		return "Adversaire";
+	}
+}
+
+export function isWhitelistedUsername(trainerName: string) {
+	return ["Sykless", "Redemption"].includes(trainerName);
+}
+
 export function translateRegexPopupMessage(originalString: string) {
 	return translateRegexMessage(originalString, POPUPMESSAGE)
 }
@@ -5702,6 +5715,14 @@ export function translateRegexMessage(originalString: string, translationType: n
 					}
 					else if (isValidEnglishItem(variableName)) {
 						translated[1] = translated[1].replace("{EFFECT}", translateItem(variableName));
+					}
+                }
+				else if (variablesToTranslate[i].includes("{TRAINER")) {
+					if (isWhitelistedUsername(variableName.replace("☆",""))) {
+						translated[1] = translated[1].replace(variablesToTranslate[i], variableName);
+					}
+					else {
+						translated[1] = translated[1].replace(variablesToTranslate[i], "Adversaire");
 					}
                 }
                 else {
