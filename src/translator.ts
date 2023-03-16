@@ -332,7 +332,7 @@ RegexLogMessagesMap.set(/(.*) fell in love!/, "{POKEMON} est amoureux !");
 RegexLogMessagesMap.set(/(.*) fell in love because of the (.*)!/, "{SWAP_1_ITEM} rend {SWAP_0_POKEMON} amoureux !");
 RegexLogMessagesMap.set(/(.*) got over its infatuation!/, "{POKEMON} n'est plus amoureux !");
 RegexLogMessagesMap.set(/(.*) cured its infatuation using its (.*)!/, "La {SWAP_1_ITEM} du {SWAP_0_POKEMON} fait faner son amour !");
-RegexLogMessagesMap.set(/(.*) is in love with (.*)!/, "{POKEMON_1} est amoureux du {POKEMON_2}");
+RegexLogMessagesMap.set(/(.*) is in love with (.*)!/, "{POKEMON_1} est amoureux du {POKEMON_2} !");
 RegexLogMessagesMap.set(/(.*) is immobilized by love!/, "L'amour empêche {POKEMON} d'agir !");
 RegexLogMessagesMap.set(/A sea of fire enveloped (.*)!/, "{TEAM} est cernée par une mer de feu !");
 RegexLogMessagesMap.set(/The sea of fire around (.*) disappeared!/, "La mer de feu autour de {TEAM} a disparu !");
@@ -391,7 +391,7 @@ RegexLogMessagesMap.set(/(.*) knocked off (.*)'s (.*)!/, "{SWAP_0_POKEMON_1} fai
 RegexLogMessagesMap.set(/(.*) concentrated intensely!/, "{POKEMON} aiguise son esprit !");
 RegexLogMessagesMap.set(/Light Screen made (.*) stronger against special moves!/, "Mur Lumière augmente la résistance de {TEAM} aux capacités spéciales !");
 RegexLogMessagesMap.set(/(.*)'s Light Screen wore off!/, "Mur Lumière n'a plus d'effet sur {TEAM} !");
-RegexLogMessagesMap.set(/(.*) took aim at (.*)!/, "{POKEMON_1} vise {POKEMON_2}");
+RegexLogMessagesMap.set(/(.*) took aim at (.*)!/, "{POKEMON_1} vise {POKEMON_2} !");
 RegexLogMessagesMap.set(/Lucky Chant shielded (.*) from critical hits!/, "L'Air Veinard immunise {TEAM} contre les coups critiques !");
 RegexLogMessagesMap.set(/(.*)'s Lucky Chant wore off!/, "L'Air Veinard de {TEAM} prend fin !");
 RegexLogMessagesMap.set(/(.*) became cloaked in mystical moonlight!/, "{POKEMON} est baigné par des rayons de lune !");
@@ -544,6 +544,7 @@ RegexLogMessagesMap.set(/(.*) endured the hit!/, "{POKEMON} encaisse les coups !
 RegexLogMessagesMap.set(/(.*) fell for the feint!/, "{POKEMON s'est fait avoir par une ruse !");
 RegexLogMessagesMap.set(/(.*) got trapped by a snap trap/, "{POKEMON} est tombé dans un Troquenard !");
 RegexLogMessagesMap.set(/(.*) became covered in salt!/, "{POKEMON} est couvert de sel !");
+RegexLogMessagesMap.set(/(.*) shed its tail to create a decoy!/, "{POKEMON} détache sa queue pour créer un leurre !");
 
 // ABILITIES
 RegexLogMessagesMap.set(/(.*) was hurt!/, "{POKEMON} est blessé !");
@@ -609,6 +610,7 @@ RegexLogMessagesMap.set(/(.*)'s Vessel of Ruin weakened the Sp. Atk of all surro
 RegexLogMessagesMap.set(/The effects of (.*)'s (.*) wore off!/, "L'effet du talent {SWAP_1_ABILITY} de {SWAP_0_POKEMON} s'est dissipé !");
 RegexLogMessagesMap.set(/Being hit by (.*) charged (.*) with power!/, "{SWAP_1_POKEMON} a été touché par la capacité {SWAP_0_MOVE} et se charge en électricité !");
 RegexLogMessagesMap.set(/A lingering aroma clings to (.*)!/, "Une odeur tenace imprègne {POKEMON} !");
+RegexLogMessagesMap.set(/(.*) gained strength from the fallen!/, "{POKEMON} reçoit la puissance de ses alliés mis K.O. !");
 
 // MISC
 RegexLogMessagesMap.set(/(.*) moved to the center!/, "{POKEMON} s'est déplacé au milieu !");
@@ -2175,7 +2177,9 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Toedscruel": "Terracruel",
 	"Kingambit": "Scalpereur",
 	"Clodsire": "Terraiste",
-	"Annihilape": "Courrousinge"
+	"Annihilape": "Courrousinge",
+	"Walking Wake": "Serpente-Eau",
+	"Iron Leaves": "Vert-de-Fer"
 };
 
 export const AbilitiesDico: { [englishName: string]: string; } = {
@@ -2213,7 +2217,7 @@ export const AbilitiesDico: { [englishName: string]: string; } = {
     "Lightning Rod": "Paratonnerre",
     "Serene Grace": "Sérénité",
     "Swift Swim": "Glissade",
-    "Chlorophyll": "Chlorophyle",
+    "Chlorophyll": "Chlorophylle",
     "Illuminate": "Lumiattirance",
     "Trace": "Calque",
     "Huge Power": "Coloforce",
@@ -3943,6 +3947,9 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"Punching Glove": "Gant de Boxe",
 	"Covert Cloak": "Cape Obscure",
 	"Loaded Dice": "Dé Pipé",
+	"Adamant Crystal": "Globe Adamant",
+	"Lustrous Globe": "Globe Perlé",
+	"Griseous Core": "Globe Platiné"
 }
 
 export const AliasDico:  { [englishName: string]: string; } = {
@@ -5050,6 +5057,7 @@ export const LogMessagesDico:  { [englishName: string]: string; } = {
 	"The mist disappeared from the battlefield.": "La brume qui recouvrait le terrain se dissipe...",
 	"The battlefield got weird!": "Le sol se met à réagir de façon bizarre...",
 	"The weirdness disappeared from the battlefield!": "Le sol redevient normal !",
+	"(Psychic Terrain doesn't affect Pokémon immune to Ground.)": "(Les Pokémon immunisés au type Sol ne sont pas affectés par le Champ Psychique.)",
 
 	"Automatic center!": "Réinitialisation !",
 	"But there was no target...": "Mais il n'y a pas de cible ! ",
@@ -6918,8 +6926,8 @@ export const MovesLongDescDico: { [index: string]: string; } = {
 	"G-Max Sandblast": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Enlisement G-Max. Si la capacité réussit, elle empêche chaque Pokémon adverse de quitter le terrain pendant 4 ou 5 tours (7 tours si l'utilisateur tient l'Accro Griffe). Elle inflige aussi à la cible des dégâts égaux à 1/8 de ses PVs maximums (1/6 si l'utilisateur tient la Bande Étreinte), arrondis à l'unité inférieure, à la fin de chaque tour pendant l'effet. La cible peut toujours se retirer si elle tient la Carapace Mue ou utilise Relais, Eau Revoir, Dernier Mot, Téléport, Demi-Tour, ou Change Éclair. L'effet prend fin si l'utilisateur ou la cible quitte le terrain, ou si la cible utilise Tour Rapide ou Clonage avec succès. Cet effet n'est pas cumulable ou réinitialisé par l'utilisation de cette attaque ou d'une autre attaque piégeant un Pokémon sur le terrain.",
 	"G-Max Smite": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Sentence G-Max. Si la capacité réussit, chaque Pokémon du camp adverse est plongé dans la confusion, même s'il se trouve derrière un clone.",
 	"G-Max Snooze": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Torpeur G-Max. Si la capacité réussit, l'effet de Bâillement commence sur la cible, même si elle est derrière un clone.",
-	"G-Max Steelsurge": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Récif G-Max. Si la capacité réussit, des pics de métal pointus sont posés du côté adverse du terrain, blessant chaque Pokémon adverse qui est envoyé sur le terrain, même s'il se trouve derrière un clone. Échoue si l'effet est déjà actif sur le terrain adverse. Les ennemis perdent 1/32, 1/16, 1/8, 1/4, ou 1/2 de leurs PVs maximums, en fonction de leur faiblesse au type Acier; 0.25x, 0.5x, neutre, 2x, ou 4x, respectivement. Peut être retiré du terrain adverse si un Pokémon adverse utilise Tour Rapide ou Anti-Brume avec succès.",
-	"G-Max Stonesurge": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Percée G-Max. Si la capacité réussit, pose les Pièges de Roc du côté adverse du terrain, blessant chaque Pokémon adverse qui est envoyé sur le terrain, même s'il se trouve derrière un clone. Échoue si l'effet est déjà actif sur le terrain adverse. Les ennemis perdent 1/32, 1/16, 1/8, 1/4, ou 1/2 de leurs PVs maximums, en fonction de leur faiblesse au type Roche; 0.25x, 0.5x, neutre, 2x, ou 4x, respectivement. Peut être retiré du terrain adverse si un Pokémon adverse utilise Tour Rapide ou Anti-Brume avec succès.",
+	"G-Max Steelsurge": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Percée G-Max. Si la capacité réussit, des pics de métal pointus sont posés du côté adverse du terrain, blessant chaque Pokémon adverse qui est envoyé sur le terrain, même s'il se trouve derrière un clone. Échoue si l'effet est déjà actif sur le terrain adverse. Les ennemis perdent 1/32, 1/16, 1/8, 1/4, ou 1/2 de leurs PVs maximums, en fonction de leur faiblesse au type Acier; 0.25x, 0.5x, neutre, 2x, ou 4x, respectivement. Peut être retiré du terrain adverse si un Pokémon adverse utilise Tour Rapide ou Anti-Brume avec succès.",
+	"G-Max Stonesurge": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Récif G-Max. Si la capacité réussit, pose les Pièges de Roc du côté adverse du terrain, blessant chaque Pokémon adverse qui est envoyé sur le terrain, même s'il se trouve derrière un clone. Échoue si l'effet est déjà actif sur le terrain adverse. Les ennemis perdent 1/32, 1/16, 1/8, 1/4, ou 1/2 de leurs PVs maximums, en fonction de leur faiblesse au type Roche; 0.25x, 0.5x, neutre, 2x, ou 4x, respectivement. Peut être retiré du terrain adverse si un Pokémon adverse utilise Tour Rapide ou Anti-Brume avec succès.",
 	"G-Max Stun Shock": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Choc G-Max. Si la capacité réussit, chaque Pokémon du camp adverse devient soit paralysé soit empoisonné, même s'il se trouve derrière un clone.",
 	"G-Max Sweetness": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Nectar G-Max. Si la capacité réussit, chaque Pokémon de l'équipe a ses problèmes de statut soignés",
 	"G-Max Tartness": "La puissance de cette attaque est proportionnelle à la puissance de la capacité qui est devenue Corrosion G-Max. Si la capacité réussit, l'Esquive de chaque Pokémon adverse est diminuée d'1 cran, même s'il se trouve derrière un clone.",
@@ -7997,7 +8005,7 @@ export const ItemsLongDescDico: { [index: string]: string; } = {
 	"Ability Shield": "Le Talent du porteur ne peut pas être changé par un autre Pokémon.",
 	"Clear Amulet": "Empêche les autres Pokémon de baisser les stats du porteur.",
 	"Mirror Herb": "Quand le Pokémon adverse boost ses stats, ces boosts sont copiés. Usage unique.",
-	"Punching Glove": "Puissance des capacités de poing +20% et empêche le contact. ",
+	"Punching Glove": "Puissance des capacités de poing +10% et empêche le contact. ",
 	"Covert Cloak": "Le porteur n'est pas affecté par les effets secondaires des capacités adverses.",
 	"Loaded Dice": "Les capacités multi-coups du lanceur touchent au moins 4 fois.",
 }
