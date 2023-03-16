@@ -2177,7 +2177,9 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Toedscruel": "Terracruel",
 	"Kingambit": "Scalpereur",
 	"Clodsire": "Terraiste",
-	"Annihilape": "Courrousinge"
+	"Annihilape": "Courrousinge",
+	"Walking Wake": "Serpente-Eau",
+	"Iron Leaves": "Vert-de-Fer"
 };
 
 export const AbilitiesDico: { [englishName: string]: string; } = {
