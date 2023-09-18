@@ -4226,6 +4226,7 @@ export const EffectsDico: { [englishName: string]: string; } = {
 	"Slow Start": "Début Calme",
 	"Slow Start ended": "Début Calme plus actif",
 	"Flash Fire": "Torche",
+	"Fallen": "Vaincu",
 
 	// ITEMS
 	"Balloon": "Ballon",
