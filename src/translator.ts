@@ -546,6 +546,7 @@ RegexLogMessagesMap.set(/(.*) got trapped by a snap trap/, "{POKEMON} est tombé
 RegexLogMessagesMap.set(/(.*) became covered in salt!/, "{POKEMON} est couvert de sel !");
 RegexLogMessagesMap.set(/(.*) shed its tail to create a decoy!/, "{POKEMON} détache sa queue pour créer un leurre !");
 RegexLogMessagesMap.set(/(.*) got covered in sticky candy syrup!/, "{POKEMON} est recouvert de sirop !");
+RegexLogMessagesMap.set(/(.*) was revived and is ready to fight again!/, "{POKEMON} a repris connaissance et est prêt à se battre de nouveau !");
 
 // ABILITIES
 RegexLogMessagesMap.set(/(.*) was hurt!/, "{POKEMON} est blessé !");
