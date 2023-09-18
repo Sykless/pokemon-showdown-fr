@@ -1586,6 +1586,7 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Frogadier": "Croâporal",
 	"Greninja": "Amphinobi",
 	"Greninja-Ash": "Amphinobi-Sacha",
+	"Greninja-Bond": "Amphinobi-Synergie",
 	"Bunnelby": "Sapereau",
 	"Diggersby": "Excavarenne",
 	"Fletchling": "Passerouge",
