@@ -4957,7 +4957,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Retry with HTTP": "Réessayer en HTTP",
 	"You have been logged out and disconnected.": "Tu as été déconnecté.",
 	"If you wanted to change your name while staying connected, use the 'Change Name' button or the '/nick' command.": "Si tu veux changer de nom et rester connecté, utilise le bouton \"Changer de nom\" ou la commande \"/nick\".",
-	"The name you chose is registered.": "Le nom que tu as choisis est déjà utilisé.",
+	"The name you chose is registered.": "Le nom que tu as choisi est déjà utilisé.",
 	"Wrong password.": "Mot de passe incorrect.",
 	"If this is your account:": "Si c'est ton compte :",
 	"If this is someone else's account:": "Si c'est le compte de quelqu'un d'autre :",
