@@ -545,6 +545,8 @@ RegexLogMessagesMap.set(/(.*) fell for the feint!/, "{POKEMON s'est fait avoir p
 RegexLogMessagesMap.set(/(.*) got trapped by a snap trap/, "{POKEMON} est tombé dans un Troquenard !");
 RegexLogMessagesMap.set(/(.*) became covered in salt!/, "{POKEMON} est couvert de sel !");
 RegexLogMessagesMap.set(/(.*) shed its tail to create a decoy!/, "{POKEMON} détache sa queue pour créer un leurre !");
+RegexLogMessagesMap.set(/(.*) got covered in sticky candy syrup!/, "{POKEMON} est recouvert de sirop !");
+RegexLogMessagesMap.set(/(.*) was revived and is ready to fight again!/, "{POKEMON} a repris connaissance et est prêt à se battre de nouveau !");
 
 // ABILITIES
 RegexLogMessagesMap.set(/(.*) was hurt!/, "{POKEMON} est blessé !");
@@ -611,6 +613,8 @@ RegexLogMessagesMap.set(/The effects of (.*)'s (.*) wore off!/, "L'effet du tale
 RegexLogMessagesMap.set(/Being hit by (.*) charged (.*) with power!/, "{SWAP_1_POKEMON} a été touché par la capacité {SWAP_0_MOVE} et se charge en électricité !");
 RegexLogMessagesMap.set(/A lingering aroma clings to (.*)!/, "Une odeur tenace imprègne {POKEMON} !");
 RegexLogMessagesMap.set(/(.*) gained strength from the fallen!/, "{POKEMON} reçoit la puissance de ses alliés mis K.O. !");
+RegexLogMessagesMap.set(/(.*) drank down all the matcha that (.*) made!/, "{POKEMON_1} boit le thé préparé par {POKEMON_2} !");
+RegexLogMessagesMap.set(/A supersweet aroma is wafting from the syrup covering (.*)!/, "Le nectar de {POKEMON} dégage un parfum sucré !");
 
 // MISC
 RegexLogMessagesMap.set(/(.*) moved to the center!/, "{POKEMON} s'est déplacé au milieu !");
@@ -1582,6 +1586,7 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Frogadier": "Croâporal",
 	"Greninja": "Amphinobi",
 	"Greninja-Ash": "Amphinobi-Sacha",
+	"Greninja-Bond": "Amphinobi-Synergie",
 	"Bunnelby": "Sapereau",
 	"Diggersby": "Excavarenne",
 	"Fletchling": "Passerouge",
@@ -1972,6 +1977,7 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Wyrdeer": "Cerbyllin",
 	"Kleavor": "Hachécateur",
 	"Ursaluna": "Ursaking",
+	"Ursaluna-Bloodmoon": "Ursaking-Lune Vermeille",
 	"Basculegion": "Paragruel",
 	"Basculegion-F": "Paragruel-F",
 	"Sneasler": "Farfurex",
@@ -2179,7 +2185,23 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Clodsire": "Terraiste",
 	"Annihilape": "Courrousinge",
 	"Walking Wake": "Serpente-Eau",
-	"Iron Leaves": "Vert-de-Fer"
+	"Iron Leaves": "Vert-de-Fer",
+	"Dipplin": "Pomdramour",
+	"Poltchageist": "Poltchageist",
+	"Poltchageist-Artisan": "Poltchageist-Onéreuse",
+	"Sinistcha": "Théffroyable",
+	"Sinistcha-Masterpiece": "Théffroyable-Exceptionnelle",
+	"Okidogi": "Félicanis",
+	"Munkidori": "Fortusimia",
+	"Fezandipiti": "Favianos",
+	"Ogerpon": "Ogerpon",
+	"Ogerpon-Wellspring": "Ogerpon-du Puits",
+	"Ogerpon-Hearthflame": "Ogerpon-du Fourneau",
+	"Ogerpon-Cornerstone": "Ogerpon-de la Pierre",
+	"Ogerpon-Teal-Tera": "Ogerpon-Turquoise-Tera",
+	"Ogerpon-Wellspring-Tera": "Ogerpon-du Puits-Tera",
+	"Ogerpon-Hearthflame-Tera": "Ogerpon-du Fourneau-Tera",
+	"Ogerpon-Cornerstone-Tera": "Ogerpon-de la Pierre-Tera"
 };
 
 export const AbilitiesDico: { [englishName: string]: string; } = {
@@ -2484,7 +2506,15 @@ export const AbilitiesDico: { [englishName: string]: string; } = {
     "Zero to Hero": "Supermutation",
     "Thermal Exchange": "Thermodynamique",
     "Wind Power": "Turbine Éolienne",
-    "Vessel of Ruin": "Urne du Fléau"
+    "Vessel of Ruin": "Urne du Fléau",
+	"Embody Aspect (Cornerstone)": "Force Mémorielle (de la Pierre)",
+	"Embody Aspect (Hearthflame)": "Force Mémorielle (du Fourneau)",
+	"Embody Aspect (Teal)": "Force Mémorielle (Turquoise)",
+	"Embody Aspect (Wellspring)": "Force Mémorielle (du Puits)",
+	"Hospitality": "Aux Petits Soins",
+	"Mind's Eye": "Oeil Révélateur",
+	"Supersweet Syrup": "Nectar Mielleux",
+	"Toxic Chain": "Chaîne Toxique"
 }
 
 export const MovesDico: { [englishName: string]: string; } = {
@@ -3420,7 +3450,13 @@ export const MovesDico: { [englishName: string]: string; } = {
     "Aqua Cutter": "Tranch'Aqua",
     "Triple Dive": "Triple Plongeon",
     "Electro Drift": "Turbo Volt",
-    "Comeuppance": "Vindicte"
+    "Comeuppance": "Vindicte",
+	"Psyblade": "Lame Psychique",
+	"Hydro Steam": "Hydrovapeur",
+	"Blood Moon": "Lune Rouge",
+	"Ivy Cudgel": "Massue Liane",
+	"Matcha Gotcha": "Mortier Matcha",
+	"Syrup Bomb": "Bombe au Sirop"
 }
 
 export const ItemsDico: { [englishName: string] : string; } = {
@@ -3949,7 +3985,14 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"Loaded Dice": "Dé Pipé",
 	"Adamant Crystal": "Globe Adamant",
 	"Lustrous Globe": "Globe Perlé",
-	"Griseous Core": "Globe Platiné"
+	"Griseous Core": "Globe Platiné",
+	"Cornerstone Mask": "Masque de la Pierre",
+	"Hearthflame Mask": "Masque du Fourneau",
+	"Wellspring Mask": "Masque du Puits",
+	"Fairy Feather": "Plume Féérique",
+	"Masterpiece Teacup": "Bol Exceptionnel",
+	"Syrupy Apple": "Pomme Nectar",
+	"Unremarkable Teacup": "Bol Médiocre"
 }
 
 export const AliasDico:  { [englishName: string]: string; } = {
@@ -4177,12 +4220,15 @@ export const EffectsDico: { [englishName: string]: string; } = {
 	"Thunder Cage": "Voltageôle",
 	"Whirlpool": "Siphon",
 	"Wrap": "Ligotage",
+	"Syrupy": "Couvert de Sirop",
+	"Salt Cure": "Salaison",
 	
 	// ABILITIES
 	"Loafing around": "Paresse",
 	"Slow Start": "Début Calme",
 	"Slow Start ended": "Début Calme plus actif",
 	"Flash Fire": "Torche",
+	"Fallen": "Vaincu",
 
 	// ITEMS
 	"Balloon": "Ballon",
@@ -4912,7 +4958,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Retry with HTTP": "Réessayer en HTTP",
 	"You have been logged out and disconnected.": "Tu as été déconnecté.",
 	"If you wanted to change your name while staying connected, use the 'Change Name' button or the '/nick' command.": "Si tu veux changer de nom et rester connecté, utilise le bouton \"Changer de nom\" ou la commande \"/nick\".",
-	"The name you chose is registered.": "Le nom que tu as choisis est déjà utilisé.",
+	"The name you chose is registered.": "Le nom que tu as choisi est déjà utilisé.",
 	"Wrong password.": "Mot de passe incorrect.",
 	"If this is your account:": "Si c'est ton compte :",
 	"If this is someone else's account:": "Si c'est le compte de quelqu'un d'autre :",
@@ -6682,6 +6728,12 @@ export const MovesShortDescDico: { [index: string]: string; } = {
 	"Triple Dive": "Touche trois fois.",
 	"Electro Drift": "Dégâts +30% si la capacité est super efficace.",
 	"Comeuppance": "Si touché par attaque, renvoie dégâts x1.5.",
+	"Psyblade": "Puissance x2 sur Champ Électrifié.",
+	"Hydro Steam": "Sous Soleil : puissance x1.5 à la place de x0.5.",
+	"Blood Moon": "Ne peut pas être utilisée deux fois d'affilée.",
+	"Ivy Cudgel": "Haut taux de critique. Type dépend de la forme.",
+	"Matcha Gotcha": "20% brûlure. Soigne 50% dégâts infligés. Dégèle.",
+	"Syrup Bomb": "Baisse la Vitesse de la cible de 1 pendant 3 tours."
 }
 
 export const MovesLongDescDico: { [index: string]: string; } = {
@@ -7484,7 +7536,12 @@ export const MovesLongDescDico: { [index: string]: string; } = {
 	"Tera Blast": "Si l'utilisateur est Téracristallisé, cette capacité devient physique si l'Attaque du lanceur est supérieure à son Attaque Spéciale, en prenant en compte les changements de stats, et son type devient le type Téracristal du lanceur.",
 	"Mortal Spin": "Si cette capacité est utilisée avec succès, les effets de Vampigraine et des capacités de piège sur le lanceur prennent fin. Tous les éléments sur le terrain tels que Picots, Pics Toxics, Piège de Roc, Toile Gluante sont supprimés du côté du terrain de l'utilisateur. Empoisonne le Pokémon adverse.",
 	"Aqua Cutter": "Cette capacité a plus de chance (12,5% soit 1/8) d'infliger un coup critique.",
-"Comeuppance": "Inflige au dernier Pokémon adverse à toucher l'utilisateur avec une attaque physique ou spéciale ce tour des dégâts égaux à 1.5x les PVs perdus par l'utilisateur suite à cette attaque. Si l'utilisateur n'a pas perdu de PV par l'attaque, cette capacité inflige 1 PV de dégâts à la place. Si la position de l'adversaire n'est plus utilisable et qu'un autre Pokémon adverse est sur le terrain, les dégâts sont infligés à ce Pokémon. Seul le dernier coup d'une attaque à plusieurs coups est comptabilisé. Échoue si l'utilisateur n'a pas été touché par une attaque physique ou spéciale d'un Pokémon adverse ce tour-ci.",
+	"Comeuppance": "Inflige au dernier Pokémon adverse à toucher l'utilisateur avec une attaque physique ou spéciale ce tour des dégâts égaux à 1.5x les PVs perdus par l'utilisateur suite à cette attaque. Si l'utilisateur n'a pas perdu de PV par l'attaque, cette capacité inflige 1 PV de dégâts à la place. Si la position de l'adversaire n'est plus utilisable et qu'un autre Pokémon adverse est sur le terrain, les dégâts sont infligés à ce Pokémon. Seul le dernier coup d'une attaque à plusieurs coups est comptabilisé. Échoue si l'utilisateur n'a pas été touché par une attaque physique ou spéciale d'un Pokémon adverse ce tour-ci.",
+	"Psyblade": "Si le Champ Électrifié est actif, la puissance de cette capacité est augmentée de 50%.",
+	"Hydro Steam": "Si le Soleil brille, la puissance de cette capacité augmente de 50% au lieu d'être réduite.",
+	"Ivy Cudgel": "Le type de cette capacité dépend du Masque tenu par le lanceur. Cette capacité a également plus de chances (12,5% soit 1/8) d'infliger un coup critique.",
+	"Matcha Gotcha": "Cette capacité a 20% de chances de brûler la cible. L'utilisateur et la cible dégèlent si elle sont gelées. L'utilisateur récupère la moitié des PVs perdus par la cible, arrondie à l'unité supérieure.",
+	"Syrup Bomb": "Si l'attaque touche sa cible, elle lui baisse sa Vitesse d'1 cran à la fin de chaque tour durant 3 tours."
 }
 
 export const ItemsShortDescDico: { [index: string]: string; } = {
@@ -8029,6 +8086,13 @@ export const ItemsLongDescDico: { [index: string]: string; } = {
 	"Punching Glove": "Puissance des capacités de poing +10% et empêche le contact. ",
 	"Covert Cloak": "Le porteur n'est pas affecté par les effets secondaires des capacités adverses.",
 	"Loaded Dice": "Les capacités multi-coups du lanceur touchent au moins 4 fois.",
+	"Cornerstone Mask": "Ogerpon de la Pierre : puissance attaques 1.2x. Téracristal pour Force Mémorielle.",
+	"Hearthflame Mask": "Ogerpon du Fourneau : puissance attaques 1.2x. Téracristal pour Force Mémorielle.",
+	"Wellspring Mask": "Ogerpon du Puits : puissance attaques 1.2x. Téracristal pour Force Mémorielle.",
+	"Fairy Feather": "Augmente la puissance des capacités de type Fée du Pokémon de 20%.",
+	"Masterpiece Teacup": "Fait évoluer Poltchageist-Onéreuse en Théffroyable-Exceptionnelle.",
+	"Unremarkable Teacup": "Fait évoluer Poltchageist en Théffroyable.",
+	"Syrupy Apple": "Fait évoluer Verpom en Pomdramour."
 }
 
 export const AbilitiesShortDescDico: { [index: string]: string; } = {
@@ -8332,6 +8396,14 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
 	"Thermal Exchange": "Augmente l'Attaque du Pokémon de 1 si touché par une capacité Feu. Immunité Brûlure.",
 	"Wind Power": "Si le Pokémon est touché par une capacité de vent, il devient chargé.",
 	"Vessel of Ruin": "L'Attaque Spéciale de tous les autres Pokémon actifs est réduite de 25%.",
+	"Embody Aspect (Cornerstone)": "À son arrivée sur le terrain, la Défense de ce Pokémon est augmentée d'1 cran.",
+	"Embody Aspect (Hearthflame)": "À son arrivée sur le terrain, l'Attaque de ce Pokémon est augmentée d'1 cran.",
+	"Embody Aspect (Teal)": "À son arrivée sur le terrain, la Vitesse de ce Pokémon est augmentée d'1 cran.",
+	"Embody Aspect (Wellspring)": "À son arrivée sur le terrain, la Défense Spéciale de ce Pokémon est augmentée d'1 cran.",
+	"Hospitality": "Lorsque ce Pokémon arrive sur le terrain, il restaure 1/4 des PVs maximums de son allié.",
+	"Mind's Eye": "Capacités Normal et Combat touchent Spectre. Précision ne baisse pas. Ignore esquive.",
+	"Supersweet Syrup": "Lorsqu'il arrive sur le terrain, diminue l'Esquive des Pokémon adverses adjacents d'1 cran.",
+	"Toxic Chain": "Les capacités offensives du Pokémon ont 30% de chances d'empoisonner gravement."
 }
 
 export const AbilitiesLongDescDico: { [index: string]: string; } = {
@@ -8492,5 +8564,7 @@ export const AbilitiesLongDescDico: { [index: string]: string; } = {
     "Weak Armor": "If a physical attack hits this Pokemon, its Defense is lowered by 1 stage and its Speed is raised by 2 stages.",
     "Wimp Out": "When this Pokemon has more than 1/2 its maximum HP and takes damage bringing it to 1/2 or less of its maximum HP, it immediately switches out to a chosen ally. This effect applies after all hits from a multi-hit move; Sheer Force prevents it from activating if the move has a secondary effect. This effect applies to both direct and indirect damage, except Curse and Substitute on use, Belly Drum, Pain Split, and confusion damage.",
     "Wonder Skin": "All non-damaging moves that check accuracy have their accuracy changed to 50% when used on this Pokemon. This change is done before any other accuracy modifying effects.",
-    "Zen Mode": "If this Pokemon is a Darmanitan or Darmanitan-Galar, it changes to Zen Mode if it has 1/2 or less of its maximum HP at the end of a turn. If Darmanitan's HP is above 1/2 of its maximum HP at the end of a turn, it changes back to Standard Mode. This Ability cannot be removed or suppressed."
+    "Zen Mode": "If this Pokemon is a Darmanitan or Darmanitan-Galar, it changes to Zen Mode if it has 1/2 or less of its maximum HP at the end of a turn. If Darmanitan's HP is above 1/2 of its maximum HP at the end of a turn, it changes back to Standard Mode. This Ability cannot be removed or suppressed.",
+	"Mind's Eye": "Ce Pokémon peut toucher les types Spectre avec des capacités de type Combat et de type Normal. De plus, la Précision de ce Pokémon ne peut pas être baissée et il ignore les changements d'Esquive de sa cible.",
+	"Toxic Chain": "Lorsque ce Pokémon utilise une capacité offensive, il a 30% de chances d'empoisonner gravement la cible."
 }

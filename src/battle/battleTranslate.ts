@@ -1244,9 +1244,17 @@ function updatePokemonCondition(newElement: Element)
         }
         // Boost from Paradox ability
         else if (newElement.textContent.includes(": ")) {
-            // Translate stat
+            // Retrieve content before the ":"
             var buffStatSplit = newElement.textContent.split(": ");
-            newElement.textContent = translateAbility(buffStatSplit[0].replace(" ", " ")) + ": " + translateStat(buffStatSplit[1]);
+            var supposedAbility = buffStatSplit[0].replace(" ", " ");
+
+            // Status split with ":" could be either an Ability or a regular Effect
+            if (isValidEnglishAbility(supposedAbility)) {
+                newElement.textContent = translateAbility(supposedAbility) + " : " + translateStat(buffStatSplit[1]);
+            }
+            else {
+                newElement.textContent = translateEffect(supposedAbility) + " : " + buffStatSplit[1];
+            }
         }
         // Status condition
         else {
