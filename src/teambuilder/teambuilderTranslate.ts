@@ -676,9 +676,17 @@ function updateTeamWrapper(mainElement: Element)
 								teamchartElement.childNodes.forEach(function (pasteFormNode) {
 									var pasteFormElement = pasteFormNode as Element;
 
-									// Translate button label
-									if (pasteFormElement.tagName == "BUTTON" && pasteFormElement.lastChild?.textContent) {
-										pasteFormElement.lastChild.textContent = translateMenu(pasteFormElement.lastChild?.textContent);
+									if (pasteFormElement.tagName == "P") {
+										pasteFormElement.childNodes.forEach(function(exporMainNode) {
+											exporMainNode.childNodes.forEach(function(exportNode) {
+												var exportElement = exportNode as Element;
+
+												// Translate button label
+												if (exportElement.textContent) {
+													exportElement.textContent = translateMenu(exportElement.textContent);
+												}
+											})
+										})
 									}
 								})
 							}
