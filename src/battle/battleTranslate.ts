@@ -390,7 +390,7 @@ function updatePokemonTooltip(tooltip: Element)
             })
         }
         // Moves
-        else if (tooltipContent.className == "section")
+        else if (tooltipContent.className == "tooltip-section")
         {
             tooltipContent.childNodes.forEach(function (moveNode) {
                 var moveElement = moveNode as Element;
@@ -585,7 +585,7 @@ function updateMoveTooltip(tooltip: Element)
         else if (tooltipElement.tagName == "P")
         {
             // Move base description
-            if (tooltipElement.className == "section")
+            if (tooltipElement.className == "tooltip-section")
             {
                 tooltipElement.childNodes.forEach(function (sectionNode) {
                     var sectionElement = sectionNode as Element;
