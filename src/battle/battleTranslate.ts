@@ -100,19 +100,19 @@ function onMutation(mutations: MutationRecord[])
                         var tooltip = newElement.firstChild as Element;
 
                         // Pokémon tooltip
-                        if (tooltip.classList.contains("tooltip-pokemon") || tooltip.classList.contains("tooltip-activepokemon")
-                            || tooltip.classList.contains("tooltip-switchpokemon")  || tooltip.classList.contains("tooltip-allypokemon"))
+                        if (tooltip?.classList.contains("tooltip-pokemon") || tooltip?.classList.contains("tooltip-activepokemon")
+                            || tooltip?.classList.contains("tooltip-switchpokemon")  || tooltip?.classList.contains("tooltip-allypokemon"))
                         {
                             updatePokemonTooltip(tooltip);
                         }
                         // Move tooltip
-                        else if (tooltip.classList.contains("tooltip-move") || tooltip.classList.contains("tooltip-zmove")
-                            || tooltip.classList.contains("tooltip-maxmove"))
+                        else if (tooltip?.classList.contains("tooltip-move") || tooltip?.classList.contains("tooltip-zmove")
+                            || tooltip?.classList.contains("tooltip-maxmove"))
                         {
                             updateMoveTooltip(tooltip);
                         }
                         // Field tooltip
-                        else if (tooltip.classList.contains("tooltip-field"))
+                        else if (tooltip?.classList.contains("tooltip-field"))
                         {
                             updateFieldTooltip(tooltip);
                         }
@@ -125,7 +125,7 @@ function onMutation(mutations: MutationRecord[])
                     else if (elementClasses.contains("controls"))
                     {
                         // Waiting and Active control panel use different structures
-                        if ((newElement.firstChild as Element).tagName == "P")
+                        if ((newElement.firstChild as Element)?.tagName == "P")
                         {
                             if (newElement.getElementsByClassName("replayDownloadButton").length) {
                                 updateBattleEnded(newElement);
@@ -1257,7 +1257,7 @@ function updatePokemonResult(newElement: Element)
 {
     var textInfoTag = newElement.firstChild as Element;
 
-    if (textInfoTag.tagName == "STRONG" && textInfoTag.textContent) {
+    if (textInfoTag?.tagName == "STRONG" && textInfoTag.textContent) {
         if (newElement.className.includes("abilityresult")){
             textInfoTag.textContent = translateAbility(textInfoTag.textContent);
         }
