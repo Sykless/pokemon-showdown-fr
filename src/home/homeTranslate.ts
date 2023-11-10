@@ -317,7 +317,7 @@ function translateHomePage()
             // Button the only element is within three tags layers
             var joinChatButton = sideMenuElement.firstChild?.firstChild?.firstChild as Element;
             
-            if (joinChatButton.tagName == "BUTTON" && joinChatButton.textContent) {
+            if (joinChatButton?.tagName == "BUTTON" && joinChatButton.textContent) {
                 joinChatButton.textContent = translateMenu(joinChatButton.textContent);
             }
         }
@@ -590,7 +590,7 @@ function translateLadderRoomPage(ladderRoom: Element)
                 if (ladderContent.tagName == "TBODY") {
                     var trFirstElement = ladderContent.firstChild as Element;
 
-                    if (trFirstElement.tagName == "TR") {
+                    if (trFirstElement?.tagName == "TR") {
                         trFirstElement.childNodes.forEach(function (thNode) {
                             var thElement = thNode as Element;
                             var thContentElement = thElement.firstElementChild;
@@ -859,7 +859,7 @@ function updatePokemonTeamName(teamElement: Element)
 
 function updateBackgroundCredit(footerElement: Element)
 {
-    footerElement.childNodes.forEach(function (backgroundNode) {
+    footerElement?.childNodes.forEach(function (backgroundNode) {
         var backgroundElement = backgroundNode as Element;
 
         // Pokémon Showdown day
