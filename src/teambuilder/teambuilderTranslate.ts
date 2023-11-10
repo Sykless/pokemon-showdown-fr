@@ -330,7 +330,7 @@ function updateTeampaneElement(newElement: Element)
 				{
 					var emptyTeamElement = teamElement.firstChild as Element;
 
-					if (emptyTeamElement.tagName == "EM" && emptyTeamElement.textContent)
+					if (emptyTeamElement?.tagName == "EM" && emptyTeamElement.textContent)
 					{
 						emptyTeamElement.textContent = translateMenu(emptyTeamElement.textContent);
 
@@ -349,7 +349,7 @@ function updateTeampaneElement(newElement: Element)
 
 function updateFolderList(newElement: Element)
 {
-	newElement.childNodes.forEach(function (folderMainNode) {
+	newElement?.childNodes.forEach(function (folderMainNode) {
 		folderMainNode.childNodes.forEach(function (folderNode) {
 			folderNode.childNodes.forEach(function (folderNameNode) {
 				var folderElement = folderNameNode as Element;
@@ -676,9 +676,17 @@ function updateTeamWrapper(mainElement: Element)
 								teamchartElement.childNodes.forEach(function (pasteFormNode) {
 									var pasteFormElement = pasteFormNode as Element;
 
-									// Translate button label
-									if (pasteFormElement.tagName == "BUTTON" && pasteFormElement.lastChild?.textContent) {
-										pasteFormElement.lastChild.textContent = translateMenu(pasteFormElement.lastChild?.textContent);
+									if (pasteFormElement.tagName == "P") {
+										pasteFormElement.childNodes.forEach(function(exporMainNode) {
+											exporMainNode.childNodes.forEach(function(exportNode) {
+												var exportElement = exportNode as Element;
+
+												// Translate button label
+												if (exportElement.textContent) {
+													exportElement.textContent = translateMenu(exportElement.textContent);
+												}
+											})
+										})
 									}
 								})
 							}
@@ -762,11 +770,11 @@ function updatePokemonInfo(teamchartElement: Element | null)
 		var liComponent = liNode as HTMLLIElement;
 
 		// Clipboard (No way to differenciate with the teams element, so we check the first child)
-		if ((liComponent.firstChild as Element).className == "teambuilder-clipboard-container") {
+		if ((liComponent.firstChild as Element)?.className == "teambuilder-clipboard-container") {
 			updateClipboardElement(liComponent.firstChild as Element);
 		}
 		// Button menu (No way to differenciate with the teams element, so we check the first child)
-		else if ((liComponent.firstChild as Element).tagName == "BUTTON")
+		else if ((liComponent.firstChild as Element)?.tagName == "BUTTON")
 		{
 			// Translate button label
 			if (liComponent.firstChild?.lastChild?.textContent) {
@@ -774,7 +782,7 @@ function updatePokemonInfo(teamchartElement: Element | null)
 			}
 		}
 		// Label (No way to differenciate with the teams element, so we check the first child)
-		else if ((liComponent.firstChild as Element).tagName == "EM")
+		else if ((liComponent.firstChild as Element)?.tagName == "EM")
 		{
 			// Translate label
 			if (liComponent.firstChild?.textContent) {
@@ -1362,7 +1370,7 @@ function updateHeader(headerElement: Element)
 {
 	var headerTag = headerElement.firstChild as Element;
 
-	if (headerTag.tagName == "H3" && headerTag.textContent)
+	if (headerTag?.tagName == "H3" && headerTag.textContent)
 	{
 		// Get all header words
 		var headerWords = headerTag.textContent.split(" ");
@@ -1438,7 +1446,7 @@ function updateSortFilters(resultElement: Element)
 {
 	var sortRowElement = resultElement.firstChild as Element;
 
-	if (sortRowElement.className == "sortrow")
+	if (sortRowElement?.className == "sortrow")
 	{
 		sortRowElement.childNodes.forEach(function (sortButton) {
 			var sortButtonElement = sortButton as Element;
@@ -1454,7 +1462,7 @@ function updateMoveAbilityFilter(resultElement: Element)
 {
 	var filterTag = resultElement.firstChild as Element;
 
-	if (filterTag.tagName == "P")
+	if (filterTag?.tagName == "P")
 	{
 		filterTag.childNodes.forEach(function (filterNode) {
 			var filterElement = filterNode as Element;
@@ -1521,7 +1529,7 @@ function updateFilterElement(filterNode: Element)
 {
 	var filterButtonTag = filterNode.firstChild as Element;
 
-	if (filterButtonTag.tagName == "EM" && filterButtonTag.textContent) {
+	if (filterButtonTag?.tagName == "EM" && filterButtonTag.textContent) {
 		filterButtonTag.textContent = translateMenu(filterButtonTag.textContent);
 	}
 	else {
