@@ -73,6 +73,10 @@ function onMutation(mutations: MutationRecord[])
                     if (newElement.tagName == "OPTION" && newElement.textContent) {
                         newElement.textContent = translateMenu(newElement.textContent);
                     }
+                    // Section in Replays page
+                    if (newElement.tagName == "SECTION" && newElement.firstElementChild?.tagName == "H1") {
+                        translateReplaysSection(newElement);
+                    }
                     else {
                         // No translation found
                         translatedElement = false;
@@ -157,6 +161,11 @@ function onMutation(mutations: MutationRecord[])
                     else if (newElement.classList.contains("battleform"))
                     {
                         updateMainButton(newElement);
+                    }
+                    // Replay options have been put on a sidebar
+                    else if (newElement.classList.contains("sidebar"))
+                    {
+                        translateReplaysHomePage(newElement);
                     }
                     else {
                         // No translation found
@@ -417,89 +426,7 @@ function translateReplaysPage()
 function translateReplaysHomePage(replaysHomeElement: Element)
 {
     replaysHomeElement.childNodes.forEach(function (mainContentNode) {
-        mainContentNode.childNodes.forEach(function(sectionNode) {
-            var mainContent = sectionNode as Element;
-
-            // Menu label, just translate it
-            if (mainContent.tagName == "H1" && mainContent.textContent) {
-                mainContent.textContent = translateMenu(mainContent.textContent);
-            }
-            // Search form, iterate over children in order to translate labels and input placeholders
-            else if (mainContent.tagName == "FORM")
-            {
-                mainContent.childNodes.forEach(function (searchNode) {
-                    var searchElement = searchNode as Element;
-
-                    if (searchElement?.tagName == "P") {
-                        searchElement.childNodes.forEach(function (searchNode) {
-                            searchNode.childNodes.forEach(function (searchContentNode) {
-                                var searchContent = searchContentNode as Element;
-    
-                                // Text content containing search label, translate it
-                                if (searchContent.textContent && (!searchContent.tagName || searchContent.tagName == "STRONG")) {
-                                    searchContent.textContent = translateMenu(searchContent.textContent);
-                                }
-                                // Search bar, translate placeholder
-                                else if (searchContent.tagName == "INPUT") {
-                                    var inputElement = searchContent as HTMLInputElement;
-    
-                                    if (inputElement.placeholder) {
-                                        inputElement.placeholder = translateMenu(inputElement.placeholder);
-                                    }
-                                }
-                                // Username button 
-                                else if (searchContent.tagName == "BUTTON") {
-                                    var buttonText = searchContent.childNodes;
-
-                                    if (buttonText[1].textContent == "'s replays") {
-                                        var username = buttonText[0].textContent;
-                                        var translatedButton = translateMenu(buttonText[1].textContent)
-
-                                        buttonText[0].textContent = translatedButton;
-                                        buttonText[1].textContent = username;
-                                    }
-                                }
-                            })
-                        })
-                    }
-                })
-            }
-            // Replays list, only translate menu labels
-            else if (mainContent.tagName == "UL") {
-                mainContent.childNodes.forEach(function (replayNode) {
-                    var replayElement = replayNode as Element;
-
-                    // Menu label, just translate it
-                    if (replayElement.tagName == "H2" && replayElement.textContent) {
-                        replayElement.textContent = translateMenu(replayElement.textContent);
-                    }
-                    // Replay content, only translate buttons
-                    else if (replayElement.tagName == "LI") {
-                        var menuElement = replayElement.firstElementChild;
-
-                        // Menu label
-                        if (menuElement?.tagName == "H2" && menuElement.textContent) {
-                            menuElement.textContent = translateMenu(menuElement.textContent);
-                        }
-                        // Button
-                        else if (menuElement?.tagName == "BUTTON") {
-                            menuElement.childNodes.forEach(function(buttonNode) {
-                                var buttonElement = buttonNode as Element;
-
-                                // Only translate raw text
-                                if (!buttonElement.tagName && buttonElement.textContent) {
-                                    buttonElement.textContent = translateMenu(buttonElement.textContent);
-                                }
-                            })
-                        }
-                    }
-                })
-            }
-            // Back to Replays home
-            else if (mainContent.className == "pfx-backbutton") {
-                updateReplaysBackButton(mainContent);
-            }
-        })
+        translateReplaysSection(mainContentNode as Element);
     })
 }
 
@@ -536,6 +463,93 @@ function translateReplaysLoading(loadingElement: Element)
         // Translate <em> text content
         if (loadingContent.tagName == "EM" && loadingContent.textContent) {
             loadingContent.textContent = translateMenu(loadingContent.textContent);
+        }
+    })
+}
+
+function translateReplaysSection(mainContentNode: Element)
+{
+    mainContentNode.childNodes.forEach(function(sectionNode) {
+        var mainContent = sectionNode as Element;
+
+        // Menu label, just translate it
+        if (mainContent.tagName == "H1" && mainContent.textContent) {
+            mainContent.textContent = translateMenu(mainContent.textContent);
+        }
+        // Search form, iterate over children in order to translate labels and input placeholders
+        else if (mainContent.tagName == "FORM")
+        {
+            mainContent.childNodes.forEach(function (searchNode) {
+                var searchElement = searchNode as Element;
+
+                if (searchElement?.tagName == "P") {
+                    searchElement.childNodes.forEach(function (searchNode) {
+                        searchNode.childNodes.forEach(function (searchContentNode) {
+                            var searchContent = searchContentNode as Element;
+
+                            // Text content containing search label, translate it
+                            if (searchContent.textContent && (!searchContent.tagName || searchContent.tagName == "STRONG")) {
+                                searchContent.textContent = translateMenu(searchContent.textContent);
+                            }
+                            // Search bar, translate placeholder
+                            else if (searchContent.tagName == "INPUT") {
+                                var inputElement = searchContent as HTMLInputElement;
+
+                                if (inputElement.placeholder) {
+                                    inputElement.placeholder = translateMenu(inputElement.placeholder);
+                                }
+                            }
+                            // Username button 
+                            else if (searchContent.tagName == "BUTTON") {
+                                var buttonText = searchContent.childNodes;
+
+                                if (buttonText[1].textContent == "'s replays") {
+                                    var username = buttonText[0].textContent;
+                                    var translatedButton = translateMenu(buttonText[1].textContent)
+
+                                    buttonText[0].textContent = translatedButton;
+                                    buttonText[1].textContent = username;
+                                }
+                            }
+                        })
+                    })
+                }
+            })
+        }
+        // Replays list, only translate menu labels
+        else if (mainContent.tagName == "UL") {
+            mainContent.childNodes.forEach(function (replayNode) {
+                var replayElement = replayNode as Element;
+
+                // Menu label, just translate it
+                if (replayElement.tagName == "H2" && replayElement.textContent) {
+                    replayElement.textContent = translateMenu(replayElement.textContent);
+                }
+                // Replay content, only translate buttons
+                else if (replayElement.tagName == "LI") {
+                    var menuElement = replayElement.firstElementChild;
+
+                    // Menu label
+                    if (menuElement?.tagName == "H2" && menuElement.textContent) {
+                        menuElement.textContent = translateMenu(menuElement.textContent);
+                    }
+                    // Button
+                    else if (menuElement?.tagName == "BUTTON") {
+                        menuElement.childNodes.forEach(function(buttonNode) {
+                            var buttonElement = buttonNode as Element;
+
+                            // Only translate raw text
+                            if (!buttonElement.tagName && buttonElement.textContent) {
+                                buttonElement.textContent = translateMenu(buttonElement.textContent);
+                            }
+                        })
+                    }
+                }
+            })
+        }
+        // Back to Replays home
+        else if (mainContent.className == "pfx-backbutton") {
+            updateReplaysBackButton(mainContent);
         }
     })
 }

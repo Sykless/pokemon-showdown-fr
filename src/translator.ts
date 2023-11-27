@@ -4720,6 +4720,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Join chat": "Rejoindre le chat",
 	"Watch a battle": "Regarder un match",
 	"Find a user": "Trouver un utilisateur",
+	"Friends": "Amis",
 	"Rules": "Règles",
 	"Credits": "Crédits",
 	"background by ": "par ",
