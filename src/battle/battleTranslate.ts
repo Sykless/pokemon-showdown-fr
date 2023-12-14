@@ -6,6 +6,8 @@ console.log("BattleTranslate successfully loaded !");
 
 const HP = 0, ABILITY = 1, POSSIBLE_ABILITIES = 2, ITEM = 3, STATS = 4, SPEED = 5, UNKNOWN = 6;
 
+declare var app: any;
+
 // If a Battle is reloaded, the original code is not counted as a page change
 // So we need to translate it if needed
 if (window.location.host == PLAY_SHOWDOWN_HOST) {
@@ -22,8 +24,6 @@ var SpriteURL = "";
 window.addEventListener('RecieveContent', function(evt: any) {
 	SpriteURL = evt.detail;
 });
-
-declare var app: any;
 
 // Create a MutationObserver element in order to track every page change
 // So we can it dynamically translate new content
@@ -43,7 +43,7 @@ function onMutation(mutations: MutationRecord[])
 	}
 
 	for (var i = 0, len = mutations.length; i < len ; i++)
-	{		
+	{
         // Iterate on every added node that isn't on the preempt message target
 		if (mutations[i].type == "childList"
             && !(mutations[i].target as Element).className?.includes("inner-preempt message-log"))
@@ -269,7 +269,7 @@ function isBattleOpen()
 {
     // Get all battle rooms
 	var teambuilderElement = document.querySelectorAll('[id^=room-battle-]');
-    var replayElement = document.querySelectorAll('.replay-wrapper')
+    var replayElement = document.querySelectorAll('.mainbar')
 
     var battleOpen = false;
 
@@ -606,7 +606,7 @@ function updateMoveTooltip(tooltip: Element)
                         // Not a priority move : section element is the move description
                         else if (sectionElement.textContent != ".") {
                             // In hardcore mode or if there's no long desc, display short desc
-                            var frenchDesc = app.curRoom?.battle?.hardcoreMode || !MovesLongDescDico[moveName] ? 
+                            var frenchDesc = app?.curRoom?.battle?.hardcoreMode || !MovesLongDescDico[moveName] ? 
                                 MovesShortDescDico[moveName] : MovesLongDescDico[moveName];
                             
                             if (frenchDesc) {
@@ -633,7 +633,7 @@ function updateMoveTooltip(tooltip: Element)
                 // Priority move : empty classname element is the move description
                 if (priorityMove) {
                     // In hardcore mode, display short desc
-                    var frenchDesc = app.curRoom?.battle?.hardcoreMode ? 
+                    var frenchDesc = app?.curRoom?.battle?.hardcoreMode ? 
                         MovesShortDescDico[moveName] : MovesLongDescDico[moveName];
                     
                     if (frenchDesc) {
@@ -1399,7 +1399,7 @@ function updateChatElement(messageElement: Element)
         })
     }
     // Not a message, check if the message could be a command result
-    else if (app.curRoom?.chatHistory?.lines?.length > 0)
+    else if (window.location.host == PLAY_SHOWDOWN_HOST && app?.curRoom?.chatHistory?.lines?.length > 0)
     {
         // Commands are processed on the back-end, so we can't modify the data in order to add french names
         // We could intercept the webSocket message but it seems a bit too hacky
@@ -1410,7 +1410,7 @@ function updateChatElement(messageElement: Element)
         var noCommandFound = true;
 
         // Get last message sent
-        var message = app.curRoom.chatHistory.lines[app.curRoom.chatHistory.lines.length - 1];
+        var message = app?.curRoom.chatHistory.lines[app?.curRoom.chatHistory.lines.length - 1];
 
         // If message was a command
         if (message.startsWith("!") || message.startsWith("/"))
@@ -1445,7 +1445,7 @@ function updateChatElement(messageElement: Element)
                                 noCommandFound = false;
 
                                 // We add a "<>" symbol that will be removed by the HTML sanitizer just to indicate that we generated this message
-                                app.send(commandContent[0] + ' <"' + englishValue + '">', app.curRoom.id);
+                                app.send(commandContent[0] + ' <"' + englishValue + '">', app?.curRoom.id);
 
                                 // Stop the process
                                 break;
@@ -1483,7 +1483,7 @@ function updateChatElement(messageElement: Element)
                                         messageElement.parentElement?.removeChild(messageElement);
 
                                         // We add a <""> symbol that will be removed by the HTML sanitizer just to indicate that we generated this message
-                                        app.send(commandContent[0]  + ' <"' + englishValue + '">', app.curRoom.id);
+                                        app.send(commandContent[0]  + ' <"' + englishValue + '">', app?.curRoom.id);
                                     }
 
                                     break;
@@ -1767,10 +1767,4 @@ function isChatMessage(messageElement: Element)
 
 function removeSpecialCharacters(text: string) {
 	return text.replace(/[^a-z0-9]+/g, "");
-}
-
-function removeDiacritics(text: string) {
-	return text
-	  .normalize('NFD')
-	  .replace(/[\u0300-\u036f]/g, '');
 }

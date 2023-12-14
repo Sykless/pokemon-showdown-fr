@@ -261,12 +261,13 @@ function onMutation(mutations: MutationRecord[])
                         //
                         // So if a text node with no context is added, and a sibling
                         // with the same text is already present, we just remove the text node
-                        if (parentElement.childNodes.length > 1)
+                        if (parentElement.childNodes.length > 1 && isValidEnglishMenu(newElement.textContent))
                         {
                             if (parentElement.firstChild?.textContent != translateMenu(newElement.textContent)) {
                                 newElement.textContent = translateMenu(newElement.textContent);
                             }
-                            else {
+                            // Only use this process on Replays page
+                            else if (window.location.host == REPLAYS_SHOWDOWN_HOST) {
                                 if (DEBUG) console.log('Text node not added : "' + newElement.textContent + '"')
                                 newElement.remove();
                             }
