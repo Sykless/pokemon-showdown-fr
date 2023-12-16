@@ -14,7 +14,7 @@ if (window.location.host == PLAY_SHOWDOWN_HOST) {
     translateBattleHomePage();
 }
 else if (window.location.host == REPLAYS_SHOWDOWN_HOST) {
-    translateReplayBattlePage();
+    translateReplayBattlePage(null);
 }
 
 // The injected script cannot access chrome.runtime.getURL
@@ -82,12 +82,8 @@ function onMutation(mutations: MutationRecord[])
                         // console.log("Whole room, rien d'intéressant : " + newElement.outerHTML);
                     }
                     // Whole replay has been loaded
-                    else if (elementClasses.contains("pfx-body")) {
-                        var uploadDate = document.getElementsByClassName("uploaddate");
-
-                        if (uploadDate.length > 0) {
-                            updateUploadDateLabel(uploadDate[0])
-                        }
+                    else if (elementClasses.contains("mainbar")) {
+                        translateReplayBattlePage(newElement.firstChild as Element);
                     }
                     // Trainer sprite has been loaded
                     else if (elementClasses.contains("trainer"))
@@ -137,17 +133,6 @@ function onMutation(mutations: MutationRecord[])
                         else {
                             updateControlPanel(newElement);
                         }
-                    }
-                    // Replays options button (Speed, Music, etc)
-                    else if (elementClasses.contains("chooser"))
-                    {
-                        updateReplayChooser(newElement)
-                    }
-                    // Replays action button (Play, Go to turn, Download, etc)
-                    else if (elementClasses.contains("replayDownloadButton")
-                        || (newElement.tagName == "BUTTON" && newElement.getAttribute("data-action")))
-                    {
-                        updateActionButton(newElement);
                     }
                     // Replays Play buttons
                     else if (elementClasses.contains("playbutton"))
@@ -207,11 +192,6 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updateRatedBattle(newElement);
                     }
-                    // Upload date label
-                    else if (newElement.tagName == "P" && newElement.firstElementChild?.classList?.contains("uploaddate"))
-                    {
-                        updateUploadDateLabel(newElement.firstElementChild);
-                    }
                     else {
                         // No translation found
                         translatedElement = false;
@@ -222,6 +202,7 @@ function onMutation(mutations: MutationRecord[])
                     translatedElement = false;
                 }
 
+                // Find element by parent class
 				if (parentClasses && !translatedElement)
                 {
                     // Weather and side-conditions
@@ -243,6 +224,48 @@ function onMutation(mutations: MutationRecord[])
                     else if (newElement.className == "" && parentClasses.contains("message-log"))
                     {
                         updateBattleRules(newElement);
+                    }
+                }
+
+                // Find element by parent children
+                if (parentElement.childNodes.length > 1 && !translatedElement)
+                {
+                    // Download replays section
+                    if (newElement.textContent && parentElement.tagName == "P"
+                        && parentElement.firstElementChild?.firstElementChild?.classList?.contains("fa-download"))
+                    {
+                        // Rating label
+                        if (newElement.tagName == "EM") {
+                            newElement.textContent = translateMenu(newElement.textContent);
+                        }
+                        // Download button, also translate upload date
+                        else if (newElement.tagName == "A") {
+                            var buttonLabel = newElement.lastChild;
+                            var uploadDate = newElement.nextSibling as Element;
+
+                            // Download button
+                            if (buttonLabel?.textContent) {
+                                buttonLabel.textContent = translateMenu(buttonLabel.textContent);
+                            }
+
+                            // Upload date
+                            if (uploadDate?.textContent) {
+                                updateUploadDateLabel(uploadDate);
+                            }
+                        }
+                    }
+                }
+
+                // Find element by parent tag
+                if (parentElement.tagName && !translatedElement)
+                {
+                    if (parentElement.tagName == "H1")
+                    {
+                        // Isolated Loading label
+                        if (newElement.tagName == "EM" && newElement.textContent
+                            && newElement.childNodes.length == 1) {
+                                newElement.textContent = translateMenu(newElement.textContent);
+                        }
                     }
                 }
 			}
@@ -988,35 +1011,14 @@ function updateTrainerElement(trainerElement: Element)
     })
 }
 
-function updateReplayChooser(chooserElement: Element)
-{
-    chooserElement.childNodes.forEach(function (chooserContentNode) {
-        var chooserContent = chooserContentNode as Element;
-
-        // Name label
-        if (chooserContent.tagName == "EM" && chooserContent.textContent) {
-            chooserContent.textContent = translateMenu(chooserContent.textContent);
-        }
-        // Action buttons node, iterate on children to translate labels
-        else if (chooserContent.tagName == "DIV") {
-            chooserContent.childNodes.forEach(function (actionButtonNode) {
-                var actionButton = actionButtonNode as Element;
-
-                if (actionButton.tagName == "BUTTON" && actionButton.textContent) {
-                    actionButton.textContent = translateMenu(actionButton.textContent);
-                }
-            })
-        }
-    })
-}
-
 function updateActionButton(actionButtonElement: Element)
 {
     actionButtonElement.childNodes.forEach(function (actionButtonContentNode) {
         var actionButtonContent = actionButtonContentNode as Element;
 
         // Only translate raw text (Action label)
-        if (!actionButtonContent.tagName && actionButtonContent.textContent) {
+        if ((!actionButtonContent.tagName || actionButtonContent.tagName == "OPTION") 
+            && actionButtonContent.textContent) {
             actionButtonContent.textContent = translateMenu(actionButtonContent.textContent);
         }
     })
@@ -1038,29 +1040,16 @@ function updateReplayPlayButtons(playButtonElement: Element)
 
 function updateUploadDateLabel(uploadLabel: Element)
 {
-    uploadLabel.childNodes.forEach(function (uploadDateNode) {
-        var uploadDateElement = uploadDateNode as Element;
+    if (!uploadLabel.tagName && uploadLabel.textContent) {
+        var uploadDate = uploadLabel.textContent.split(" ");
 
-        if (uploadDateElement.textContent)
-        {
-            // Raw text label
-            if (uploadDateElement.tagName == "EM") {
-                uploadDateElement.textContent = translateMenu(uploadDateElement.textContent);
-            }
-            // Actual upload date
-            else if (!uploadDateElement.tagName) {
-                var uploadDate = uploadDateElement.textContent.split(" ");
-
-                // Less than 3 spaces is the elo rating, we don't translate that
-                if (uploadDate.length > 3) {
-                    uploadDateElement.textContent = " " + uploadDate[2].slice(0,-1) // Day (without the comma at the end)
-                        + " " + translateMenu(uploadDate[1]) // Translated Month
-                        + " " + uploadDate[3] // Year
-                        + (uploadDate.length > 4 ? " " + uploadDate[4] + " " : "") // Separator
-                }
-            }
+        if (uploadDate.length > 3) {
+            uploadLabel.textContent = translateMenu(uploadDate[0]) // Translated Day of the week
+            + " " + uploadDate[2] // Day
+            + " " + translateMenu(uploadDate[1]) // Translated Month
+            + " " + uploadDate[3]; // Year
         }
-    })
+    }
 }
 
 function updateOpponentWait(newElement: Element)
@@ -1551,96 +1540,108 @@ function updateBattleRules(messageElement: Element)
     })
 }
 
-function translateReplayBattlePage()
+function translateReplayBattlePage(mainDiv: Element | null)
 {
-    var replayWrapper = document.getElementsByClassName("replay-wrapper");
+    if (!mainDiv) {
+        var replayWrapper = document.getElementsByClassName("mainbar");
 
-    if (replayWrapper.length > 0) {
-        replayWrapper[0].childNodes.forEach(function (replayWrapperNode) {
-            var replayWrapperElement = replayWrapperNode as Element;
-
-            // Download button
-            if (replayWrapperElement.classList?.contains("replayDownloadButton")) {
-                updateActionButton(replayWrapperElement)
-            }
-            // Back to Home button
-            else if (replayWrapperElement.classList?.contains("pfx-backbutton")) {
-                updateActionButton(replayWrapperElement);
-            }
-            // Upload date label
-            else if (replayWrapperElement.tagName == "P" && replayWrapperElement.firstElementChild?.classList?.contains("uploaddate")) {
-                updateUploadDateLabel(replayWrapperElement.firstElementChild);
-            }
-            // Action buttons (Play, Next turn, etc)
-            else if (replayWrapperElement.className == "replay-controls") {
-                replayWrapperElement.childNodes.forEach(function (actionButtonNode) {
-                    var actionButton = actionButtonNode as Element;
-
-                    if (actionButton.tagName == "BUTTON" && actionButton.getAttribute("data-action")) {
-                        updateActionButton(actionButton);
-                    }
-                })
-            }
-            // Options button (Speed, Music, etc)
-            else if (replayWrapperElement.className == "replay-controls-2") {
-                replayWrapperElement.childNodes.forEach(function (chooserButtonNode) {
-                    var chooserButton = chooserButtonNode as Element;
-
-                    if (chooserButton.classList?.contains("chooser")) {
-                        updateReplayChooser(chooserButton);
-                    }
-                })
-            }
-            // Battle element
-            else if (replayWrapperElement.className == "battle") {
-                replayWrapperElement.childNodes.forEach(function (battleNode) {
-                    var battleElement = battleNode as Element;
-
-                    // Actual battle, only translate trainer title (rating)
-                    if (battleElement.className == "innerbattle") {
-                        var trainersElements = battleElement.getElementsByClassName("trainer");
-
-                        for (var i = 0 ; i < trainersElements.length ; i++) {
-                            updateTrainerElement(trainersElements[i]);
-                        }
-                    }
-                    // Battle options (Play button)
-                    else if (battleElement.className == "playbutton") {
-                        updateReplayPlayButtons(battleElement);
-                    }
-                })
-            }
-            // Battle logs element
-            else if (replayWrapperElement.className == "battle-log") {
-                replayWrapperElement.childNodes.forEach(function (battleLogNode) {
-                    var battleLogElement = battleLogNode as Element;
-
-                    if (battleLogElement.classList?.contains("message-log")) {
-                        battleLogElement.childNodes.forEach(function (originalLogNode) {
-                            var originalLog = originalLogNode as Element;
-
-                            // Battle rules
-                            if (originalLog.className == "") {
-                                updateBattleRules(originalLog);
-                            }
-                            // Rated battle label
-                            else if (originalLog.className == "rated") {
-                                updateRatedBattle(originalLog);
-                            }
-                            // Showdown battle message
-                            else if (originalLog.classList?.contains("battle-history")) {
-                                updateShowdownMessage(originalLog);
-                            }
-                            // Default : chat message
-                            else {
-                                updateChatElement(originalLog);
-                            }
-                        })
-                    }
-                })
-            }
-        })   
+        if (replayWrapper.length > 0) {
+            mainDiv = replayWrapper[0].firstElementChild;
+        }
     }
+
+    mainDiv?.childNodes.forEach(function (replayWrapperNode) {
+        var replayWrapperElement = replayWrapperNode as Element;
+
+        // Action buttons (Play, Next turn, Replay Speed, Description, etc)
+        if (replayWrapperElement.className == "replay-controls") {
+            replayWrapperElement.childNodes.forEach(function(replayControlsNode) {
+                var replayControls = replayControlsNode as Element;
+
+                // Options button are located on <p> tags
+                if (replayControls.tagName == "P") {
+                    replayControls.childNodes.forEach(function (actionButtonNode) {
+                        var actionButton = actionButtonNode as Element;
+    
+                        // Action button, Download button, label
+                        if (["BUTTON", "A", "EM"].includes(actionButton.tagName)) {
+                            updateActionButton(actionButton);
+                        }
+                        // Action button with label
+                        else if (actionButton.tagName == "LABEL") {
+                            actionButton.childNodes.forEach(function (buttonNode) {
+                                var buttonElement = buttonNode as Element;
+
+                                // Dropdown list
+                                if (buttonElement.tagName == "SELECT") {
+                                    updateActionButton(buttonElement);
+                                }
+                                // Label
+                                else if (!buttonElement.tagName && buttonElement.textContent) {
+                                    buttonElement.textContent = translateMenu(buttonElement.textContent);
+                                }
+                            })
+                        }
+                        // Regular text content
+                        else if (!actionButton.tagName && actionButton.textContent) {
+                            // Upload date is directly after the download button
+                            if (actionButton.previousElementSibling?.firstElementChild?.classList?.contains("fa-download")) {
+                                updateUploadDateLabel(actionButton);
+                            }
+                        }
+                    })
+                }
+            })
+        }
+        // Battle element
+        else if (replayWrapperElement.className == "battle") {
+            replayWrapperElement.childNodes.forEach(function (battleNode) {
+                var battleElement = battleNode as Element;
+
+                // Actual battle, only translate trainer title (rating)
+                if (battleElement.className == "innerbattle") {
+                    var trainersElements = battleElement.getElementsByClassName("trainer");
+
+                    for (var i = 0 ; i < trainersElements.length ; i++) {
+                        updateTrainerElement(trainersElements[i]);
+                    }
+                }
+                // Battle options (Play button)
+                else if (battleElement.className == "playbutton") {
+                    updateReplayPlayButtons(battleElement);
+                }
+            })
+        }
+        // Battle logs element
+        else if (replayWrapperElement.className == "battle-log") {
+            replayWrapperElement.childNodes.forEach(function (battleLogNode) {
+                var battleLogElement = battleLogNode as Element;
+
+                if (battleLogElement.classList?.contains("message-log")) {
+                    battleLogElement.childNodes.forEach(function (originalLogNode) {
+                        var originalLog = originalLogNode as Element;
+
+                        // Battle rules
+                        if (originalLog.className == "") {
+                            updateBattleRules(originalLog);
+                        }
+                        // Rated battle label
+                        else if (originalLog.className == "rated") {
+                            updateRatedBattle(originalLog);
+                        }
+                        // Showdown battle message
+                        else if (originalLog.classList?.contains("battle-history")) {
+                            updateShowdownMessage(originalLog);
+                        }
+                        // Default : chat message
+                        else {
+                            updateChatElement(originalLog);
+                        }
+                    })
+                }
+            })
+        }
+    })   
 }
 
 function translateBattleHomePage()

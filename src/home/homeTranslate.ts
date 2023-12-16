@@ -108,7 +108,7 @@ function onMutation(mutations: MutationRecord[])
                         updateWindow(newElement);
                     }
                     // Replays home page has been openened
-                    else if (newElement.classList.contains("pfx-body"))
+                    else if (newElement.classList.contains("mainbar"))
                     {
                         // Translate whole page
                         translateReplaysHomePage(newElement);
