@@ -2201,7 +2201,17 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Ogerpon-Teal-Tera": "Ogerpon-Turquoise-Tera",
 	"Ogerpon-Wellspring-Tera": "Ogerpon-du Puits-Tera",
 	"Ogerpon-Hearthflame-Tera": "Ogerpon-du Fourneau-Tera",
-	"Ogerpon-Cornerstone-Tera": "Ogerpon-de la Pierre-Tera"
+	"Ogerpon-Cornerstone-Tera": "Ogerpon-de la Pierre-Tera",
+	"Archaludon": "Pondralugon",
+	"Hydrapple": "Pomdorochi",
+	"Gouging Fire": "Feu-Perçant",
+	"Raging Bolt": "Ire-Foudre",
+	"Iron Boulder": "Roc-de-Fer",
+	"Iron Crown": "Chef-de-Fer",
+	"Terapagos": "Terapagos",
+	"Terapagos-Terastal": "Terapagos-Téracristal",
+	"Terapagos-Stellar": "Terapagos-Stellaire",
+	"Pecharunt": "Pêchaminus"
 };
 
 export const AbilitiesDico: { [englishName: string]: string; } = {
@@ -2514,7 +2524,11 @@ export const AbilitiesDico: { [englishName: string]: string; } = {
 	"Hospitality": "Aux Petits Soins",
 	"Mind's Eye": "Oeil Révélateur",
 	"Supersweet Syrup": "Nectar Mielleux",
-	"Toxic Chain": "Chaîne Toxique"
+	"Toxic Chain": "Chaîne Toxique",
+	"Poison Puppeteer": "Emprise Toxique",
+	"Teraform Zero": "Téraformation 0",
+	"Tera Shell": "Téra Carapace",
+	"Tera Shift": "Téramorphose",
 }
 
 export const MovesDico: { [englishName: string]: string; } = {
@@ -3456,7 +3470,22 @@ export const MovesDico: { [englishName: string]: string; } = {
 	"Blood Moon": "Lune Rouge",
 	"Ivy Cudgel": "Massue Liane",
 	"Matcha Gotcha": "Mortier Matcha",
-	"Syrup Bomb": "Bombe au Sirop"
+	"Syrup Bomb": "Bombe au Sirop",
+	"Alluring Voice": "Voix Envoûtante",
+	"Burning Bulwark": "Rempart Brûlant",
+	"Dragon Cheer": "Cri Draconique",
+	"Electro Shot": "Fulgurayon",
+	"Fickle Beam": "Laser Hasard",
+	"Hard Press": "Pression Extrême",
+	"Malignant Chain": "Chaîne Malsaine",
+	"Mighty Cleave": "Lame Puissante",
+	"Psychic Noise": "Dissonance Psy",
+	"Supercell Slam": "Volt Assaut",
+	"Tachyon Cutter": "Lame Tachyonique",
+	"Temper Flare": "Indignition",
+	"Tera Starstorm": "Pluie Térastrale",
+	"Thunderclap": "Vif Éclair",
+	"Upper Hand": "Prio-Parade"
 }
 
 export const ItemsDico: { [englishName: string] : string; } = {
@@ -3992,7 +4021,8 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"Fairy Feather": "Plume Féérique",
 	"Masterpiece Teacup": "Bol Exceptionnel",
 	"Syrupy Apple": "Pomme Nectar",
-	"Unremarkable Teacup": "Bol Médiocre"
+	"Unremarkable Teacup": "Bol Médiocre",
+	"Metal Alloy": "Métal Composite"
 }
 
 export const AliasDico:  { [englishName: string]: string; } = {
@@ -4019,7 +4049,8 @@ export const TypesDico: { [englishName: string]: string; } = {
 	"Rock": "Roche",
 	"Steel": "Acier",
 	"Water": "Eau",
-	"Unknown": "Unknown"
+	"Unknown": "Unknown",
+	"Stellar": "Stellaire"
 }
 
 export const NaturesDico: { [englishName: string]: string; } = {
@@ -6730,7 +6761,22 @@ export const MovesShortDescDico: { [index: string]: string; } = {
 	"Blood Moon": "Ne peut pas être utilisée deux fois d'affilée.",
 	"Ivy Cudgel": "Haut taux de critique. Type dépend de la forme.",
 	"Matcha Gotcha": "20% brûlure. Soigne 50% dégâts infligés. Dégèle.",
-	"Syrup Bomb": "Baisse la Vitesse de la cible de 1 pendant 3 tours."
+	"Syrup Bomb": "Baisse la Vitesse de la cible de 1 pendant 3 tours.",
+	"Alluring Voice": "100% confus si la cible a augmenté une stat ce tour.",
+	"Burning Bulwark": "Protège le lanceur des capacités. Contact : brûlure.",
+	"Dragon Cheer": "Sur allié : taux critique +1, +2 si Dragon.",
+	"Electro Shot": "SpA +1. Attaque Tour 2. Pluie : pas de charge.",
+	"Fickle Beam": "30% de chance de doubler la puissance.",
+	"Hard Press": "Puissance proportionnelle aux PV de la cible.",
+	"Malignant Chain": "50% de chance de gravement empoisonner la cible.",
+	"Mighty Cleave": "Passe à travers les protections sans les briser.",
+	"Psychic Noise": "La cible ne peut pas se soigner. (2 tours)",
+	"Supercell Slam": "Le lanceur subit 50% de ses PV max s'il rate.",
+	"Tachyon Cutter": "Touche 2 fois. N'échoue jamais.",
+	"Temper Flare": "Puissance x2 si la dernière capacité a échoué.",
+	"Tera Starstorm": "Terapagos-Stellaire : Type Stellaire. (Zone)",
+	"Thunderclap": "Frappe en priorité. Échoue si la cible n'attaque pas.",
+	"Upper Hand": "100% peur, échoue sauf si la cible agit en priorité."
 }
 
 export const MovesLongDescDico: { [index: string]: string; } = {
@@ -8400,7 +8446,10 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
 	"Hospitality": "Lorsque ce Pokémon arrive sur le terrain, il restaure 1/4 des PVs maximums de son allié.",
 	"Mind's Eye": "Capacités Normal et Combat touchent Spectre. Précision ne baisse pas. Ignore esquive.",
 	"Supersweet Syrup": "Lorsqu'il arrive sur le terrain, diminue l'Esquive des Pokémon adverses adjacents d'1 cran.",
-	"Toxic Chain": "Les capacités offensives du Pokémon ont 30% de chances d'empoisonner gravement."
+	"Toxic Chain": "Les capacités offensives du Pokémon ont 30% de chances d'empoisonner gravement.",
+	"Teraform Zero": "Après Téracristallisation, élimine les changements de météo et de terrain.",
+	"Tera Shift": "Lorsque Terapagos est envoyé au combat, il se transforme dans sa forme Téracristal.",
+	"Tera Shell": "Toutes les capacités reçues deviennent peu efficaces tant que le Pokémon a tous ses PV."
 }
 
 export const AbilitiesLongDescDico: { [index: string]: string; } = {
@@ -8563,5 +8612,6 @@ export const AbilitiesLongDescDico: { [index: string]: string; } = {
     "Wonder Skin": "All non-damaging moves that check accuracy have their accuracy changed to 50% when used on this Pokemon. This change is done before any other accuracy modifying effects.",
     "Zen Mode": "If this Pokemon is a Darmanitan or Darmanitan-Galar, it changes to Zen Mode if it has 1/2 or less of its maximum HP at the end of a turn. If Darmanitan's HP is above 1/2 of its maximum HP at the end of a turn, it changes back to Standard Mode. This Ability cannot be removed or suppressed.",
 	"Mind's Eye": "Ce Pokémon peut toucher les types Spectre avec des capacités de type Combat et de type Normal. De plus, la Précision de ce Pokémon ne peut pas être baissée et il ignore les changements d'Esquive de sa cible.",
-	"Toxic Chain": "Lorsque ce Pokémon utilise une capacité offensive, il a 30% de chances d'empoisonner gravement la cible."
+	"Toxic Chain": "Lorsque ce Pokémon utilise une capacité offensive, il a 30% de chances d'empoisonner gravement la cible."?
+	"Tera Shell": "Toutes les capacités reçues deviennent peu efficaces tant que le Pokémon a tous ces PV."
 }
