@@ -225,6 +225,11 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updateBattleRules(newElement);
                     }
+                    // Replays action buttons
+                    if (parentClasses.contains("replay-controls"))
+                    {
+                        updateReplayControl(newElement as Element);
+                    }
                 }
 
                 // Find element by parent children
@@ -1556,41 +1561,7 @@ function translateReplayBattlePage(mainDiv: Element | null)
         // Action buttons (Play, Next turn, Replay Speed, Description, etc)
         if (replayWrapperElement.className == "replay-controls") {
             replayWrapperElement.childNodes.forEach(function(replayControlsNode) {
-                var replayControls = replayControlsNode as Element;
-
-                // Options button are located on <p> tags
-                if (replayControls.tagName == "P") {
-                    replayControls.childNodes.forEach(function (actionButtonNode) {
-                        var actionButton = actionButtonNode as Element;
-    
-                        // Action button, Download button, label
-                        if (["BUTTON", "A", "EM"].includes(actionButton.tagName)) {
-                            updateActionButton(actionButton);
-                        }
-                        // Action button with label
-                        else if (actionButton.tagName == "LABEL") {
-                            actionButton.childNodes.forEach(function (buttonNode) {
-                                var buttonElement = buttonNode as Element;
-
-                                // Dropdown list
-                                if (buttonElement.tagName == "SELECT") {
-                                    updateActionButton(buttonElement);
-                                }
-                                // Label
-                                else if (!buttonElement.tagName && buttonElement.textContent) {
-                                    buttonElement.textContent = translateMenu(buttonElement.textContent);
-                                }
-                            })
-                        }
-                        // Regular text content
-                        else if (!actionButton.tagName && actionButton.textContent) {
-                            // Upload date is directly after the download button
-                            if (actionButton.previousElementSibling?.firstElementChild?.classList?.contains("fa-download")) {
-                                updateUploadDateLabel(actionButton);
-                            }
-                        }
-                    })
-                }
+                updateReplayControl(replayControlsNode as Element);
             })
         }
         // Battle element
@@ -1642,6 +1613,83 @@ function translateReplayBattlePage(mainDiv: Element | null)
             })
         }
     })   
+}
+
+function updateReplayControl(replayControls: Element)
+{
+    // Options button are located on <p> tags
+    if (replayControls.tagName == "P") {
+        replayControls.childNodes.forEach(function (actionButtonNode) {
+            var actionButton = actionButtonNode as Element;
+
+            // Action button, Download button, label
+            if (["BUTTON", "A", "EM"].includes(actionButton.tagName)) {
+                updateActionButton(actionButton);
+            }
+            // Action button with label
+            else if (actionButton.tagName == "LABEL") {
+                actionButton.childNodes.forEach(function (buttonNode) {
+                    var buttonElement = buttonNode as Element;
+
+                    // Dropdown list
+                    if (buttonElement.tagName == "SELECT") {
+                        updateActionButton(buttonElement);
+                    }
+                    // Label
+                    else if (!buttonElement.tagName && buttonElement.textContent) {
+                        buttonElement.textContent = translateMenu(buttonElement.textContent);
+                    }
+                })
+            }
+            // Regular text content
+            else if (!actionButton.tagName && actionButton.textContent) {
+                // Upload date is directly after the download button
+                if (actionButton.previousElementSibling?.firstElementChild?.classList?.contains("fa-download")) {
+                    updateUploadDateLabel(actionButton);
+                }
+            }
+        })
+    }
+    // Go to turn interface
+    else if (replayControls.tagName == "SECTION") {
+        replayControls.childNodes.forEach(function (goToTurnNode) {
+            var goToTurnElement = goToTurnNode as Element;
+
+            // Actual "Go to turn" interface
+            if (goToTurnElement.tagName == "FORM") {
+                goToTurnElement.childNodes.forEach(function (turnSelectorNode) {
+                    var turnSelectorElement = turnSelectorNode as Element;
+
+                    // Go/Cancel button
+                    if (turnSelectorElement.tagName == "BUTTON") {
+                        var buttonLabel = turnSelectorElement.firstChild as Element;
+
+                        if (buttonLabel.textContent
+                            && (!buttonLabel.tagName || buttonLabel.tagName == "STRONG"))
+                        {
+                            buttonLabel.textContent = translateMenu(buttonLabel.textContent);
+                        }
+                    }
+                    // Turn Label
+                    else if (!turnSelectorElement.tagName && turnSelectorElement.textContent) {
+                        turnSelectorElement.textContent = translateMenu(turnSelectorElement.textContent);
+                    }
+                })
+            }
+            // Pro tip
+            else if (goToTurnElement.tagName == "P") {
+                goToTurnElement.childNodes.forEach(function (protipNode) {
+                    var protipElement = protipNode as Element;
+
+                    // Translate all labels
+                    if (protipElement.textContent
+                        && (!protipElement.tagName || ["EM", "KBD"].includes(protipElement.tagName))) {
+                        protipElement.textContent = translateMenu(protipElement.textContent);
+                    }
+                })
+            }
+        })
+    }
 }
 
 function translateBattleHomePage()
