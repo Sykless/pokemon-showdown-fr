@@ -2201,7 +2201,17 @@ export const PokemonDico: { [englishName: string]: string; } = {
 	"Ogerpon-Teal-Tera": "Ogerpon-Turquoise-Tera",
 	"Ogerpon-Wellspring-Tera": "Ogerpon-du Puits-Tera",
 	"Ogerpon-Hearthflame-Tera": "Ogerpon-du Fourneau-Tera",
-	"Ogerpon-Cornerstone-Tera": "Ogerpon-de la Pierre-Tera"
+	"Ogerpon-Cornerstone-Tera": "Ogerpon-de la Pierre-Tera",
+	"Archaludon": "Pondralugon",
+	"Hydrapple": "Pomdorochi",
+	"Gouging Fire": "Feu-Perçant",
+	"Raging Bolt": "Ire-Foudre",
+	"Iron Boulder": "Roc-de-Fer",
+	"Iron Crown": "Chef-de-Fer",
+	"Terapagos": "Terapagos",
+	"Terapagos-Terastal": "Terapagos-Téracristal",
+	"Terapagos-Stellar": "Terapagos-Stellaire",
+	"Pecharunt": "Pêchaminus"
 };
 
 export const AbilitiesDico: { [englishName: string]: string; } = {
@@ -2514,7 +2524,11 @@ export const AbilitiesDico: { [englishName: string]: string; } = {
 	"Hospitality": "Aux Petits Soins",
 	"Mind's Eye": "Oeil Révélateur",
 	"Supersweet Syrup": "Nectar Mielleux",
-	"Toxic Chain": "Chaîne Toxique"
+	"Toxic Chain": "Chaîne Toxique",
+	"Poison Puppeteer": "Emprise Toxique",
+	"Teraform Zero": "Téraformation 0",
+	"Tera Shell": "Téra Carapace",
+	"Tera Shift": "Téramorphose",
 }
 
 export const MovesDico: { [englishName: string]: string; } = {
@@ -3456,7 +3470,22 @@ export const MovesDico: { [englishName: string]: string; } = {
 	"Blood Moon": "Lune Rouge",
 	"Ivy Cudgel": "Massue Liane",
 	"Matcha Gotcha": "Mortier Matcha",
-	"Syrup Bomb": "Bombe au Sirop"
+	"Syrup Bomb": "Bombe au Sirop",
+	"Alluring Voice": "Voix Envoûtante",
+	"Burning Bulwark": "Rempart Brûlant",
+	"Dragon Cheer": "Cri Draconique",
+	"Electro Shot": "Fulgurayon",
+	"Fickle Beam": "Laser Hasard",
+	"Hard Press": "Pression Extrême",
+	"Malignant Chain": "Chaîne Malsaine",
+	"Mighty Cleave": "Lame Puissante",
+	"Psychic Noise": "Dissonance Psy",
+	"Supercell Slam": "Volt Assaut",
+	"Tachyon Cutter": "Lame Tachyonique",
+	"Temper Flare": "Indignition",
+	"Tera Starstorm": "Pluie Térastrale",
+	"Thunderclap": "Vif Éclair",
+	"Upper Hand": "Prio-Parade"
 }
 
 export const ItemsDico: { [englishName: string] : string; } = {
@@ -3992,7 +4021,8 @@ export const ItemsDico: { [englishName: string] : string; } = {
 	"Fairy Feather": "Plume Féérique",
 	"Masterpiece Teacup": "Bol Exceptionnel",
 	"Syrupy Apple": "Pomme Nectar",
-	"Unremarkable Teacup": "Bol Médiocre"
+	"Unremarkable Teacup": "Bol Médiocre",
+	"Metal Alloy": "Métal Composite"
 }
 
 export const AliasDico:  { [englishName: string]: string; } = {
@@ -4019,7 +4049,8 @@ export const TypesDico: { [englishName: string]: string; } = {
 	"Rock": "Roche",
 	"Steel": "Acier",
 	"Water": "Eau",
-	"Unknown": "Unknown"
+	"Unknown": "Unknown",
+	"Stellar": "Stellaire"
 }
 
 export const NaturesDico: { [englishName: string]: string; } = {
@@ -4720,6 +4751,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Join chat": "Rejoindre le chat",
 	"Watch a battle": "Regarder un match",
 	"Find a user": "Trouver un utilisateur",
+	"Friends": "Amis",
 	"Rules": "Règles",
 	"Credits": "Crédits",
 	"background by ": "par ",
@@ -4739,7 +4771,7 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Skip turn": "Passer le tour",
 	"Skip to end": "Passer à la fin",
 	"First turn": "Premier tour",
-	"Last turn": "Tour précédent",
+	"Prev turn": "Tour précédent",
 	" users online": " joueurs actifs",
 	" active battles": " matchs actifs",
 	"username prefix": "préfixe du pseudo",
@@ -4974,39 +5006,48 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"or": "ou",
 
 	// Replays
-	"Upload replays": "Uploader des replays",
+	"(blank = any user)": "(vide = tous les users)",
+	"(blank = any format)": "(vide = tous les formats)",
+	"Username:": "Nom d'utilisateur :",
+	"'s replays": "replays de ",
+	" Private (your own replays only)": " Privé (uniquement vos replays)",
 	"Search replays": "Rechercher des replays",
 	"Featured replays": "Replays mis en avant",
 	"Recent replays": "Replays récents",
-	"\n\t\t\tTo upload a replay, click \"Share\" or use the command ": "Pour uploader un replay, clique sur \"Partager\" ou utilise la commande ",
-	" in a Pokémon Showdown battle!\n\t\t": " dans un match sur Pokémon Showdown !",
+	"More ": "Plus ",
 	"Search for user": "Rechercher un utilisateur",
 	"Search by format": "Recherche par format",
 	"Competitive": "Compétitif",
 	"Older": "Plus vieux",
-	"hour": "heure",
-	"hours": "heures",
-	"day": "jour",
-	"days": "jours",
 	"Speed:": "Vitesse :",
 	"Hyperfast": "Hyper rapide",
 	"Fast": "Rapide",
 	"Slow": "Lent",
-	"Really Slow": "Très lent",
-	"Color scheme:": "Thème :",
-	"Music:": "Musique :",
+	"Really slow": "Très lent",
+	"Sound:": "Son :",
+	"On": "Activé",
+	"Music Off": "Sans musique",
+	"Muted": "Muet",
+	"Dark mode:": "Thème sombre :",
+	"Automatic": "Automatique",
+	"Viewpoint:": "Point de vue :",
 	" Play": " Lecture",
-	"Play (music off)": "Lecture (musique off)",
+	"Play (sound off)": "Lecture (son désactivé)",
 	" Download": " Télécharger",
 	" Reset": " Réinitialiser",
 	" Last turn": " Tour précédent",
 	" Next turn": " Tour suivant",
 	" Go to turn...": " Aller au tour...",
-	" Switch sides": "Changer de côté",
 	" Other replays": " Autres Replays",
 	" More replays": " Plus de Replays",
 	"Rating:": "Elo :",
 	"Uploaded:": "Uploadé :",
+	"Turn? ": "Tour ? ",
+	"Pro tip:": "Astuce de pro :",
+	" You don't need to click \"Skip to turn\" if you have a keyboard, just start typing the turn number and press ": " Tu n'as pas besoin de cliquer sur \"Aller au tour...\" si tu as un clavier, tape juste le numéro du tour et appuie sur ",
+	"Enter": "Entrée",
+	". For more shortcuts, press ": ". Pour plus de raccourcis, appuie sur ",
+	" when a text box isn't focused.": " quand une boîte de dialogue n'a pas le focus.",
 	"Jan": "Janvier",
 	"Feb": "Février",
 	"Mar": "Mars",
@@ -5019,6 +5060,13 @@ export const MenuDico: { [englishName: string]: string; } = {
 	"Oct": "Octobre",
 	"Nov":" Novembre",
 	"Dec": "Décembre",
+	"Mon": "Lundi",
+	"Tue": "Mardi",
+	"Wed": "Mercredi",
+	"Thu": "Jeudi",
+	"Fri": "Vendredi",
+	"Sat": "Samedi",
+	"Sun": "Dimanche"
 }
 
 export const FiltersDico:  { [englishName: string]: string; } = {
@@ -6719,7 +6767,22 @@ export const MovesShortDescDico: { [index: string]: string; } = {
 	"Blood Moon": "Ne peut pas être utilisée deux fois d'affilée.",
 	"Ivy Cudgel": "Haut taux de critique. Type dépend de la forme.",
 	"Matcha Gotcha": "20% brûlure. Soigne 50% dégâts infligés. Dégèle.",
-	"Syrup Bomb": "Baisse la Vitesse de la cible de 1 pendant 3 tours."
+	"Syrup Bomb": "Baisse la Vitesse de la cible de 1 pendant 3 tours.",
+	"Alluring Voice": "100% confus si la cible a augmenté une stat ce tour.",
+	"Burning Bulwark": "Protège le lanceur des capacités. Contact : brûlure.",
+	"Dragon Cheer": "Sur allié : taux critique +1, +2 si Dragon.",
+	"Electro Shot": "SpA +1. Attaque Tour 2. Pluie : pas de charge.",
+	"Fickle Beam": "30% de chance de doubler la puissance.",
+	"Hard Press": "Puissance proportionnelle aux PV de la cible.",
+	"Malignant Chain": "50% de chance de gravement empoisonner la cible.",
+	"Mighty Cleave": "Passe à travers les protections sans les briser.",
+	"Psychic Noise": "La cible ne peut pas se soigner. (2 tours)",
+	"Supercell Slam": "Le lanceur subit 50% de ses PV max s'il rate.",
+	"Tachyon Cutter": "Touche 2 fois. N'échoue jamais.",
+	"Temper Flare": "Puissance x2 si la dernière capacité a échoué.",
+	"Tera Starstorm": "Terapagos-Stellaire : Type Stellaire. (Zone)",
+	"Thunderclap": "Frappe en priorité. Échoue si la cible n'attaque pas.",
+	"Upper Hand": "100% peur, échoue sauf si la cible agit en priorité."
 }
 
 export const MovesLongDescDico: { [index: string]: string; } = {
@@ -7527,7 +7590,20 @@ export const MovesLongDescDico: { [index: string]: string; } = {
 	"Hydro Steam": "Si le Soleil brille, la puissance de cette capacité augmente de 50% au lieu d'être réduite.",
 	"Ivy Cudgel": "Le type de cette capacité dépend du Masque tenu par le lanceur. Cette capacité a également plus de chances (12,5% soit 1/8) d'infliger un coup critique.",
 	"Matcha Gotcha": "Cette capacité a 20% de chances de brûler la cible. L'utilisateur et la cible dégèlent si elle sont gelées. L'utilisateur récupère la moitié des PVs perdus par la cible, arrondie à l'unité supérieure.",
-	"Syrup Bomb": "Si l'attaque touche sa cible, elle lui baisse sa Vitesse d'1 cran à la fin de chaque tour durant 3 tours."
+	"Syrup Bomb": "Si l'attaque touche sa cible, elle lui baisse sa Vitesse d'1 cran à la fin de chaque tour durant 3 tours.",
+	"Alluring Voice": "Plonge la cible sous confusion si elle a augmenté ses statistiques ce tour-ci.",
+	"Burning Bulwark": "Protège l'utilisateur de la plupart des attaques. Si une capacité de contact est lancée sur l'utilisateur lorsqu'il se protège, alors le lanceur est brûlé. Les chances que cette capacité fonctionne sont divisées par 3 à chaque fois qu'elle est réussie de manière consécutive, y compris les variantes de la capacité (Abri, Blockhaus, Détection, Ténacité, Garde Large, Pico-défense Prévention, Bouclier Royal). La capacité échoue si le lanceur attaque en dernier pendant ce tour.",
+	"Dragon Cheer": "Augmente les chances de coup critique d'un allié d'1 cran. Si l'allié est de type Dragon, elle augmente de 2 crans. Échoue si l'utilisateur a déjà l'effet. Relais peut être utilisé pour transférer cet effet à un allié.",
+	"Electro Shot": "Cette attaque se charge au premier tour et s'exécute au second. Elle augmente l'Attaque Spéciale de l'utilisateur d'1 cran au premier tour. Si la pluie est actif ou que l'utilisateur tient une Herbe Pouvoir, l'attaque s'effectue en un tour.",
+	"Hard Press": "La puissance de cette capacité est égale à 100 * (PVs actuels de la cible / PVs maximums de la cible).",
+	"Malignant Chain": "Cette capacité a 50% de chances d'empoisonner gravement la cible.",
+	"Psychic Noise": "Si cette capacité touche sa cible, elle ne peut plus restaurer de PVs pendant 2 tours tant qu'elle reste sur le terrain. Pendant l'effet, les capacités de guérison telles que Soin, Rayon Lune, Paresse, Repos, Vibra Soin, ainsi que Vœu, Vœu Soin sont inutilisables. Les attaques drainant des PVs comme Giga-Sangsue ou Mort'Ailes échouent. Les objets tels que Restes, et les talents comme Absorb-Volt par exemple, n'ont aucun effet sur les PVs de la cible. Le Champ Herbu, Vampigraine, et Anneau Hydro ne soignent plus le Pokémon sur le terrain. Si un Pokémon affecté utilise Relais, le remplaçant récupère cet effet. Le talent Régé-Force n'est pas affecté.",
+	"Supercell Slam": "Si cette attaque échoue, l'utilisateur perd la moitié de ses PVs maximums arrondis à l'unité inférieure, sous forme de dégâts de chute. Cette capacité ne peut pas être utilisé si Gravité est actif. Les Pokémon avec le talent Garde Magik ne sont pas affectés par les dégâts de chute.",
+	"Tachyon Cutter": "Frappe deux fois. Si le premier coup brise le clone de la cible, elle subit des dégâts du deuxième coup. N'échoue jamais.",
+	"Temper Flare": "Si au tour précèdent l'utilisateur a raté son attaque sur l'une de ses cibles ou a été empêché d'être utilisé (comme par exemple à cause d'une paralysie, de capacité comme Possessif ou encore d'un talent tel que Corps en Or), cette capacité double en puissance. Cela ne fonctionnera pas si l'attaque de l'utilisateur a été bloqué par Abri, ou ses variantes, si l'utilisateur était sous effet de recharge, ou si l'attaque qui a raté était Pied Voltige, ou ses variantes.",
+	"Tera Starstorm": "Si l'utilisateur est un Terapagos dans sa forme Stellaire, cette capacité devient de type Stellaire et frappe tous les Pokemon adverses.",
+	"Thunderclap": "La capacité échoue si la cible n'a pas choisi une attaque physique ou spéciale à utiliser ce tour-ci, si l'adversaire change de Pokémon ou si la cible attaque avant l'utilisateur.",
+	"Upper Hand": "Si la cible utilise une capacité de priorité +1 ou supérieur ce tour-ci, cette attaque agit en premier et apeure la cible. Echoue si la cible n'utilise pas une capacité de priorité."
 }
 
 export const ItemsShortDescDico: { [index: string]: string; } = {
@@ -8389,7 +8465,10 @@ export const AbilitiesShortDescDico: { [index: string]: string; } = {
 	"Hospitality": "Lorsque ce Pokémon arrive sur le terrain, il restaure 1/4 des PVs maximums de son allié.",
 	"Mind's Eye": "Capacités Normal et Combat touchent Spectre. Précision ne baisse pas. Ignore esquive.",
 	"Supersweet Syrup": "Lorsqu'il arrive sur le terrain, diminue l'Esquive des Pokémon adverses adjacents d'1 cran.",
-	"Toxic Chain": "Les capacités offensives du Pokémon ont 30% de chances d'empoisonner gravement."
+	"Toxic Chain": "Les capacités offensives du Pokémon ont 30% de chances d'empoisonner gravement.",
+	"Teraform Zero": "Après Téracristallisation, élimine les changements de météo et de terrain.",
+	"Tera Shift": "Lorsque Terapagos est envoyé au combat, il se transforme dans sa forme Téracristal.",
+	"Tera Shell": "Toutes les capacités reçues deviennent peu efficaces tant que le Pokémon a tous ses PV."
 }
 
 export const AbilitiesLongDescDico: { [index: string]: string; } = {
@@ -8552,5 +8631,6 @@ export const AbilitiesLongDescDico: { [index: string]: string; } = {
     "Wonder Skin": "All non-damaging moves that check accuracy have their accuracy changed to 50% when used on this Pokemon. This change is done before any other accuracy modifying effects.",
     "Zen Mode": "If this Pokemon is a Darmanitan or Darmanitan-Galar, it changes to Zen Mode if it has 1/2 or less of its maximum HP at the end of a turn. If Darmanitan's HP is above 1/2 of its maximum HP at the end of a turn, it changes back to Standard Mode. This Ability cannot be removed or suppressed.",
 	"Mind's Eye": "Ce Pokémon peut toucher les types Spectre avec des capacités de type Combat et de type Normal. De plus, la Précision de ce Pokémon ne peut pas être baissée et il ignore les changements d'Esquive de sa cible.",
-	"Toxic Chain": "Lorsque ce Pokémon utilise une capacité offensive, il a 30% de chances d'empoisonner gravement la cible."
+	"Toxic Chain": "Lorsque ce Pokémon utilise une capacité offensive, il a 30% de chances d'empoisonner gravement la cible."?
+	"Tera Shell": "Toutes les capacités reçues deviennent peu efficaces tant que le Pokémon a tous ces PV."
 }
