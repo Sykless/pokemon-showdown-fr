@@ -1823,9 +1823,11 @@ function updateInputPokemonName()
 function convertPokemonNameToArray(pokemonName: string)
 {
 	const HyphenPokemonName = ["nidoran-f", "nidoran-m", "ho-oh", "porygon-z", "jangmo-o", "hakamo-o", "kommo-o", "ama-ama", "tag-tag",
-		"fort-ivoire", "fongus-furie", "pelage-sable", "hurle-queue", "flotte-meche", "rampe-ailes", "rugit-lune", "serpente-eau"]
+		"fort-ivoire", "fongus-furie", "pelage-sable", "hurle-queue", "flotte-meche", "rampe-ailes", "rugit-lune", "serpente-eau",
+		"feu-percant", "ire-foudre"]
 
-	const TwoHyphenPokemonName = ["roue-de-fer", "mite-de-fer", "paume-de-fer", "tetes-de-fer", "epine-de-fer", "hotte-de-fer", "garde-de-fer", "vert-de-fer"]
+	const TwoHyphenPokemonName = ["roue-de-fer", "mite-de-fer", "paume-de-fer", "tetes-de-fer", "epine-de-fer", "hotte-de-fer",
+		"garde-de-fer", "vert-de-fer", "roc-de-fer", "chef-de-fer"]
 		
 	var pokemonRawName = pokemonName.split("-");
 

@@ -6,13 +6,15 @@ console.log("BattleTranslate successfully loaded !");
 
 const HP = 0, ABILITY = 1, POSSIBLE_ABILITIES = 2, ITEM = 3, STATS = 4, SPEED = 5, UNKNOWN = 6;
 
+declare var app: any;
+
 // If a Battle is reloaded, the original code is not counted as a page change
 // So we need to translate it if needed
 if (window.location.host == PLAY_SHOWDOWN_HOST) {
     translateBattleHomePage();
 }
 else if (window.location.host == REPLAYS_SHOWDOWN_HOST) {
-    translateReplayBattlePage();
+    translateReplayBattlePage(null);
 }
 
 // The injected script cannot access chrome.runtime.getURL
@@ -22,8 +24,6 @@ var SpriteURL = "";
 window.addEventListener('RecieveContent', function(evt: any) {
 	SpriteURL = evt.detail;
 });
-
-declare var app: any;
 
 // Create a MutationObserver element in order to track every page change
 // So we can it dynamically translate new content
@@ -43,7 +43,7 @@ function onMutation(mutations: MutationRecord[])
 	}
 
 	for (var i = 0, len = mutations.length; i < len ; i++)
-	{		
+	{
         // Iterate on every added node that isn't on the preempt message target
 		if (mutations[i].type == "childList"
             && !(mutations[i].target as Element).className?.includes("inner-preempt message-log"))
@@ -83,12 +83,8 @@ function onMutation(mutations: MutationRecord[])
                         // console.log("Whole room, rien d'intéressant : " + newElement.outerHTML);
                     }
                     // Whole replay has been loaded
-                    else if (elementClasses.contains("pfx-body")) {
-                        var uploadDate = document.getElementsByClassName("uploaddate");
-
-                        if (uploadDate.length > 0) {
-                            updateUploadDateLabel(uploadDate[0])
-                        }
+                    else if (elementClasses.contains("mainbar")) {
+                        translateReplayBattlePage(newElement.firstChild as Element);
                     }
                     // Trainer sprite has been loaded
                     else if (elementClasses.contains("trainer"))
@@ -138,17 +134,6 @@ function onMutation(mutations: MutationRecord[])
                         else {
                             updateControlPanel(newElement);
                         }
-                    }
-                    // Replays options button (Speed, Music, etc)
-                    else if (elementClasses.contains("chooser"))
-                    {
-                        updateReplayChooser(newElement)
-                    }
-                    // Replays action button (Play, Go to turn, Download, etc)
-                    else if (elementClasses.contains("replayDownloadButton")
-                        || (newElement.tagName == "BUTTON" && newElement.getAttribute("data-action")))
-                    {
-                        updateActionButton(newElement);
                     }
                     // Replays Play buttons
                     else if (elementClasses.contains("playbutton"))
@@ -208,11 +193,6 @@ function onMutation(mutations: MutationRecord[])
                     {
                         updateRatedBattle(newElement);
                     }
-                    // Upload date label
-                    else if (newElement.tagName == "P" && newElement.firstElementChild?.classList?.contains("uploaddate"))
-                    {
-                        updateUploadDateLabel(newElement.firstElementChild);
-                    }
                     else {
                         // No translation found
                         translatedElement = false;
@@ -223,6 +203,7 @@ function onMutation(mutations: MutationRecord[])
                     translatedElement = false;
                 }
 
+                // Find element by parent class
 				if (parentClasses && !translatedElement)
                 {
                     // Weather and side-conditions
@@ -244,6 +225,53 @@ function onMutation(mutations: MutationRecord[])
                     else if (newElement.className == "" && parentClasses.contains("message-log"))
                     {
                         updateBattleRules(newElement);
+                    }
+                    // Replays action buttons
+                    if (parentClasses.contains("replay-controls"))
+                    {
+                        updateReplayControl(newElement as Element);
+                    }
+                }
+
+                // Find element by parent children
+                if (parentElement.childNodes.length > 1 && !translatedElement)
+                {
+                    // Download replays section
+                    if (newElement.textContent && parentElement.tagName == "P"
+                        && parentElement.firstElementChild?.firstElementChild?.classList?.contains("fa-download"))
+                    {
+                        // Rating label
+                        if (newElement.tagName == "EM") {
+                            newElement.textContent = translateMenu(newElement.textContent);
+                        }
+                        // Download button, also translate upload date
+                        else if (newElement.tagName == "A") {
+                            var buttonLabel = newElement.lastChild;
+                            var uploadDate = newElement.nextSibling as Element;
+
+                            // Download button
+                            if (buttonLabel?.textContent) {
+                                buttonLabel.textContent = translateMenu(buttonLabel.textContent);
+                            }
+
+                            // Upload date
+                            if (uploadDate?.textContent) {
+                                updateUploadDateLabel(uploadDate);
+                            }
+                        }
+                    }
+                }
+
+                // Find element by parent tag
+                if (parentElement.tagName && !translatedElement)
+                {
+                    if (parentElement.tagName == "H1")
+                    {
+                        // Isolated Loading label
+                        if (newElement.tagName == "EM" && newElement.textContent
+                            && newElement.childNodes.length == 1) {
+                                newElement.textContent = translateMenu(newElement.textContent);
+                        }
                     }
                 }
 			}
@@ -270,7 +298,7 @@ function isBattleOpen()
 {
     // Get all battle rooms
 	var teambuilderElement = document.querySelectorAll('[id^=room-battle-]');
-    var replayElement = document.querySelectorAll('.replay-wrapper')
+    var replayElement = document.querySelectorAll('.mainbar')
 
     var battleOpen = false;
 
@@ -607,7 +635,7 @@ function updateMoveTooltip(tooltip: Element)
                         // Not a priority move : section element is the move description
                         else if (sectionElement.textContent != ".") {
                             // In hardcore mode or if there's no long desc, display short desc
-                            var frenchDesc = app.curRoom?.battle?.hardcoreMode || !MovesLongDescDico[moveName] ? 
+                            var frenchDesc = app?.curRoom?.battle?.hardcoreMode || !MovesLongDescDico[moveName] ? 
                                 MovesShortDescDico[moveName] : MovesLongDescDico[moveName];
                             
                             if (frenchDesc) {
@@ -634,7 +662,7 @@ function updateMoveTooltip(tooltip: Element)
                 // Priority move : empty classname element is the move description
                 if (priorityMove) {
                     // In hardcore mode, display short desc
-                    var frenchDesc = app.curRoom?.battle?.hardcoreMode ? 
+                    var frenchDesc = app?.curRoom?.battle?.hardcoreMode ? 
                         MovesShortDescDico[moveName] : MovesLongDescDico[moveName];
                     
                     if (frenchDesc) {
@@ -998,35 +1026,14 @@ function updateTrainerElement(trainerElement: Element)
     })
 }
 
-function updateReplayChooser(chooserElement: Element)
-{
-    chooserElement.childNodes.forEach(function (chooserContentNode) {
-        var chooserContent = chooserContentNode as Element;
-
-        // Name label
-        if (chooserContent.tagName == "EM" && chooserContent.textContent) {
-            chooserContent.textContent = translateMenu(chooserContent.textContent);
-        }
-        // Action buttons node, iterate on children to translate labels
-        else if (chooserContent.tagName == "DIV") {
-            chooserContent.childNodes.forEach(function (actionButtonNode) {
-                var actionButton = actionButtonNode as Element;
-
-                if (actionButton.tagName == "BUTTON" && actionButton.textContent) {
-                    actionButton.textContent = translateMenu(actionButton.textContent);
-                }
-            })
-        }
-    })
-}
-
 function updateActionButton(actionButtonElement: Element)
 {
     actionButtonElement.childNodes.forEach(function (actionButtonContentNode) {
         var actionButtonContent = actionButtonContentNode as Element;
 
         // Only translate raw text (Action label)
-        if (!actionButtonContent.tagName && actionButtonContent.textContent) {
+        if ((!actionButtonContent.tagName || actionButtonContent.tagName == "OPTION") 
+            && actionButtonContent.textContent) {
             actionButtonContent.textContent = translateMenu(actionButtonContent.textContent);
         }
     })
@@ -1048,29 +1055,16 @@ function updateReplayPlayButtons(playButtonElement: Element)
 
 function updateUploadDateLabel(uploadLabel: Element)
 {
-    uploadLabel.childNodes.forEach(function (uploadDateNode) {
-        var uploadDateElement = uploadDateNode as Element;
+    if (!uploadLabel.tagName && uploadLabel.textContent) {
+        var uploadDate = uploadLabel.textContent.split(" ");
 
-        if (uploadDateElement.textContent)
-        {
-            // Raw text label
-            if (uploadDateElement.tagName == "EM") {
-                uploadDateElement.textContent = translateMenu(uploadDateElement.textContent);
-            }
-            // Actual upload date
-            else if (!uploadDateElement.tagName) {
-                var uploadDate = uploadDateElement.textContent.split(" ");
-
-                // Less than 3 spaces is the elo rating, we don't translate that
-                if (uploadDate.length > 3) {
-                    uploadDateElement.textContent = " " + uploadDate[2].slice(0,-1) // Day (without the comma at the end)
-                        + " " + translateMenu(uploadDate[1]) // Translated Month
-                        + " " + uploadDate[3] // Year
-                        + (uploadDate.length > 4 ? " " + uploadDate[4] + " " : "") // Separator
-                }
-            }
+        if (uploadDate.length > 3) {
+            uploadLabel.textContent = translateMenu(uploadDate[0]) // Translated Day of the week
+            + " " + uploadDate[2] // Day
+            + " " + translateMenu(uploadDate[1]) // Translated Month
+            + " " + uploadDate[3]; // Year
         }
-    })
+    }
 }
 
 function updateOpponentWait(newElement: Element)
@@ -1421,7 +1415,7 @@ function updateChatElement(messageElement: Element)
         })
     }
     // Not a message, check if the message could be a command result
-    else if (app.curRoom?.chatHistory?.lines?.length > 0)
+    else if (window.location.host == PLAY_SHOWDOWN_HOST && app?.curRoom?.chatHistory?.lines?.length > 0)
     {
         // Commands are processed on the back-end, so we can't modify the data in order to add french names
         // We could intercept the webSocket message but it seems a bit too hacky
@@ -1432,7 +1426,7 @@ function updateChatElement(messageElement: Element)
         var noCommandFound = true;
 
         // Get last message sent
-        var message = app.curRoom.chatHistory.lines[app.curRoom.chatHistory.lines.length - 1];
+        var message = app?.curRoom.chatHistory.lines[app?.curRoom.chatHistory.lines.length - 1];
 
         // If message was a command
         if (message.startsWith("!") || message.startsWith("/"))
@@ -1467,7 +1461,7 @@ function updateChatElement(messageElement: Element)
                                 noCommandFound = false;
 
                                 // We add a "<>" symbol that will be removed by the HTML sanitizer just to indicate that we generated this message
-                                app.send(commandContent[0] + ' <"' + englishValue + '">', app.curRoom.id);
+                                app.send(commandContent[0] + ' <"' + englishValue + '">', app?.curRoom.id);
 
                                 // Stop the process
                                 break;
@@ -1505,7 +1499,7 @@ function updateChatElement(messageElement: Element)
                                         messageElement.parentElement?.removeChild(messageElement);
 
                                         // We add a <""> symbol that will be removed by the HTML sanitizer just to indicate that we generated this message
-                                        app.send(commandContent[0]  + ' <"' + englishValue + '">', app.curRoom.id);
+                                        app.send(commandContent[0]  + ' <"' + englishValue + '">', app?.curRoom.id);
                                     }
 
                                     break;
@@ -1573,95 +1567,150 @@ function updateBattleRules(messageElement: Element)
     })
 }
 
-function translateReplayBattlePage()
+function translateReplayBattlePage(mainDiv: Element | null)
 {
-    var replayWrapper = document.getElementsByClassName("replay-wrapper");
+    if (!mainDiv) {
+        var replayWrapper = document.getElementsByClassName("mainbar");
 
-    if (replayWrapper.length > 0) {
-        replayWrapper[0].childNodes.forEach(function (replayWrapperNode) {
-            var replayWrapperElement = replayWrapperNode as Element;
+        if (replayWrapper.length > 0) {
+            mainDiv = replayWrapper[0].firstElementChild;
+        }
+    }
 
-            // Download button
-            if (replayWrapperElement.classList?.contains("replayDownloadButton")) {
-                updateActionButton(replayWrapperElement)
-            }
-            // Back to Home button
-            else if (replayWrapperElement.classList?.contains("pfx-backbutton")) {
-                updateActionButton(replayWrapperElement);
-            }
-            // Upload date label
-            else if (replayWrapperElement.tagName == "P" && replayWrapperElement.firstElementChild?.classList?.contains("uploaddate")) {
-                updateUploadDateLabel(replayWrapperElement.firstElementChild);
-            }
-            // Action buttons (Play, Next turn, etc)
-            else if (replayWrapperElement.className == "replay-controls") {
-                replayWrapperElement.childNodes.forEach(function (actionButtonNode) {
-                    var actionButton = actionButtonNode as Element;
+    mainDiv?.childNodes.forEach(function (replayWrapperNode) {
+        var replayWrapperElement = replayWrapperNode as Element;
 
-                    if (actionButton.tagName == "BUTTON" && actionButton.getAttribute("data-action")) {
-                        updateActionButton(actionButton);
+        // Action buttons (Play, Next turn, Replay Speed, Description, etc)
+        if (replayWrapperElement.className == "replay-controls") {
+            replayWrapperElement.childNodes.forEach(function(replayControlsNode) {
+                updateReplayControl(replayControlsNode as Element);
+            })
+        }
+        // Battle element
+        else if (replayWrapperElement.className == "battle") {
+            replayWrapperElement.childNodes.forEach(function (battleNode) {
+                var battleElement = battleNode as Element;
+
+                // Actual battle, only translate trainer title (rating)
+                if (battleElement.className == "innerbattle") {
+                    var trainersElements = battleElement.getElementsByClassName("trainer");
+
+                    for (var i = 0 ; i < trainersElements.length ; i++) {
+                        updateTrainerElement(trainersElements[i]);
+                    }
+                }
+                // Battle options (Play button)
+                else if (battleElement.className == "playbutton") {
+                    updateReplayPlayButtons(battleElement);
+                }
+            })
+        }
+        // Battle logs element
+        else if (replayWrapperElement.className == "battle-log") {
+            replayWrapperElement.childNodes.forEach(function (battleLogNode) {
+                var battleLogElement = battleLogNode as Element;
+
+                if (battleLogElement.classList?.contains("message-log")) {
+                    battleLogElement.childNodes.forEach(function (originalLogNode) {
+                        var originalLog = originalLogNode as Element;
+
+                        // Battle rules
+                        if (originalLog.className == "") {
+                            updateBattleRules(originalLog);
+                        }
+                        // Rated battle label
+                        else if (originalLog.className == "rated") {
+                            updateRatedBattle(originalLog);
+                        }
+                        // Showdown battle message
+                        else if (originalLog.classList?.contains("battle-history")) {
+                            updateShowdownMessage(originalLog);
+                        }
+                        // Default : chat message
+                        else {
+                            updateChatElement(originalLog);
+                        }
+                    })
+                }
+            })
+        }
+    })   
+}
+
+function updateReplayControl(replayControls: Element)
+{
+    // Options button are located on <p> tags
+    if (replayControls.tagName == "P") {
+        replayControls.childNodes.forEach(function (actionButtonNode) {
+            var actionButton = actionButtonNode as Element;
+
+            // Action button, Download button, label
+            if (["BUTTON", "A", "EM"].includes(actionButton.tagName)) {
+                updateActionButton(actionButton);
+            }
+            // Action button with label
+            else if (actionButton.tagName == "LABEL") {
+                actionButton.childNodes.forEach(function (buttonNode) {
+                    var buttonElement = buttonNode as Element;
+
+                    // Dropdown list
+                    if (buttonElement.tagName == "SELECT") {
+                        updateActionButton(buttonElement);
+                    }
+                    // Label
+                    else if (!buttonElement.tagName && buttonElement.textContent) {
+                        buttonElement.textContent = translateMenu(buttonElement.textContent);
                     }
                 })
             }
-            // Options button (Speed, Music, etc)
-            else if (replayWrapperElement.className == "replay-controls-2") {
-                replayWrapperElement.childNodes.forEach(function (chooserButtonNode) {
-                    var chooserButton = chooserButtonNode as Element;
-
-                    if (chooserButton.classList?.contains("chooser")) {
-                        updateReplayChooser(chooserButton);
-                    }
-                })
+            // Regular text content
+            else if (!actionButton.tagName && actionButton.textContent) {
+                // Upload date is directly after the download button
+                if (actionButton.previousElementSibling?.firstElementChild?.classList?.contains("fa-download")) {
+                    updateUploadDateLabel(actionButton);
+                }
             }
-            // Battle element
-            else if (replayWrapperElement.className == "battle") {
-                replayWrapperElement.childNodes.forEach(function (battleNode) {
-                    var battleElement = battleNode as Element;
+        })
+    }
+    // Go to turn interface
+    else if (replayControls.tagName == "SECTION") {
+        replayControls.childNodes.forEach(function (goToTurnNode) {
+            var goToTurnElement = goToTurnNode as Element;
 
-                    // Actual battle, only translate trainer title (rating)
-                    if (battleElement.className == "innerbattle") {
-                        var trainersElements = battleElement.getElementsByClassName("trainer");
+            // Actual "Go to turn" interface
+            if (goToTurnElement.tagName == "FORM") {
+                goToTurnElement.childNodes.forEach(function (turnSelectorNode) {
+                    var turnSelectorElement = turnSelectorNode as Element;
 
-                        for (var i = 0 ; i < trainersElements.length ; i++) {
-                            updateTrainerElement(trainersElements[i]);
+                    // Go/Cancel button
+                    if (turnSelectorElement.tagName == "BUTTON") {
+                        var buttonLabel = turnSelectorElement.firstChild as Element;
+
+                        if (buttonLabel.textContent
+                            && (!buttonLabel.tagName || buttonLabel.tagName == "STRONG"))
+                        {
+                            buttonLabel.textContent = translateMenu(buttonLabel.textContent);
                         }
                     }
-                    // Battle options (Play button)
-                    else if (battleElement.className == "playbutton") {
-                        updateReplayPlayButtons(battleElement);
+                    // Turn Label
+                    else if (!turnSelectorElement.tagName && turnSelectorElement.textContent) {
+                        turnSelectorElement.textContent = translateMenu(turnSelectorElement.textContent);
                     }
                 })
             }
-            // Battle logs element
-            else if (replayWrapperElement.className == "battle-log") {
-                replayWrapperElement.childNodes.forEach(function (battleLogNode) {
-                    var battleLogElement = battleLogNode as Element;
+            // Pro tip
+            else if (goToTurnElement.tagName == "P") {
+                goToTurnElement.childNodes.forEach(function (protipNode) {
+                    var protipElement = protipNode as Element;
 
-                    if (battleLogElement.classList?.contains("message-log")) {
-                        battleLogElement.childNodes.forEach(function (originalLogNode) {
-                            var originalLog = originalLogNode as Element;
-
-                            // Battle rules
-                            if (originalLog.className == "") {
-                                updateBattleRules(originalLog);
-                            }
-                            // Rated battle label
-                            else if (originalLog.className == "rated") {
-                                updateRatedBattle(originalLog);
-                            }
-                            // Showdown battle message
-                            else if (originalLog.classList?.contains("battle-history")) {
-                                updateShowdownMessage(originalLog);
-                            }
-                            // Default : chat message
-                            else {
-                                updateChatElement(originalLog);
-                            }
-                        })
+                    // Translate all labels
+                    if (protipElement.textContent
+                        && (!protipElement.tagName || ["EM", "KBD"].includes(protipElement.tagName))) {
+                        protipElement.textContent = translateMenu(protipElement.textContent);
                     }
                 })
             }
-        })   
+        })
     }
 }
 
@@ -1806,10 +1855,4 @@ function isChatMessage(messageElement: Element)
 
 function removeSpecialCharacters(text: string) {
 	return text.replace(/[^a-z0-9]+/g, "");
-}
-
-function removeDiacritics(text: string) {
-	return text
-	  .normalize('NFD')
-	  .replace(/[\u0300-\u036f]/g, '');
 }
